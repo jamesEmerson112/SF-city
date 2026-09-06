@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#102a32" />
+    <title>Civic Center · Engine comparison</title>
+    <link rel="icon" href="data:," />
+  </head>
+  <body>
+    <div id="app">
+      <header class="topbar">
+        <div class="brand"><span class="brand-mark" aria-hidden="true">◒</span><div><span class="eyebrow">OpenGlassBox / San Francisco</span><h1>Civic Center</h1></div></div>
+        <nav aria-label="Rendering engine" id="engines"></nav>
+        <div class="status"><i></i><span id="load-status">Loading scene</span></div>
+      </header>
+      <main>
+        <section class="viewport" aria-label="Interactive city scene">
+          <div id="stage"><canvas id="scene-canvas" aria-label="3D City Hall scene" tabindex="0"></canvas></div>
+          <div class="scene-caption"><span class="eyebrow">Renderer study / 02</span><h2>Morning at<br>City Hall.</h2><p>A detailed block. A growing crowd.</p></div>
+          <div class="north" aria-hidden="true">N<br>↑</div>
+          <div class="camera-bar" role="group" aria-label="Camera view"><button data-mode="orbit" class="active"><kbd>1</kbd> Overhead</button><button data-mode="walk"><kbd>2</kbd> Walk</button><button data-mode="follow"><kbd>3</kbd> Follow</button></div>
+          <div id="loading" role="status">Preparing the city…</div>
+        </section>
+        <aside>
+          <span class="eyebrow">Live scene</span><h2 id="engine-title">Loading</h2><p id="engine-description" class="muted"></p>
+          <dl class="metrics"><div><dt>Residents</dt><dd id="resident-count">—</dd></div><div><dt>Source details</dt><dd id="primitive-count">—</dd></div><div><dt>Frame rate</dt><dd><span id="fps">—</span><small> fps</small></dd></div><div><dt>Frame interval</dt><dd><span id="frame-time">—</span><small> ms</small></dd></div></dl>
+          <section class="population-panel"><div class="section-title"><label for="population">Population</label><select id="population" aria-label="Population"></select></div><p id="population-status" class="muted small">Synthetic workload · all people retained</p><div class="crowd-stats"><span>In camera <b id="visible-count">—</b></span><span>Animated <b id="animated-count">—</b></span><span>p95 <b id="p95">—</b> ms</span></div><p class="muted small">Nearby limbs animate within 80 m, up to 300 people. Other people keep moving with simpler poses.</p></section>
+          <section class="simulation"><div class="section-title"><h3>Simulation</h3><span id="sim-clock">00:00</span></div><div class="transport"><button id="pause" title="Space">Pause</button><button id="speed" title="T">1× speed</button><button id="reset" title="R">Reset</button></div><p class="muted small">Scripted trips · elapsed simulation time</p></section>
+          <section class="inspector"><span class="eyebrow">Inspector</span><h3 id="selection-title">Explore the neighborhood</h3><p id="selection-detail" class="muted">Click a building or resident to inspect it. Follow a selected resident along their route.</p></section>
+          <section class="controls"><h3>Make yourself at home</h3><p><kbd>Drag</kbd> Look around <span>·</span> <kbd>Scroll</kbd> Zoom</p><p><kbd>W A S D</kbd> Walk <span>·</span> <kbd>← →</kbd> Turn</p><p><kbd>Space</kbd> Pause <span>·</span> <kbd>R</kbd> Reset</p></section>
+          <p class="disclaimer">Original Blender architecture inspired by City Hall. Geography, home/work labels and trips are illustrative. Timing is a local diagnostic.</p>
+        </aside>
+      </main>
+      <footer><span>Shared Blender asset / 200–5,000 people / six renderer demos</span><span>Native Panda3D &amp; Godot demos: use the comparison launcher</span></footer>
+    </div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

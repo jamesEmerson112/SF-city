@@ -1,0 +1,26 @@
+# Include important files in the source distribution
+include README.md
+include LICENSE
+include environment.yml
+include pyproject.toml
+include MANIFEST.in
+
+# Include data files
+recursive-include demo/data *.txt *.png *.ttf
+
+# Include documentation
+recursive-include docs *.md *.rst *.py
+
+# Exclude development and build files
+exclude .gitignore
+exclude tox.ini
+exclude .coverage
+recursive-exclude * __pycache__
+recursive-exclude * *.py[co]
+recursive-exclude * .pytest_cache
+recursive-exclude * htmlcov
+recursive-exclude * .mypy_cache
+recursive-exclude * .tox
+recursive-exclude * build
+recursive-exclude * dist
+recursive-exclude * *.egg-info

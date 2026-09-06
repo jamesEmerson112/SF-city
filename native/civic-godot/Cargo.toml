@@ -1,0 +1,20 @@
+[package]
+name = "civic-godot"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.87"
+license = "MIT"
+description = "Optional bulk crowd buffer packing for the Civic Center Godot viewer"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+# Only builtin values and RefCounted are used; no generated scene/renderer API.
+# API 4.5 is intentionally pinned and is load-tested on the bundled Godot 4.7.2.
+godot = { version = "=0.4.5", default-features = false, features = ["api-4-5"] }
+
+[profile.release]
+codegen-units = 1
+lto = "thin"
+

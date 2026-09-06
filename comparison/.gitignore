@@ -1,0 +1,7 @@
+.tools/
+artifacts/
+web/node_modules/
+web/dist/
+godot/.godot/
+__pycache__/
+shared/*.blend1

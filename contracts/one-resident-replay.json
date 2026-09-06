@@ -1,0 +1,2703 @@
+{
+  "scene": {
+    "type": "scene",
+    "protocol_version": 1,
+    "session_id": "one-resident-replay-v1",
+    "scenario": {
+      "schema_version": 1,
+      "id": "civic-center-walking-day-v1",
+      "label": "A working day around City Hall",
+      "seed": 7,
+      "tick_hz": 200,
+      "start_time_seconds": 28790,
+      "population": 1,
+      "population_presets": [
+        1,
+        20,
+        200,
+        1000,
+        5000
+      ],
+      "source_note": "Synthetic schedules, building uses and walking connectors on an original stylized City Hall block. Not surveyed geography or observed residents.",
+      "origin": {
+        "longitude": -122.4193,
+        "latitude": 37.7793
+      },
+      "coordinate_system": "local east, north, up; meters",
+      "nodes": [
+        {
+          "id": "sw",
+          "position": [
+            -66,
+            -66,
+            0.34
+          ]
+        },
+        {
+          "id": "se",
+          "position": [
+            66,
+            -66,
+            0.34
+          ]
+        },
+        {
+          "id": "west",
+          "position": [
+            -66,
+            0,
+            0.34
+          ]
+        },
+        {
+          "id": "east",
+          "position": [
+            66,
+            0,
+            0.34
+          ]
+        },
+        {
+          "id": "east_mid",
+          "position": [
+            66,
+            25,
+            0.34
+          ]
+        },
+        {
+          "id": "nw",
+          "position": [
+            -66,
+            77,
+            0.34
+          ]
+        },
+        {
+          "id": "ne",
+          "position": [
+            66,
+            77,
+            0.34
+          ]
+        },
+        {
+          "id": "north_w",
+          "position": [
+            -66,
+            108,
+            0.08
+          ]
+        },
+        {
+          "id": "north_e",
+          "position": [
+            66,
+            108,
+            0.08
+          ]
+        },
+        {
+          "id": "south_w",
+          "position": [
+            -66,
+            -104,
+            0.08
+          ]
+        },
+        {
+          "id": "south_e",
+          "position": [
+            66,
+            -104,
+            0.08
+          ]
+        },
+        {
+          "id": "north_w_curb",
+          "position": [
+            -66,
+            82,
+            0.34
+          ]
+        },
+        {
+          "id": "north_w_ramp",
+          "position": [
+            -66,
+            83,
+            0.08
+          ]
+        },
+        {
+          "id": "south_w_curb",
+          "position": [
+            -66,
+            -72,
+            0.34
+          ]
+        },
+        {
+          "id": "south_w_ramp",
+          "position": [
+            -66,
+            -73,
+            0.08
+          ]
+        },
+        {
+          "id": "north_e_curb",
+          "position": [
+            66,
+            82,
+            0.34
+          ]
+        },
+        {
+          "id": "north_e_ramp",
+          "position": [
+            66,
+            83,
+            0.08
+          ]
+        },
+        {
+          "id": "south_e_curb",
+          "position": [
+            66,
+            -72,
+            0.34
+          ]
+        },
+        {
+          "id": "south_e_ramp",
+          "position": [
+            66,
+            -73,
+            0.08
+          ]
+        },
+        {
+          "id": "plaza_sw_apron",
+          "position": [
+            -57,
+            -62.5,
+            0.34
+          ]
+        },
+        {
+          "id": "plaza_se_apron",
+          "position": [
+            57,
+            -62.5,
+            0.34
+          ]
+        },
+        {
+          "id": "plaza_sw_edge",
+          "position": [
+            -56,
+            -61.5,
+            0.48
+          ]
+        },
+        {
+          "id": "plaza_se_edge",
+          "position": [
+            56,
+            -61.5,
+            0.48
+          ]
+        },
+        {
+          "id": "plaza_sw",
+          "position": [
+            -50,
+            -55,
+            0.48
+          ]
+        },
+        {
+          "id": "plaza_se",
+          "position": [
+            50,
+            -55,
+            0.48
+          ]
+        },
+        {
+          "id": "plaza_inner_sw",
+          "position": [
+            -24,
+            -55,
+            0.48
+          ]
+        },
+        {
+          "id": "plaza_inner_se",
+          "position": [
+            24,
+            -55,
+            0.48
+          ]
+        },
+        {
+          "id": "plaza_inner_nw",
+          "position": [
+            -24,
+            -12,
+            0.48
+          ]
+        },
+        {
+          "id": "plaza_inner_ne",
+          "position": [
+            24,
+            -12,
+            0.48
+          ]
+        },
+        {
+          "id": "plaza_front",
+          "position": [
+            0,
+            -12,
+            0.48
+          ]
+        },
+        {
+          "id": "stair_bottom",
+          "position": [
+            0,
+            -10,
+            0.48
+          ]
+        },
+        {
+          "id": "stair_top",
+          "position": [
+            0,
+            4,
+            2.4
+          ]
+        },
+        {
+          "id": "entrance:city-hall",
+          "position": [
+            0,
+            7,
+            2.4
+          ]
+        },
+        {
+          "id": "entrance:building-0",
+          "position": [
+            -113,
+            0,
+            0.08
+          ]
+        },
+        {
+          "id": "connector:building-0",
+          "position": [
+            -103,
+            0,
+            0.08
+          ]
+        },
+        {
+          "id": "curb-outer:building-0",
+          "position": [
+            -73,
+            0,
+            0.08
+          ]
+        },
+        {
+          "id": "curb-inner:building-0",
+          "position": [
+            -72,
+            0,
+            0.34
+          ]
+        },
+        {
+          "id": "entrance:building-1",
+          "position": [
+            113,
+            25,
+            0.08
+          ]
+        },
+        {
+          "id": "connector:building-1",
+          "position": [
+            103,
+            25,
+            0.08
+          ]
+        },
+        {
+          "id": "curb-outer:building-1",
+          "position": [
+            73,
+            25,
+            0.08
+          ]
+        },
+        {
+          "id": "curb-inner:building-1",
+          "position": [
+            72,
+            25,
+            0.34
+          ]
+        },
+        {
+          "id": "entrance:building-2",
+          "position": [
+            -148,
+            113,
+            0.08
+          ]
+        },
+        {
+          "id": "connector:building-2",
+          "position": [
+            -148,
+            108,
+            0.08
+          ]
+        },
+        {
+          "id": "entrance:building-3",
+          "position": [
+            -32,
+            113,
+            0.08
+          ]
+        },
+        {
+          "id": "connector:building-3",
+          "position": [
+            -32,
+            108,
+            0.08
+          ]
+        },
+        {
+          "id": "entrance:building-4",
+          "position": [
+            48,
+            113,
+            0.08
+          ]
+        },
+        {
+          "id": "connector:building-4",
+          "position": [
+            48,
+            108,
+            0.08
+          ]
+        },
+        {
+          "id": "entrance:building-5",
+          "position": [
+            156,
+            113,
+            0.08
+          ]
+        },
+        {
+          "id": "connector:building-5",
+          "position": [
+            156,
+            108,
+            0.08
+          ]
+        },
+        {
+          "id": "entrance:building-6",
+          "position": [
+            -158,
+            -111,
+            0.08
+          ]
+        },
+        {
+          "id": "connector:building-6",
+          "position": [
+            -158,
+            -104,
+            0.08
+          ]
+        },
+        {
+          "id": "entrance:building-7",
+          "position": [
+            -48,
+            -111,
+            0.08
+          ]
+        },
+        {
+          "id": "connector:building-7",
+          "position": [
+            -48,
+            -104,
+            0.08
+          ]
+        },
+        {
+          "id": "entrance:building-8",
+          "position": [
+            32,
+            -111,
+            0.08
+          ]
+        },
+        {
+          "id": "connector:building-8",
+          "position": [
+            32,
+            -104,
+            0.08
+          ]
+        },
+        {
+          "id": "entrance:building-9",
+          "position": [
+            154,
+            -111,
+            0.08
+          ]
+        },
+        {
+          "id": "connector:building-9",
+          "position": [
+            154,
+            -104,
+            0.08
+          ]
+        }
+      ],
+      "edges": [
+        {
+          "id": "edge:sw:west",
+          "from": "sw",
+          "to": "west",
+          "bidirectional": true
+        },
+        {
+          "id": "edge:west:nw",
+          "from": "west",
+          "to": "nw",
+          "bidirectional": true
+        },
+        {
+          "id": "edge:nw:ne",
+          "from": "nw",
+          "to": "ne",
+          "bidirectional": true
+        },
+        {
+          "id": "edge:ne:east_mid",
+          "from": "ne",
+          "to": "east_mid",
+          "bidirectional": true
+        },
+        {
+          "id": "edge:east_mid:east",
+          "from": "east_mid",
+          "to": "east",
+          "bidirectional": true
+        },
+        {
+          "id": "edge:east:se",
+          "from": "east",
+          "to": "se",
+          "bidirectional": true
+        },
+        {
+          "id": "edge:se:sw",
+          "from": "se",
+          "to": "sw",
+          "bidirectional": true
+        },
+        {
+          "id": "edge:nw:north_w_curb",
+          "from": "nw",
+          "to": "north_w_curb",
+          "bidirectional": true
+        },
+        {
+          "id": "edge:north_w_curb:north_w_ramp",
+          "from": "north_w_curb",
+          "to": "north_w_ramp",
+          "bidirectional": true
+        },
+        {
+          "id": "edge:north_w_ramp:north_w",
+          "from": "north_w_ramp",
+          "to": "north_w",
+          "bidirectional": true
+        },
+        {
+          "id": "edge:sw:south_w_curb",
+          "from": "sw",
+          "to": "south_w_curb",
+          "bidirectional": true
+        },
+        {
+          "id": "edge:south_w_curb:south_w_ramp",
+          "from": "south_w_curb",
+          "to": "south_w_ramp",
+          "bidirectional": true
+        },
+        {
+          "id": "edge:south_w_ramp:south_w",
+          "from": "south_w_ramp",
+          "to": "south_w",
+          "bidirectional": true
+        },
+        {
+          "id": "edge:ne:north_e_curb",
+          "from": "ne",
+          "to": "north_e_curb",
+          "bidirectional": true
+        },
+        {
+          "id": "edge:north_e_curb:north_e_ramp",
+          "from": "north_e_curb",
+          "to": "north_e_ramp",
+          "bidirectional": true
+        },
+        {
+          "id": "edge:north_e_ramp:north_e",
+          "from": "north_e_ramp",
+          "to": "north_e",
+          "bidirectional": true
+        },
+        {
+          "id": "edge:se:south_e_curb",
+          "from": "se",
+          "to": "south_e_curb",
+          "bidirectional": true
+        },
+        {
+          "id": "edge:south_e_curb:south_e_ramp",
+          "from": "south_e_curb",
+          "to": "south_e_ramp",
+          "bidirectional": true
+        },
+        {
+          "id": "edge:south_e_ramp:south_e",
+          "from": "south_e_ramp",
+          "to": "south_e",
+          "bidirectional": true
+        },
+        {
+          "id": "edge:north_w:north_e",
+          "from": "north_w",
+          "to": "north_e",
+          "bidirectional": true
+        },
+        {
+          "id": "edge:south_w:south_e",
+          "from": "south_w",
+          "to": "south_e",
+          "bidirectional": true
+        },
+        {
+          "id": "edge:sw:plaza_sw_apron",
+          "from": "sw",
+          "to": "plaza_sw_apron",
+          "bidirectional": true
+        },
+        {
+          "id": "edge:plaza_sw_apron:plaza_sw_edge",
+          "from": "plaza_sw_apron",
+          "to": "plaza_sw_edge",
+          "bidirectional": true
+        },
+        {
+          "id": "edge:plaza_sw_edge:plaza_sw",
+          "from": "plaza_sw_edge",
+          "to": "plaza_sw",
+          "bidirectional": true
+        },
+        {
+          "id": "edge:plaza_sw:plaza_inner_sw",
+          "from": "plaza_sw",
+          "to": "plaza_inner_sw",
+          "bidirectional": true
+        },
+        {
+          "id": "edge:plaza_inner_sw:plaza_inner_nw",
+          "from": "plaza_inner_sw",
+          "to": "plaza_inner_nw",
+          "bidirectional": true
+        },
+        {
+          "id": "edge:plaza_inner_nw:plaza_front",
+          "from": "plaza_inner_nw",
+          "to": "plaza_front",
+          "bidirectional": true
+        },
+        {
+          "id": "edge:se:plaza_se_apron",
+          "from": "se",
+          "to": "plaza_se_apron",
+          "bidirectional": true
+        },
+        {
+          "id": "edge:plaza_se_apron:plaza_se_edge",
+          "from": "plaza_se_apron",
+          "to": "plaza_se_edge",
+          "bidirectional": true
+        },
+        {
+          "id": "edge:plaza_se_edge:plaza_se",
+          "from": "plaza_se_edge",
+          "to": "plaza_se",
+          "bidirectional": true
+        },
+        {
+          "id": "edge:plaza_se:plaza_inner_se",
+          "from": "plaza_se",
+          "to": "plaza_inner_se",
+          "bidirectional": true
+        },
+        {
+          "id": "edge:plaza_inner_se:plaza_inner_ne",
+          "from": "plaza_inner_se",
+          "to": "plaza_inner_ne",
+          "bidirectional": true
+        },
+        {
+          "id": "edge:plaza_inner_ne:plaza_front",
+          "from": "plaza_inner_ne",
+          "to": "plaza_front",
+          "bidirectional": true
+        },
+        {
+          "id": "edge:plaza_front:stair_bottom",
+          "from": "plaza_front",
+          "to": "stair_bottom",
+          "bidirectional": true
+        },
+        {
+          "id": "edge:stair_bottom:stair_top",
+          "from": "stair_bottom",
+          "to": "stair_top",
+          "bidirectional": true
+        },
+        {
+          "id": "edge:stair_top:entrance:city-hall",
+          "from": "stair_top",
+          "to": "entrance:city-hall",
+          "bidirectional": true
+        },
+        {
+          "id": "edge:entrance:building-0:connector:building-0",
+          "from": "entrance:building-0",
+          "to": "connector:building-0",
+          "bidirectional": true
+        },
+        {
+          "id": "edge:connector:building-0:curb-outer:building-0",
+          "from": "connector:building-0",
+          "to": "curb-outer:building-0",
+          "bidirectional": true
+        },
+        {
+          "id": "edge:curb-outer:building-0:curb-inner:building-0",
+          "from": "curb-outer:building-0",
+          "to": "curb-inner:building-0",
+          "bidirectional": true
+        },
+        {
+          "id": "edge:curb-inner:building-0:west",
+          "from": "curb-inner:building-0",
+          "to": "west",
+          "bidirectional": true
+        },
+        {
+          "id": "edge:entrance:building-1:connector:building-1",
+          "from": "entrance:building-1",
+          "to": "connector:building-1",
+          "bidirectional": true
+        },
+        {
+          "id": "edge:connector:building-1:curb-outer:building-1",
+          "from": "connector:building-1",
+          "to": "curb-outer:building-1",
+          "bidirectional": true
+        },
+        {
+          "id": "edge:curb-outer:building-1:curb-inner:building-1",
+          "from": "curb-outer:building-1",
+          "to": "curb-inner:building-1",
+          "bidirectional": true
+        },
+        {
+          "id": "edge:curb-inner:building-1:east_mid",
+          "from": "curb-inner:building-1",
+          "to": "east_mid",
+          "bidirectional": true
+        },
+        {
+          "id": "edge:entrance:building-2:connector:building-2",
+          "from": "entrance:building-2",
+          "to": "connector:building-2",
+          "bidirectional": true
+        },
+        {
+          "id": "edge:connector:building-2:north_w",
+          "from": "connector:building-2",
+          "to": "north_w",
+          "bidirectional": true
+        },
+        {
+          "id": "edge:entrance:building-3:connector:building-3",
+          "from": "entrance:building-3",
+          "to": "connector:building-3",
+          "bidirectional": true
+        },
+        {
+          "id": "edge:connector:building-3:north_w",
+          "from": "connector:building-3",
+          "to": "north_w",
+          "bidirectional": true
+        },
+        {
+          "id": "edge:entrance:building-4:connector:building-4",
+          "from": "entrance:building-4",
+          "to": "connector:building-4",
+          "bidirectional": true
+        },
+        {
+          "id": "edge:connector:building-4:north_e",
+          "from": "connector:building-4",
+          "to": "north_e",
+          "bidirectional": true
+        },
+        {
+          "id": "edge:entrance:building-5:connector:building-5",
+          "from": "entrance:building-5",
+          "to": "connector:building-5",
+          "bidirectional": true
+        },
+        {
+          "id": "edge:connector:building-5:north_e",
+          "from": "connector:building-5",
+          "to": "north_e",
+          "bidirectional": true
+        },
+        {
+          "id": "edge:entrance:building-6:connector:building-6",
+          "from": "entrance:building-6",
+          "to": "connector:building-6",
+          "bidirectional": true
+        },
+        {
+          "id": "edge:connector:building-6:south_w",
+          "from": "connector:building-6",
+          "to": "south_w",
+          "bidirectional": true
+        },
+        {
+          "id": "edge:entrance:building-7:connector:building-7",
+          "from": "entrance:building-7",
+          "to": "connector:building-7",
+          "bidirectional": true
+        },
+        {
+          "id": "edge:connector:building-7:south_w",
+          "from": "connector:building-7",
+          "to": "south_w",
+          "bidirectional": true
+        },
+        {
+          "id": "edge:entrance:building-8:connector:building-8",
+          "from": "entrance:building-8",
+          "to": "connector:building-8",
+          "bidirectional": true
+        },
+        {
+          "id": "edge:connector:building-8:south_e",
+          "from": "connector:building-8",
+          "to": "south_e",
+          "bidirectional": true
+        },
+        {
+          "id": "edge:entrance:building-9:connector:building-9",
+          "from": "entrance:building-9",
+          "to": "connector:building-9",
+          "bidirectional": true
+        },
+        {
+          "id": "edge:connector:building-9:south_e",
+          "from": "connector:building-9",
+          "to": "south_e",
+          "bidirectional": true
+        }
+      ],
+      "buildings": [
+        {
+          "id": "city-hall",
+          "label": "City Hall",
+          "kind": "work",
+          "entrance_node_id": "entrance:city-hall",
+          "capacity": 1,
+          "source": "original visual study; generated entrance"
+        },
+        {
+          "id": "building-0",
+          "label": "West residences",
+          "kind": "home",
+          "entrance_node_id": "entrance:building-0",
+          "capacity": 1,
+          "source": "original visual study; generated use and entrance"
+        },
+        {
+          "id": "building-1",
+          "label": "East offices",
+          "kind": "work",
+          "entrance_node_id": "entrance:building-1",
+          "capacity": 1,
+          "source": "original visual study; generated use and entrance"
+        },
+        {
+          "id": "building-2",
+          "label": "Northwest offices",
+          "kind": "work",
+          "entrance_node_id": "entrance:building-2",
+          "capacity": 1,
+          "source": "original visual study; generated use and entrance"
+        },
+        {
+          "id": "building-3",
+          "label": "North residences",
+          "kind": "home",
+          "entrance_node_id": "entrance:building-3",
+          "capacity": 1,
+          "source": "original visual study; generated use and entrance"
+        },
+        {
+          "id": "building-4",
+          "label": "North offices",
+          "kind": "work",
+          "entrance_node_id": "entrance:building-4",
+          "capacity": 1,
+          "source": "original visual study; generated use and entrance"
+        },
+        {
+          "id": "building-5",
+          "label": "Northeast offices",
+          "kind": "work",
+          "entrance_node_id": "entrance:building-5",
+          "capacity": 1,
+          "source": "original visual study; generated use and entrance"
+        },
+        {
+          "id": "building-6",
+          "label": "Southwest residences",
+          "kind": "home",
+          "entrance_node_id": "entrance:building-6",
+          "capacity": 1,
+          "source": "original visual study; generated use and entrance"
+        },
+        {
+          "id": "building-7",
+          "label": "Southwest workshops",
+          "kind": "work",
+          "entrance_node_id": "entrance:building-7",
+          "capacity": 1,
+          "source": "original visual study; generated use and entrance"
+        },
+        {
+          "id": "building-8",
+          "label": "South offices",
+          "kind": "work",
+          "entrance_node_id": "entrance:building-8",
+          "capacity": 1,
+          "source": "original visual study; generated use and entrance"
+        },
+        {
+          "id": "building-9",
+          "label": "Southeast residences",
+          "kind": "home",
+          "entrance_node_id": "entrance:building-9",
+          "capacity": 1,
+          "source": "original visual study; generated use and entrance"
+        }
+      ],
+      "residents": [
+        {
+          "id": "resident-0000",
+          "label": "Resident 0001",
+          "home_id": "building-0",
+          "work_id": "city-hall",
+          "departure_tick": 2000,
+          "return_tick": 6482000,
+          "speed_mps": 1.45,
+          "phase": 0.0,
+          "color": [
+            0.88,
+            0.48,
+            0.17
+          ],
+          "skin_color": [
+            0.63,
+            0.39,
+            0.25
+          ],
+          "trouser_color": [
+            0.08,
+            0.12,
+            0.18
+          ],
+          "bag_color": [
+            0.3,
+            0.21,
+            0.12
+          ]
+        }
+      ],
+      "sha256": "bd1ebfa20d337d5b41eae659a416834370a669561b2e647fc8a8a3b6702acd7f"
+    },
+    "visual_asset": "res://assets/civic-center.glb"
+  },
+  "snapshots": [
+    {
+      "type": "snapshot",
+      "protocol_version": 1,
+      "session_id": "one-resident-replay-v1",
+      "sequence": 1,
+      "tick": 0,
+      "simulation_time": 0.0,
+      "clock_seconds": 28790.0,
+      "paused": false,
+      "speed": 1.0,
+      "residents": [
+        {
+          "id": "resident-0000",
+          "label": "Resident 0001",
+          "home_id": "building-0",
+          "work_id": "city-hall",
+          "departure_tick": 2000,
+          "return_tick": 6482000,
+          "speed_mps": 1.45,
+          "phase": 0.0,
+          "color": [
+            0.88,
+            0.48,
+            0.17
+          ],
+          "skin_color": [
+            0.63,
+            0.39,
+            0.25
+          ],
+          "trouser_color": [
+            0.08,
+            0.12,
+            0.18
+          ],
+          "bag_color": [
+            0.3,
+            0.21,
+            0.12
+          ],
+          "activity": "home",
+          "building_id": "building-0",
+          "position": [
+            -113.0,
+            0.0,
+            0.08
+          ],
+          "heading": 0.0,
+          "visible": false,
+          "moving": false,
+          "trip": null,
+          "blocked_reason": null
+        }
+      ],
+      "buildings": [
+        {
+          "id": "building-0",
+          "label": "West residences",
+          "kind": "home",
+          "entrance_node_id": "entrance:building-0",
+          "capacity": 1,
+          "source": "original visual study; generated use and entrance",
+          "occupancy": 1,
+          "resident_ids": [
+            "resident-0000"
+          ]
+        },
+        {
+          "id": "building-1",
+          "label": "East offices",
+          "kind": "work",
+          "entrance_node_id": "entrance:building-1",
+          "capacity": 1,
+          "source": "original visual study; generated use and entrance",
+          "occupancy": 0,
+          "resident_ids": []
+        },
+        {
+          "id": "building-2",
+          "label": "Northwest offices",
+          "kind": "work",
+          "entrance_node_id": "entrance:building-2",
+          "capacity": 1,
+          "source": "original visual study; generated use and entrance",
+          "occupancy": 0,
+          "resident_ids": []
+        },
+        {
+          "id": "building-3",
+          "label": "North residences",
+          "kind": "home",
+          "entrance_node_id": "entrance:building-3",
+          "capacity": 1,
+          "source": "original visual study; generated use and entrance",
+          "occupancy": 0,
+          "resident_ids": []
+        },
+        {
+          "id": "building-4",
+          "label": "North offices",
+          "kind": "work",
+          "entrance_node_id": "entrance:building-4",
+          "capacity": 1,
+          "source": "original visual study; generated use and entrance",
+          "occupancy": 0,
+          "resident_ids": []
+        },
+        {
+          "id": "building-5",
+          "label": "Northeast offices",
+          "kind": "work",
+          "entrance_node_id": "entrance:building-5",
+          "capacity": 1,
+          "source": "original visual study; generated use and entrance",
+          "occupancy": 0,
+          "resident_ids": []
+        },
+        {
+          "id": "building-6",
+          "label": "Southwest residences",
+          "kind": "home",
+          "entrance_node_id": "entrance:building-6",
+          "capacity": 1,
+          "source": "original visual study; generated use and entrance",
+          "occupancy": 0,
+          "resident_ids": []
+        },
+        {
+          "id": "building-7",
+          "label": "Southwest workshops",
+          "kind": "work",
+          "entrance_node_id": "entrance:building-7",
+          "capacity": 1,
+          "source": "original visual study; generated use and entrance",
+          "occupancy": 0,
+          "resident_ids": []
+        },
+        {
+          "id": "building-8",
+          "label": "South offices",
+          "kind": "work",
+          "entrance_node_id": "entrance:building-8",
+          "capacity": 1,
+          "source": "original visual study; generated use and entrance",
+          "occupancy": 0,
+          "resident_ids": []
+        },
+        {
+          "id": "building-9",
+          "label": "Southeast residences",
+          "kind": "home",
+          "entrance_node_id": "entrance:building-9",
+          "capacity": 1,
+          "source": "original visual study; generated use and entrance",
+          "occupancy": 0,
+          "resident_ids": []
+        },
+        {
+          "id": "city-hall",
+          "label": "City Hall",
+          "kind": "work",
+          "entrance_node_id": "entrance:city-hall",
+          "capacity": 1,
+          "source": "original visual study; generated entrance",
+          "occupancy": 0,
+          "resident_ids": []
+        }
+      ],
+      "events": [],
+      "event_count": 0
+    },
+    {
+      "type": "snapshot",
+      "protocol_version": 1,
+      "session_id": "one-resident-replay-v1",
+      "sequence": 2,
+      "tick": 2000,
+      "simulation_time": 10.0,
+      "clock_seconds": 28800.0,
+      "paused": false,
+      "speed": 1.0,
+      "residents": [
+        {
+          "id": "resident-0000",
+          "label": "Resident 0001",
+          "home_id": "building-0",
+          "work_id": "city-hall",
+          "departure_tick": 2000,
+          "return_tick": 6482000,
+          "speed_mps": 1.45,
+          "phase": 0.0,
+          "color": [
+            0.88,
+            0.48,
+            0.17
+          ],
+          "skin_color": [
+            0.63,
+            0.39,
+            0.25
+          ],
+          "trouser_color": [
+            0.08,
+            0.12,
+            0.18
+          ],
+          "bag_color": [
+            0.3,
+            0.21,
+            0.12
+          ],
+          "activity": "walking_to_work",
+          "building_id": null,
+          "position": [
+            -113.0,
+            0.0,
+            0.08
+          ],
+          "heading": 0.0,
+          "visible": true,
+          "moving": true,
+          "trip": {
+            "id": "resident-0000:outbound:0",
+            "points": [
+              [
+                -113.0,
+                0.0,
+                0.08
+              ],
+              [
+                -103.0,
+                0.0,
+                0.08
+              ],
+              [
+                -73.0,
+                0.0,
+                0.08
+              ],
+              [
+                -72.0,
+                0.0,
+                0.34
+              ],
+              [
+                -66.0,
+                0.0,
+                0.34
+              ],
+              [
+                -66.0,
+                -66.0,
+                0.34
+              ],
+              [
+                -57.0,
+                -62.5,
+                0.34
+              ],
+              [
+                -56.0,
+                -61.5,
+                0.48
+              ],
+              [
+                -50.0,
+                -55.0,
+                0.48
+              ],
+              [
+                -24.0,
+                -55.0,
+                0.48
+              ],
+              [
+                -24.0,
+                -12.0,
+                0.48
+              ],
+              [
+                0.0,
+                -12.0,
+                0.48
+              ],
+              [
+                0.0,
+                -10.0,
+                0.48
+              ],
+              [
+                0.0,
+                4.0,
+                2.4
+              ],
+              [
+                0.0,
+                7.0,
+                2.4
+              ]
+            ],
+            "node_ids": [
+              "entrance:building-0",
+              "connector:building-0",
+              "curb-outer:building-0",
+              "curb-inner:building-0",
+              "west",
+              "sw",
+              "plaza_sw_apron",
+              "plaza_sw_edge",
+              "plaza_sw",
+              "plaza_inner_sw",
+              "plaza_inner_nw",
+              "plaza_front",
+              "stair_bottom",
+              "stair_top",
+              "entrance:city-hall"
+            ],
+            "length_m": 245.08792442623434,
+            "segment_index": 0,
+            "segment_progress": 0.0,
+            "departure_tick": 2000,
+            "arrival_tick": 35806,
+            "origin_id": "building-0",
+            "destination_id": "city-hall"
+          },
+          "blocked_reason": null
+        }
+      ],
+      "buildings": [
+        {
+          "id": "building-0",
+          "label": "West residences",
+          "kind": "home",
+          "entrance_node_id": "entrance:building-0",
+          "capacity": 1,
+          "source": "original visual study; generated use and entrance",
+          "occupancy": 0,
+          "resident_ids": []
+        },
+        {
+          "id": "building-1",
+          "label": "East offices",
+          "kind": "work",
+          "entrance_node_id": "entrance:building-1",
+          "capacity": 1,
+          "source": "original visual study; generated use and entrance",
+          "occupancy": 0,
+          "resident_ids": []
+        },
+        {
+          "id": "building-2",
+          "label": "Northwest offices",
+          "kind": "work",
+          "entrance_node_id": "entrance:building-2",
+          "capacity": 1,
+          "source": "original visual study; generated use and entrance",
+          "occupancy": 0,
+          "resident_ids": []
+        },
+        {
+          "id": "building-3",
+          "label": "North residences",
+          "kind": "home",
+          "entrance_node_id": "entrance:building-3",
+          "capacity": 1,
+          "source": "original visual study; generated use and entrance",
+          "occupancy": 0,
+          "resident_ids": []
+        },
+        {
+          "id": "building-4",
+          "label": "North offices",
+          "kind": "work",
+          "entrance_node_id": "entrance:building-4",
+          "capacity": 1,
+          "source": "original visual study; generated use and entrance",
+          "occupancy": 0,
+          "resident_ids": []
+        },
+        {
+          "id": "building-5",
+          "label": "Northeast offices",
+          "kind": "work",
+          "entrance_node_id": "entrance:building-5",
+          "capacity": 1,
+          "source": "original visual study; generated use and entrance",
+          "occupancy": 0,
+          "resident_ids": []
+        },
+        {
+          "id": "building-6",
+          "label": "Southwest residences",
+          "kind": "home",
+          "entrance_node_id": "entrance:building-6",
+          "capacity": 1,
+          "source": "original visual study; generated use and entrance",
+          "occupancy": 0,
+          "resident_ids": []
+        },
+        {
+          "id": "building-7",
+          "label": "Southwest workshops",
+          "kind": "work",
+          "entrance_node_id": "entrance:building-7",
+          "capacity": 1,
+          "source": "original visual study; generated use and entrance",
+          "occupancy": 0,
+          "resident_ids": []
+        },
+        {
+          "id": "building-8",
+          "label": "South offices",
+          "kind": "work",
+          "entrance_node_id": "entrance:building-8",
+          "capacity": 1,
+          "source": "original visual study; generated use and entrance",
+          "occupancy": 0,
+          "resident_ids": []
+        },
+        {
+          "id": "building-9",
+          "label": "Southeast residences",
+          "kind": "home",
+          "entrance_node_id": "entrance:building-9",
+          "capacity": 1,
+          "source": "original visual study; generated use and entrance",
+          "occupancy": 0,
+          "resident_ids": []
+        },
+        {
+          "id": "city-hall",
+          "label": "City Hall",
+          "kind": "work",
+          "entrance_node_id": "entrance:city-hall",
+          "capacity": 1,
+          "source": "original visual study; generated entrance",
+          "occupancy": 0,
+          "resident_ids": []
+        }
+      ],
+      "events": [
+        {
+          "sequence": 1,
+          "type": "departure",
+          "tick": 2000,
+          "resident_id": "resident-0000",
+          "trip_id": "resident-0000:outbound:0",
+          "building_id": "building-0",
+          "destination_id": "city-hall"
+        }
+      ],
+      "event_count": 1
+    },
+    {
+      "type": "snapshot",
+      "protocol_version": 1,
+      "session_id": "one-resident-replay-v1",
+      "sequence": 3,
+      "tick": 18903,
+      "simulation_time": 94.515,
+      "clock_seconds": 28884.515,
+      "paused": false,
+      "speed": 1.0,
+      "residents": [
+        {
+          "id": "resident-0000",
+          "label": "Resident 0001",
+          "home_id": "building-0",
+          "work_id": "city-hall",
+          "departure_tick": 2000,
+          "return_tick": 6482000,
+          "speed_mps": 1.45,
+          "phase": 0.0,
+          "color": [
+            0.88,
+            0.48,
+            0.17
+          ],
+          "skin_color": [
+            0.63,
+            0.39,
+            0.25
+          ],
+          "trouser_color": [
+            0.08,
+            0.12,
+            0.18
+          ],
+          "bag_color": [
+            0.3,
+            0.21,
+            0.12
+          ],
+          "activity": "walking_to_work",
+          "building_id": null,
+          "position": [
+            -57.13337104856566,
+            -62.55186651888664,
+            0.34
+          ],
+          "heading": 0.37089128881266237,
+          "visible": true,
+          "moving": true,
+          "trip": {
+            "id": "resident-0000:outbound:0",
+            "points": [
+              [
+                -113.0,
+                0.0,
+                0.08
+              ],
+              [
+                -103.0,
+                0.0,
+                0.08
+              ],
+              [
+                -73.0,
+                0.0,
+                0.08
+              ],
+              [
+                -72.0,
+                0.0,
+                0.34
+              ],
+              [
+                -66.0,
+                0.0,
+                0.34
+              ],
+              [
+                -66.0,
+                -66.0,
+                0.34
+              ],
+              [
+                -57.0,
+                -62.5,
+                0.34
+              ],
+              [
+                -56.0,
+                -61.5,
+                0.48
+              ],
+              [
+                -50.0,
+                -55.0,
+                0.48
+              ],
+              [
+                -24.0,
+                -55.0,
+                0.48
+              ],
+              [
+                -24.0,
+                -12.0,
+                0.48
+              ],
+              [
+                0.0,
+                -12.0,
+                0.48
+              ],
+              [
+                0.0,
+                -10.0,
+                0.48
+              ],
+              [
+                0.0,
+                4.0,
+                2.4
+              ],
+              [
+                0.0,
+                7.0,
+                2.4
+              ]
+            ],
+            "node_ids": [
+              "entrance:building-0",
+              "connector:building-0",
+              "curb-outer:building-0",
+              "curb-inner:building-0",
+              "west",
+              "sw",
+              "plaza_sw_apron",
+              "plaza_sw_edge",
+              "plaza_sw",
+              "plaza_inner_sw",
+              "plaza_inner_nw",
+              "plaza_front",
+              "stair_bottom",
+              "stair_top",
+              "entrance:city-hall"
+            ],
+            "length_m": 245.08792442623434,
+            "segment_index": 5,
+            "segment_progress": 0.985180994603816,
+            "departure_tick": 2000,
+            "arrival_tick": 35806,
+            "origin_id": "building-0",
+            "destination_id": "city-hall"
+          },
+          "blocked_reason": null
+        }
+      ],
+      "buildings": [
+        {
+          "id": "building-0",
+          "label": "West residences",
+          "kind": "home",
+          "entrance_node_id": "entrance:building-0",
+          "capacity": 1,
+          "source": "original visual study; generated use and entrance",
+          "occupancy": 0,
+          "resident_ids": []
+        },
+        {
+          "id": "building-1",
+          "label": "East offices",
+          "kind": "work",
+          "entrance_node_id": "entrance:building-1",
+          "capacity": 1,
+          "source": "original visual study; generated use and entrance",
+          "occupancy": 0,
+          "resident_ids": []
+        },
+        {
+          "id": "building-2",
+          "label": "Northwest offices",
+          "kind": "work",
+          "entrance_node_id": "entrance:building-2",
+          "capacity": 1,
+          "source": "original visual study; generated use and entrance",
+          "occupancy": 0,
+          "resident_ids": []
+        },
+        {
+          "id": "building-3",
+          "label": "North residences",
+          "kind": "home",
+          "entrance_node_id": "entrance:building-3",
+          "capacity": 1,
+          "source": "original visual study; generated use and entrance",
+          "occupancy": 0,
+          "resident_ids": []
+        },
+        {
+          "id": "building-4",
+          "label": "North offices",
+          "kind": "work",
+          "entrance_node_id": "entrance:building-4",
+          "capacity": 1,
+          "source": "original visual study; generated use and entrance",
+          "occupancy": 0,
+          "resident_ids": []
+        },
+        {
+          "id": "building-5",
+          "label": "Northeast offices",
+          "kind": "work",
+          "entrance_node_id": "entrance:building-5",
+          "capacity": 1,
+          "source": "original visual study; generated use and entrance",
+          "occupancy": 0,
+          "resident_ids": []
+        },
+        {
+          "id": "building-6",
+          "label": "Southwest residences",
+          "kind": "home",
+          "entrance_node_id": "entrance:building-6",
+          "capacity": 1,
+          "source": "original visual study; generated use and entrance",
+          "occupancy": 0,
+          "resident_ids": []
+        },
+        {
+          "id": "building-7",
+          "label": "Southwest workshops",
+          "kind": "work",
+          "entrance_node_id": "entrance:building-7",
+          "capacity": 1,
+          "source": "original visual study; generated use and entrance",
+          "occupancy": 0,
+          "resident_ids": []
+        },
+        {
+          "id": "building-8",
+          "label": "South offices",
+          "kind": "work",
+          "entrance_node_id": "entrance:building-8",
+          "capacity": 1,
+          "source": "original visual study; generated use and entrance",
+          "occupancy": 0,
+          "resident_ids": []
+        },
+        {
+          "id": "building-9",
+          "label": "Southeast residences",
+          "kind": "home",
+          "entrance_node_id": "entrance:building-9",
+          "capacity": 1,
+          "source": "original visual study; generated use and entrance",
+          "occupancy": 0,
+          "resident_ids": []
+        },
+        {
+          "id": "city-hall",
+          "label": "City Hall",
+          "kind": "work",
+          "entrance_node_id": "entrance:city-hall",
+          "capacity": 1,
+          "source": "original visual study; generated entrance",
+          "occupancy": 0,
+          "resident_ids": []
+        }
+      ],
+      "events": [
+        {
+          "sequence": 1,
+          "type": "departure",
+          "tick": 2000,
+          "resident_id": "resident-0000",
+          "trip_id": "resident-0000:outbound:0",
+          "building_id": "building-0",
+          "destination_id": "city-hall"
+        }
+      ],
+      "event_count": 1
+    },
+    {
+      "type": "snapshot",
+      "protocol_version": 1,
+      "session_id": "one-resident-replay-v1",
+      "sequence": 4,
+      "tick": 35806,
+      "simulation_time": 179.03,
+      "clock_seconds": 28969.03,
+      "paused": false,
+      "speed": 1.0,
+      "residents": [
+        {
+          "id": "resident-0000",
+          "label": "Resident 0001",
+          "home_id": "building-0",
+          "work_id": "city-hall",
+          "departure_tick": 2000,
+          "return_tick": 6482000,
+          "speed_mps": 1.45,
+          "phase": 0.0,
+          "color": [
+            0.88,
+            0.48,
+            0.17
+          ],
+          "skin_color": [
+            0.63,
+            0.39,
+            0.25
+          ],
+          "trouser_color": [
+            0.08,
+            0.12,
+            0.18
+          ],
+          "bag_color": [
+            0.3,
+            0.21,
+            0.12
+          ],
+          "activity": "at_work",
+          "building_id": "city-hall",
+          "position": [
+            0.0,
+            7.0,
+            2.4
+          ],
+          "heading": 1.5707963267948966,
+          "visible": false,
+          "moving": false,
+          "trip": null,
+          "blocked_reason": null
+        }
+      ],
+      "buildings": [
+        {
+          "id": "building-0",
+          "label": "West residences",
+          "kind": "home",
+          "entrance_node_id": "entrance:building-0",
+          "capacity": 1,
+          "source": "original visual study; generated use and entrance",
+          "occupancy": 0,
+          "resident_ids": []
+        },
+        {
+          "id": "building-1",
+          "label": "East offices",
+          "kind": "work",
+          "entrance_node_id": "entrance:building-1",
+          "capacity": 1,
+          "source": "original visual study; generated use and entrance",
+          "occupancy": 0,
+          "resident_ids": []
+        },
+        {
+          "id": "building-2",
+          "label": "Northwest offices",
+          "kind": "work",
+          "entrance_node_id": "entrance:building-2",
+          "capacity": 1,
+          "source": "original visual study; generated use and entrance",
+          "occupancy": 0,
+          "resident_ids": []
+        },
+        {
+          "id": "building-3",
+          "label": "North residences",
+          "kind": "home",
+          "entrance_node_id": "entrance:building-3",
+          "capacity": 1,
+          "source": "original visual study; generated use and entrance",
+          "occupancy": 0,
+          "resident_ids": []
+        },
+        {
+          "id": "building-4",
+          "label": "North offices",
+          "kind": "work",
+          "entrance_node_id": "entrance:building-4",
+          "capacity": 1,
+          "source": "original visual study; generated use and entrance",
+          "occupancy": 0,
+          "resident_ids": []
+        },
+        {
+          "id": "building-5",
+          "label": "Northeast offices",
+          "kind": "work",
+          "entrance_node_id": "entrance:building-5",
+          "capacity": 1,
+          "source": "original visual study; generated use and entrance",
+          "occupancy": 0,
+          "resident_ids": []
+        },
+        {
+          "id": "building-6",
+          "label": "Southwest residences",
+          "kind": "home",
+          "entrance_node_id": "entrance:building-6",
+          "capacity": 1,
+          "source": "original visual study; generated use and entrance",
+          "occupancy": 0,
+          "resident_ids": []
+        },
+        {
+          "id": "building-7",
+          "label": "Southwest workshops",
+          "kind": "work",
+          "entrance_node_id": "entrance:building-7",
+          "capacity": 1,
+          "source": "original visual study; generated use and entrance",
+          "occupancy": 0,
+          "resident_ids": []
+        },
+        {
+          "id": "building-8",
+          "label": "South offices",
+          "kind": "work",
+          "entrance_node_id": "entrance:building-8",
+          "capacity": 1,
+          "source": "original visual study; generated use and entrance",
+          "occupancy": 0,
+          "resident_ids": []
+        },
+        {
+          "id": "building-9",
+          "label": "Southeast residences",
+          "kind": "home",
+          "entrance_node_id": "entrance:building-9",
+          "capacity": 1,
+          "source": "original visual study; generated use and entrance",
+          "occupancy": 0,
+          "resident_ids": []
+        },
+        {
+          "id": "city-hall",
+          "label": "City Hall",
+          "kind": "work",
+          "entrance_node_id": "entrance:city-hall",
+          "capacity": 1,
+          "source": "original visual study; generated entrance",
+          "occupancy": 1,
+          "resident_ids": [
+            "resident-0000"
+          ]
+        }
+      ],
+      "events": [
+        {
+          "sequence": 1,
+          "type": "departure",
+          "tick": 2000,
+          "resident_id": "resident-0000",
+          "trip_id": "resident-0000:outbound:0",
+          "building_id": "building-0",
+          "destination_id": "city-hall"
+        },
+        {
+          "sequence": 2,
+          "type": "arrival",
+          "tick": 35806,
+          "resident_id": "resident-0000",
+          "trip_id": "resident-0000:outbound:0",
+          "building_id": "city-hall"
+        }
+      ],
+      "event_count": 2
+    },
+    {
+      "type": "snapshot",
+      "protocol_version": 1,
+      "session_id": "one-resident-replay-v1",
+      "sequence": 5,
+      "tick": 6482000,
+      "simulation_time": 32410.0,
+      "clock_seconds": 61200.0,
+      "paused": false,
+      "speed": 1.0,
+      "residents": [
+        {
+          "id": "resident-0000",
+          "label": "Resident 0001",
+          "home_id": "building-0",
+          "work_id": "city-hall",
+          "departure_tick": 2000,
+          "return_tick": 6482000,
+          "speed_mps": 1.45,
+          "phase": 0.0,
+          "color": [
+            0.88,
+            0.48,
+            0.17
+          ],
+          "skin_color": [
+            0.63,
+            0.39,
+            0.25
+          ],
+          "trouser_color": [
+            0.08,
+            0.12,
+            0.18
+          ],
+          "bag_color": [
+            0.3,
+            0.21,
+            0.12
+          ],
+          "activity": "walking_home",
+          "building_id": null,
+          "position": [
+            0.0,
+            7.0,
+            2.4
+          ],
+          "heading": -1.5707963267948966,
+          "visible": true,
+          "moving": true,
+          "trip": {
+            "id": "resident-0000:return:0",
+            "points": [
+              [
+                0.0,
+                7.0,
+                2.4
+              ],
+              [
+                0.0,
+                4.0,
+                2.4
+              ],
+              [
+                0.0,
+                -10.0,
+                0.48
+              ],
+              [
+                0.0,
+                -12.0,
+                0.48
+              ],
+              [
+                -24.0,
+                -12.0,
+                0.48
+              ],
+              [
+                -24.0,
+                -55.0,
+                0.48
+              ],
+              [
+                -50.0,
+                -55.0,
+                0.48
+              ],
+              [
+                -56.0,
+                -61.5,
+                0.48
+              ],
+              [
+                -57.0,
+                -62.5,
+                0.34
+              ],
+              [
+                -66.0,
+                -66.0,
+                0.34
+              ],
+              [
+                -66.0,
+                0.0,
+                0.34
+              ],
+              [
+                -72.0,
+                0.0,
+                0.34
+              ],
+              [
+                -73.0,
+                0.0,
+                0.08
+              ],
+              [
+                -103.0,
+                0.0,
+                0.08
+              ],
+              [
+                -113.0,
+                0.0,
+                0.08
+              ]
+            ],
+            "node_ids": [
+              "entrance:city-hall",
+              "stair_top",
+              "stair_bottom",
+              "plaza_front",
+              "plaza_inner_nw",
+              "plaza_inner_sw",
+              "plaza_sw",
+              "plaza_sw_edge",
+              "plaza_sw_apron",
+              "sw",
+              "west",
+              "curb-inner:building-0",
+              "curb-outer:building-0",
+              "connector:building-0",
+              "entrance:building-0"
+            ],
+            "length_m": 245.0879244262343,
+            "segment_index": 0,
+            "segment_progress": 0.0,
+            "departure_tick": 6482000,
+            "arrival_tick": 6515806,
+            "origin_id": "city-hall",
+            "destination_id": "building-0"
+          },
+          "blocked_reason": null
+        }
+      ],
+      "buildings": [
+        {
+          "id": "building-0",
+          "label": "West residences",
+          "kind": "home",
+          "entrance_node_id": "entrance:building-0",
+          "capacity": 1,
+          "source": "original visual study; generated use and entrance",
+          "occupancy": 0,
+          "resident_ids": []
+        },
+        {
+          "id": "building-1",
+          "label": "East offices",
+          "kind": "work",
+          "entrance_node_id": "entrance:building-1",
+          "capacity": 1,
+          "source": "original visual study; generated use and entrance",
+          "occupancy": 0,
+          "resident_ids": []
+        },
+        {
+          "id": "building-2",
+          "label": "Northwest offices",
+          "kind": "work",
+          "entrance_node_id": "entrance:building-2",
+          "capacity": 1,
+          "source": "original visual study; generated use and entrance",
+          "occupancy": 0,
+          "resident_ids": []
+        },
+        {
+          "id": "building-3",
+          "label": "North residences",
+          "kind": "home",
+          "entrance_node_id": "entrance:building-3",
+          "capacity": 1,
+          "source": "original visual study; generated use and entrance",
+          "occupancy": 0,
+          "resident_ids": []
+        },
+        {
+          "id": "building-4",
+          "label": "North offices",
+          "kind": "work",
+          "entrance_node_id": "entrance:building-4",
+          "capacity": 1,
+          "source": "original visual study; generated use and entrance",
+          "occupancy": 0,
+          "resident_ids": []
+        },
+        {
+          "id": "building-5",
+          "label": "Northeast offices",
+          "kind": "work",
+          "entrance_node_id": "entrance:building-5",
+          "capacity": 1,
+          "source": "original visual study; generated use and entrance",
+          "occupancy": 0,
+          "resident_ids": []
+        },
+        {
+          "id": "building-6",
+          "label": "Southwest residences",
+          "kind": "home",
+          "entrance_node_id": "entrance:building-6",
+          "capacity": 1,
+          "source": "original visual study; generated use and entrance",
+          "occupancy": 0,
+          "resident_ids": []
+        },
+        {
+          "id": "building-7",
+          "label": "Southwest workshops",
+          "kind": "work",
+          "entrance_node_id": "entrance:building-7",
+          "capacity": 1,
+          "source": "original visual study; generated use and entrance",
+          "occupancy": 0,
+          "resident_ids": []
+        },
+        {
+          "id": "building-8",
+          "label": "South offices",
+          "kind": "work",
+          "entrance_node_id": "entrance:building-8",
+          "capacity": 1,
+          "source": "original visual study; generated use and entrance",
+          "occupancy": 0,
+          "resident_ids": []
+        },
+        {
+          "id": "building-9",
+          "label": "Southeast residences",
+          "kind": "home",
+          "entrance_node_id": "entrance:building-9",
+          "capacity": 1,
+          "source": "original visual study; generated use and entrance",
+          "occupancy": 0,
+          "resident_ids": []
+        },
+        {
+          "id": "city-hall",
+          "label": "City Hall",
+          "kind": "work",
+          "entrance_node_id": "entrance:city-hall",
+          "capacity": 1,
+          "source": "original visual study; generated entrance",
+          "occupancy": 0,
+          "resident_ids": []
+        }
+      ],
+      "events": [
+        {
+          "sequence": 1,
+          "type": "departure",
+          "tick": 2000,
+          "resident_id": "resident-0000",
+          "trip_id": "resident-0000:outbound:0",
+          "building_id": "building-0",
+          "destination_id": "city-hall"
+        },
+        {
+          "sequence": 2,
+          "type": "arrival",
+          "tick": 35806,
+          "resident_id": "resident-0000",
+          "trip_id": "resident-0000:outbound:0",
+          "building_id": "city-hall"
+        },
+        {
+          "sequence": 3,
+          "type": "departure",
+          "tick": 6482000,
+          "resident_id": "resident-0000",
+          "trip_id": "resident-0000:return:0",
+          "building_id": "city-hall",
+          "destination_id": "building-0"
+        }
+      ],
+      "event_count": 3
+    },
+    {
+      "type": "snapshot",
+      "protocol_version": 1,
+      "session_id": "one-resident-replay-v1",
+      "sequence": 6,
+      "tick": 6498903,
+      "simulation_time": 32494.515,
+      "clock_seconds": 61284.515,
+      "paused": false,
+      "speed": 1.0,
+      "residents": [
+        {
+          "id": "resident-0000",
+          "label": "Resident 0001",
+          "home_id": "building-0",
+          "work_id": "city-hall",
+          "departure_tick": 2000,
+          "return_tick": 6482000,
+          "speed_mps": 1.45,
+          "phase": 0.0,
+          "color": [
+            0.88,
+            0.48,
+            0.17
+          ],
+          "skin_color": [
+            0.63,
+            0.39,
+            0.25
+          ],
+          "trouser_color": [
+            0.08,
+            0.12,
+            0.18
+          ],
+          "bag_color": [
+            0.3,
+            0.21,
+            0.12
+          ],
+          "activity": "walking_home",
+          "building_id": null,
+          "position": [
+            -57.138567509361806,
+            -62.553887364751816,
+            0.34
+          ],
+          "heading": -2.770701364777131,
+          "visible": true,
+          "moving": true,
+          "trip": {
+            "id": "resident-0000:return:0",
+            "points": [
+              [
+                0.0,
+                7.0,
+                2.4
+              ],
+              [
+                0.0,
+                4.0,
+                2.4
+              ],
+              [
+                0.0,
+                -10.0,
+                0.48
+              ],
+              [
+                0.0,
+                -12.0,
+                0.48
+              ],
+              [
+                -24.0,
+                -12.0,
+                0.48
+              ],
+              [
+                -24.0,
+                -55.0,
+                0.48
+              ],
+              [
+                -50.0,
+                -55.0,
+                0.48
+              ],
+              [
+                -56.0,
+                -61.5,
+                0.48
+              ],
+              [
+                -57.0,
+                -62.5,
+                0.34
+              ],
+              [
+                -66.0,
+                -66.0,
+                0.34
+              ],
+              [
+                -66.0,
+                0.0,
+                0.34
+              ],
+              [
+                -72.0,
+                0.0,
+                0.34
+              ],
+              [
+                -73.0,
+                0.0,
+                0.08
+              ],
+              [
+                -103.0,
+                0.0,
+                0.08
+              ],
+              [
+                -113.0,
+                0.0,
+                0.08
+              ]
+            ],
+            "node_ids": [
+              "entrance:city-hall",
+              "stair_top",
+              "stair_bottom",
+              "plaza_front",
+              "plaza_inner_nw",
+              "plaza_inner_sw",
+              "plaza_sw",
+              "plaza_sw_edge",
+              "plaza_sw_apron",
+              "sw",
+              "west",
+              "curb-inner:building-0",
+              "curb-outer:building-0",
+              "connector:building-0",
+              "entrance:building-0"
+            ],
+            "length_m": 245.0879244262343,
+            "segment_index": 8,
+            "segment_progress": 0.015396389929089807,
+            "departure_tick": 6482000,
+            "arrival_tick": 6515806,
+            "origin_id": "city-hall",
+            "destination_id": "building-0"
+          },
+          "blocked_reason": null
+        }
+      ],
+      "buildings": [
+        {
+          "id": "building-0",
+          "label": "West residences",
+          "kind": "home",
+          "entrance_node_id": "entrance:building-0",
+          "capacity": 1,
+          "source": "original visual study; generated use and entrance",
+          "occupancy": 0,
+          "resident_ids": []
+        },
+        {
+          "id": "building-1",
+          "label": "East offices",
+          "kind": "work",
+          "entrance_node_id": "entrance:building-1",
+          "capacity": 1,
+          "source": "original visual study; generated use and entrance",
+          "occupancy": 0,
+          "resident_ids": []
+        },
+        {
+          "id": "building-2",
+          "label": "Northwest offices",
+          "kind": "work",
+          "entrance_node_id": "entrance:building-2",
+          "capacity": 1,
+          "source": "original visual study; generated use and entrance",
+          "occupancy": 0,
+          "resident_ids": []
+        },
+        {
+          "id": "building-3",
+          "label": "North residences",
+          "kind": "home",
+          "entrance_node_id": "entrance:building-3",
+          "capacity": 1,
+          "source": "original visual study; generated use and entrance",
+          "occupancy": 0,
+          "resident_ids": []
+        },
+        {
+          "id": "building-4",
+          "label": "North offices",
+          "kind": "work",
+          "entrance_node_id": "entrance:building-4",
+          "capacity": 1,
+          "source": "original visual study; generated use and entrance",
+          "occupancy": 0,
+          "resident_ids": []
+        },
+        {
+          "id": "building-5",
+          "label": "Northeast offices",
+          "kind": "work",
+          "entrance_node_id": "entrance:building-5",
+          "capacity": 1,
+          "source": "original visual study; generated use and entrance",
+          "occupancy": 0,
+          "resident_ids": []
+        },
+        {
+          "id": "building-6",
+          "label": "Southwest residences",
+          "kind": "home",
+          "entrance_node_id": "entrance:building-6",
+          "capacity": 1,
+          "source": "original visual study; generated use and entrance",
+          "occupancy": 0,
+          "resident_ids": []
+        },
+        {
+          "id": "building-7",
+          "label": "Southwest workshops",
+          "kind": "work",
+          "entrance_node_id": "entrance:building-7",
+          "capacity": 1,
+          "source": "original visual study; generated use and entrance",
+          "occupancy": 0,
+          "resident_ids": []
+        },
+        {
+          "id": "building-8",
+          "label": "South offices",
+          "kind": "work",
+          "entrance_node_id": "entrance:building-8",
+          "capacity": 1,
+          "source": "original visual study; generated use and entrance",
+          "occupancy": 0,
+          "resident_ids": []
+        },
+        {
+          "id": "building-9",
+          "label": "Southeast residences",
+          "kind": "home",
+          "entrance_node_id": "entrance:building-9",
+          "capacity": 1,
+          "source": "original visual study; generated use and entrance",
+          "occupancy": 0,
+          "resident_ids": []
+        },
+        {
+          "id": "city-hall",
+          "label": "City Hall",
+          "kind": "work",
+          "entrance_node_id": "entrance:city-hall",
+          "capacity": 1,
+          "source": "original visual study; generated entrance",
+          "occupancy": 0,
+          "resident_ids": []
+        }
+      ],
+      "events": [
+        {
+          "sequence": 1,
+          "type": "departure",
+          "tick": 2000,
+          "resident_id": "resident-0000",
+          "trip_id": "resident-0000:outbound:0",
+          "building_id": "building-0",
+          "destination_id": "city-hall"
+        },
+        {
+          "sequence": 2,
+          "type": "arrival",
+          "tick": 35806,
+          "resident_id": "resident-0000",
+          "trip_id": "resident-0000:outbound:0",
+          "building_id": "city-hall"
+        },
+        {
+          "sequence": 3,
+          "type": "departure",
+          "tick": 6482000,
+          "resident_id": "resident-0000",
+          "trip_id": "resident-0000:return:0",
+          "building_id": "city-hall",
+          "destination_id": "building-0"
+        }
+      ],
+      "event_count": 3
+    },
+    {
+      "type": "snapshot",
+      "protocol_version": 1,
+      "session_id": "one-resident-replay-v1",
+      "sequence": 7,
+      "tick": 6515806,
+      "simulation_time": 32579.03,
+      "clock_seconds": 61369.03,
+      "paused": false,
+      "speed": 1.0,
+      "residents": [
+        {
+          "id": "resident-0000",
+          "label": "Resident 0001",
+          "home_id": "building-0",
+          "work_id": "city-hall",
+          "departure_tick": 2000,
+          "return_tick": 6482000,
+          "speed_mps": 1.45,
+          "phase": 0.0,
+          "color": [
+            0.88,
+            0.48,
+            0.17
+          ],
+          "skin_color": [
+            0.63,
+            0.39,
+            0.25
+          ],
+          "trouser_color": [
+            0.08,
+            0.12,
+            0.18
+          ],
+          "bag_color": [
+            0.3,
+            0.21,
+            0.12
+          ],
+          "activity": "home",
+          "building_id": "building-0",
+          "position": [
+            -113.0,
+            0.0,
+            0.08
+          ],
+          "heading": 3.141592653589793,
+          "visible": false,
+          "moving": false,
+          "trip": null,
+          "blocked_reason": null
+        }
+      ],
+      "buildings": [
+        {
+          "id": "building-0",
+          "label": "West residences",
+          "kind": "home",
+          "entrance_node_id": "entrance:building-0",
+          "capacity": 1,
+          "source": "original visual study; generated use and entrance",
+          "occupancy": 1,
+          "resident_ids": [
+            "resident-0000"
+          ]
+        },
+        {
+          "id": "building-1",
+          "label": "East offices",
+          "kind": "work",
+          "entrance_node_id": "entrance:building-1",
+          "capacity": 1,
+          "source": "original visual study; generated use and entrance",
+          "occupancy": 0,
+          "resident_ids": []
+        },
+        {
+          "id": "building-2",
+          "label": "Northwest offices",
+          "kind": "work",
+          "entrance_node_id": "entrance:building-2",
+          "capacity": 1,
+          "source": "original visual study; generated use and entrance",
+          "occupancy": 0,
+          "resident_ids": []
+        },
+        {
+          "id": "building-3",
+          "label": "North residences",
+          "kind": "home",
+          "entrance_node_id": "entrance:building-3",
+          "capacity": 1,
+          "source": "original visual study; generated use and entrance",
+          "occupancy": 0,
+          "resident_ids": []
+        },
+        {
+          "id": "building-4",
+          "label": "North offices",
+          "kind": "work",
+          "entrance_node_id": "entrance:building-4",
+          "capacity": 1,
+          "source": "original visual study; generated use and entrance",
+          "occupancy": 0,
+          "resident_ids": []
+        },
+        {
+          "id": "building-5",
+          "label": "Northeast offices",
+          "kind": "work",
+          "entrance_node_id": "entrance:building-5",
+          "capacity": 1,
+          "source": "original visual study; generated use and entrance",
+          "occupancy": 0,
+          "resident_ids": []
+        },
+        {
+          "id": "building-6",
+          "label": "Southwest residences",
+          "kind": "home",
+          "entrance_node_id": "entrance:building-6",
+          "capacity": 1,
+          "source": "original visual study; generated use and entrance",
+          "occupancy": 0,
+          "resident_ids": []
+        },
+        {
+          "id": "building-7",
+          "label": "Southwest workshops",
+          "kind": "work",
+          "entrance_node_id": "entrance:building-7",
+          "capacity": 1,
+          "source": "original visual study; generated use and entrance",
+          "occupancy": 0,
+          "resident_ids": []
+        },
+        {
+          "id": "building-8",
+          "label": "South offices",
+          "kind": "work",
+          "entrance_node_id": "entrance:building-8",
+          "capacity": 1,
+          "source": "original visual study; generated use and entrance",
+          "occupancy": 0,
+          "resident_ids": []
+        },
+        {
+          "id": "building-9",
+          "label": "Southeast residences",
+          "kind": "home",
+          "entrance_node_id": "entrance:building-9",
+          "capacity": 1,
+          "source": "original visual study; generated use and entrance",
+          "occupancy": 0,
+          "resident_ids": []
+        },
+        {
+          "id": "city-hall",
+          "label": "City Hall",
+          "kind": "work",
+          "entrance_node_id": "entrance:city-hall",
+          "capacity": 1,
+          "source": "original visual study; generated entrance",
+          "occupancy": 0,
+          "resident_ids": []
+        }
+      ],
+      "events": [
+        {
+          "sequence": 1,
+          "type": "departure",
+          "tick": 2000,
+          "resident_id": "resident-0000",
+          "trip_id": "resident-0000:outbound:0",
+          "building_id": "building-0",
+          "destination_id": "city-hall"
+        },
+        {
+          "sequence": 2,
+          "type": "arrival",
+          "tick": 35806,
+          "resident_id": "resident-0000",
+          "trip_id": "resident-0000:outbound:0",
+          "building_id": "city-hall"
+        },
+        {
+          "sequence": 3,
+          "type": "departure",
+          "tick": 6482000,
+          "resident_id": "resident-0000",
+          "trip_id": "resident-0000:return:0",
+          "building_id": "city-hall",
+          "destination_id": "building-0"
+        },
+        {
+          "sequence": 4,
+          "type": "arrival",
+          "tick": 6515806,
+          "resident_id": "resident-0000",
+          "trip_id": "resident-0000:return:0",
+          "building_id": "building-0"
+        }
+      ],
+      "event_count": 4
+    }
+  ]
+}

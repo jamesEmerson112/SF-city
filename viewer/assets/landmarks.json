@@ -1,0 +1,1078 @@
+{
+  "schema_version": 1,
+  "landmarks": [
+    {
+      "schema_version": 1,
+      "id": "sf-building:201006.0000041",
+      "label": "San Francisco City Hall",
+      "asset": "res://assets/city-hall-geographic.glb",
+      "origin": {
+        "latitude": 37.7793,
+        "longitude": -122.4193
+      },
+      "position": [
+        6.348999977111816,
+        -2.634000062942505,
+        0
+      ],
+      "place_on_terrain": true,
+      "height_m": 93.726,
+      "footprint": [
+        [
+          39.981,
+          63.848,
+          0.0
+        ],
+        [
+          47.105,
+          19.481,
+          0.0
+        ],
+        [
+          48.687,
+          19.728,
+          0.0
+        ],
+        [
+          49.15,
+          16.756,
+          0.0
+        ],
+        [
+          51.762,
+          17.173,
+          0.0
+        ],
+        [
+          52.424,
+          13.038,
+          0.0
+        ],
+        [
+          52.533,
+          12.347,
+          0.0
+        ],
+        [
+          55.639,
+          -7.111,
+          0.0
+        ],
+        [
+          55.633,
+          -7.119,
+          0.0
+        ],
+        [
+          52.937,
+          -7.549,
+          0.0
+        ],
+        [
+          53.438,
+          -10.764,
+          0.0
+        ],
+        [
+          51.996,
+          -10.989,
+          0.0
+        ],
+        [
+          58.977,
+          -55.081,
+          0.0
+        ],
+        [
+          58.972,
+          -55.087,
+          0.0
+        ],
+        [
+          57.546,
+          -55.398,
+          0.0
+        ],
+        [
+          56.232,
+          -57.43,
+          0.0
+        ],
+        [
+          56.291,
+          -58.906,
+          0.0
+        ],
+        [
+          56.285,
+          -58.913,
+          0.0
+        ],
+        [
+          38.053,
+          -61.847,
+          0.0
+        ],
+        [
+          37.704,
+          -60.242,
+          0.0
+        ],
+        [
+          -4.933,
+          -67.343,
+          0.0
+        ],
+        [
+          -4.755,
+          -68.829,
+          0.0
+        ],
+        [
+          -4.76,
+          -68.835,
+          0.0
+        ],
+        [
+          -22.527,
+          -71.661,
+          0.0
+        ],
+        [
+          -22.769,
+          -70.299,
+          0.0
+        ],
+        [
+          -23.029,
+          -70.175,
+          0.0
+        ],
+        [
+          -25.04,
+          -68.637,
+          0.0
+        ],
+        [
+          -26.488,
+          -68.823,
+          0.0
+        ],
+        [
+          -26.77,
+          -67.055,
+          0.0
+        ],
+        [
+          -27.526,
+          -67.174,
+          0.0
+        ],
+        [
+          -27.675,
+          -66.223,
+          0.0
+        ],
+        [
+          -28.372,
+          -61.945,
+          0.0
+        ],
+        [
+          -28.979,
+          -57.9,
+          0.0
+        ],
+        [
+          -29.12,
+          -56.997,
+          0.0
+        ],
+        [
+          -29.115,
+          -56.991,
+          0.0
+        ],
+        [
+          -28.394,
+          -56.878,
+          0.0
+        ],
+        [
+          -33.533,
+          -24.678,
+          0.0
+        ],
+        [
+          -33.954,
+          -24.749,
+          0.0
+        ],
+        [
+          -35.117,
+          -24.943,
+          0.0
+        ],
+        [
+          -35.277,
+          -23.699,
+          0.0
+        ],
+        [
+          -36.847,
+          -22.504,
+          0.0
+        ],
+        [
+          -38.186,
+          -22.697,
+          0.0
+        ],
+        [
+          -38.264,
+          -22.209,
+          0.0
+        ],
+        [
+          -41.207,
+          -22.689,
+          0.0
+        ],
+        [
+          -45.158,
+          1.495,
+          0.0
+        ],
+        [
+          -45.151,
+          1.502,
+          0.0
+        ],
+        [
+          -42.165,
+          1.99,
+          0.0
+        ],
+        [
+          -42.283,
+          2.727,
+          0.0
+        ],
+        [
+          -42.133,
+          2.745,
+          0.0
+        ],
+        [
+          -41.042,
+          2.877,
+          0.0
+        ],
+        [
+          -39.938,
+          4.59,
+          0.0
+        ],
+        [
+          -40.135,
+          5.667,
+          0.0
+        ],
+        [
+          -38.414,
+          5.914,
+          0.0
+        ],
+        [
+          -43.535,
+          38.007,
+          0.0
+        ],
+        [
+          -44.414,
+          37.869,
+          0.0
+        ],
+        [
+          -44.819,
+          40.454,
+          0.0
+        ],
+        [
+          -45.217,
+          42.96,
+          0.0
+        ],
+        [
+          -45.616,
+          45.548,
+          0.0
+        ],
+        [
+          -46.008,
+          48.051,
+          0.0
+        ],
+        [
+          -46.003,
+          48.057,
+          0.0
+        ],
+        [
+          -45.202,
+          48.182,
+          0.0
+        ],
+        [
+          -45.212,
+          48.228,
+          0.0
+        ],
+        [
+          -45.474,
+          50.034,
+          0.0
+        ],
+        [
+          -45.47,
+          50.039,
+          0.0
+        ],
+        [
+          -43.217,
+          50.429,
+          0.0
+        ],
+        [
+          -42.54,
+          51.794,
+          0.0
+        ],
+        [
+          -42.462,
+          54.004,
+          0.0
+        ],
+        [
+          -42.457,
+          54.009,
+          0.0
+        ],
+        [
+          -24.598,
+          56.969,
+          0.0
+        ],
+        [
+          -24.232,
+          55.208,
+          0.0
+        ],
+        [
+          18.603,
+          61.943,
+          0.0
+        ],
+        [
+          18.451,
+          63.767,
+          0.0
+        ],
+        [
+          18.456,
+          63.773,
+          0.0
+        ],
+        [
+          35.827,
+          66.484,
+          0.0
+        ],
+        [
+          36.062,
+          65.321,
+          0.0
+        ],
+        [
+          38.021,
+          63.849,
+          0.0
+        ]
+      ],
+      "sha256": "a3534f0c7a587e6fd1ee1aec158951d5612423834b957bd134db34d4073e34fd",
+      "bytes": 930836,
+      "source_geometry_sha256": "99a0c0b5293c06c6e257785fe47394f797349b80b16dd2654bebe2405d2352be",
+      "source_note": "Observed DataSF outer footprint and median roof height; original procedural facade, columns and dome. Total landmark height follows the City's docent reference. LiDAR peak-ground statistic is retained separately and differs from architectural height. This is an approximate exterior, not a surveyed facade or interior.",
+      "height_reference": {
+        "url": "https://www.sf.gov/sites/default/files/2021-12/12746-DocentPresentation.pdf",
+        "title": "San Francisco City Hall docent presentation",
+        "reported_height_feet": 307.5
+      },
+      "mesh_count": 10,
+      "source_file": "assets/source/city-hall-geographic.blend",
+      "blender_version": "5.2.1 LTS",
+      "building_reference": {
+        "url": "https://data.sfgov.org/d/ynuv-fyni",
+        "title": "San Francisco building footprints",
+        "source_id": "201006.0000041",
+        "license": "Open Data Commons Public Domain Dedication and License 1.0",
+        "license_url": "https://opendatacommons.org/licenses/pddl/1-0/",
+        "observation_note": "2010 Pictometry-origin geometry refined in 2017; source refresh dates are not new surveys."
+      },
+      "walk_position": [
+        -73.757,
+        70.532,
+        0.0
+      ],
+      "walk_node_id": "sf-bend:13146201:0:2",
+      "walk_target_distance_m": 108.491
+    },
+    {
+      "schema_version": 1,
+      "id": "sf-building:201006.0000687",
+      "label": "Transamerica Pyramid",
+      "asset": "res://assets/transamerica-pyramid-geographic.glb",
+      "origin": {
+        "latitude": 37.7793,
+        "longitude": -122.4193
+      },
+      "position": [
+        1455.495,
+        1762.642,
+        0.0
+      ],
+      "place_on_terrain": true,
+      "height_m": 259.9944,
+      "footprint": [
+        [
+          1474.742,
+          1799.126,
+          0.0
+        ],
+        [
+          1475.69,
+          1793.247,
+          0.0
+        ],
+        [
+          1477.383,
+          1793.527,
+          0.0
+        ],
+        [
+          1486.332,
+          1739.188,
+          0.0
+        ],
+        [
+          1432.845,
+          1731.336,
+          0.0
+        ],
+        [
+          1424.208,
+          1784.741,
+          0.0
+        ],
+        [
+          1469.136,
+          1792.164,
+          0.0
+        ],
+        [
+          1468.114,
+          1798.006,
+          0.0
+        ]
+      ],
+      "sha256": "7c7fa876fb71436dd4e02b63f3136366bb348a9cea6467f0e2392a774f52a574",
+      "bytes": 559012,
+      "source_geometry_sha256": "e4785377b8779e0e244ca4de3a699d4acf152d05c9edd07897c0c4e845c7bc63",
+      "source_note": "Original approximate exterior using the observed DataSF footprint location and USGS-reported overall height, base width and structural orientation. Taper, wing geometry, colonnade and facade details are illustrative. The source footprint's median height is a different statistic from the pyramid's architectural top.",
+      "height_reference": {
+        "url": "https://www.strongmotioncenter.org/NCESMD/photos/NSMP/bldlayouts/bld1239.pdf",
+        "title": "USGS National Strong Motion Project station 1239 building layout, revision 2025-01-21",
+        "reported_height_feet": 853,
+        "reported_base_width_m": 53,
+        "reported_structural_reference_degrees": 350
+      },
+      "building_reference": {
+        "url": "https://data.sfgov.org/d/ynuv-fyni",
+        "title": "San Francisco building footprints",
+        "source_id": "201006.0000687",
+        "license": "Open Data Commons Public Domain Dedication and License 1.0",
+        "license_url": "https://opendatacommons.org/licenses/pddl/1-0/",
+        "observation_note": "2010 Pictometry-origin geometry refined in 2017; source refresh dates are not new surveys."
+      },
+      "replaces_building_ids": [
+        "sf-building:201006.0000687"
+      ],
+      "source_file": "assets/source/sf-skyline-landmarks.blend",
+      "blender_version": "5.2.1 LTS",
+      "mesh_count": 4,
+      "vertex_count": 20388,
+      "mesh_bounds": {
+        "min": [
+          -31.28699493408203,
+          -31.305967330932617,
+          0.0
+        ],
+        "max": [
+          30.837005615234375,
+          36.484031677246094,
+          259.994384765625
+        ]
+      },
+      "walk_position": [
+        1416.144,
+        1750.065,
+        0.0
+      ],
+      "walk_node_id": "sf-node:24757000",
+      "walk_target_distance_m": 41.312
+    },
+    {
+      "schema_version": 1,
+      "id": "sf-building:201006.0006230",
+      "label": "Coit Tower",
+      "asset": "res://assets/coit-tower-geographic.glb",
+      "origin": {
+        "latitude": 37.7793,
+        "longitude": -122.4193
+      },
+      "position": [
+        1184.725,
+        2567.292,
+        0.0
+      ],
+      "place_on_terrain": true,
+      "height_m": 64.6176,
+      "footprint": [
+        [
+          1182.878,
+          2588.245,
+          0.0
+        ],
+        [
+          1183.603,
+          2585.452,
+          0.0
+        ],
+        [
+          1183.544,
+          2585.437,
+          0.0
+        ],
+        [
+          1184.719,
+          2580.638,
+          0.0
+        ],
+        [
+          1184.735,
+          2580.642,
+          0.0
+        ],
+        [
+          1185.668,
+          2577.935,
+          0.0
+        ],
+        [
+          1187.852,
+          2578.47,
+          0.0
+        ],
+        [
+          1188.897,
+          2574.319,
+          0.0
+        ],
+        [
+          1188.977,
+          2574.342,
+          0.0
+        ],
+        [
+          1189.526,
+          2572.048,
+          0.0
+        ],
+        [
+          1192.404,
+          2572.771,
+          0.0
+        ],
+        [
+          1193.068,
+          2569.988,
+          0.0
+        ],
+        [
+          1193.97,
+          2570.133,
+          0.0
+        ],
+        [
+          1194.826,
+          2569.086,
+          0.0
+        ],
+        [
+          1195.871,
+          2567.41,
+          0.0
+        ],
+        [
+          1196.632,
+          2565.718,
+          0.0
+        ],
+        [
+          1197.072,
+          2563.98,
+          0.0
+        ],
+        [
+          1197.207,
+          2562.32,
+          0.0
+        ],
+        [
+          1196.991,
+          2560.402,
+          0.0
+        ],
+        [
+          1196.657,
+          2558.973,
+          0.0
+        ],
+        [
+          1195.91,
+          2558.803,
+          0.0
+        ],
+        [
+          1196.583,
+          2555.868,
+          0.0
+        ],
+        [
+          1193.676,
+          2555.116,
+          0.0
+        ],
+        [
+          1193.85,
+          2554.366,
+          0.0
+        ],
+        [
+          1192.902,
+          2553.474,
+          0.0
+        ],
+        [
+          1191.433,
+          2552.439,
+          0.0
+        ],
+        [
+          1190.302,
+          2551.795,
+          0.0
+        ],
+        [
+          1188.949,
+          2551.372,
+          0.0
+        ],
+        [
+          1187.47,
+          2551.126,
+          0.0
+        ],
+        [
+          1185.889,
+          2551.085,
+          0.0
+        ],
+        [
+          1183.694,
+          2551.139,
+          0.0
+        ],
+        [
+          1182.751,
+          2551.346,
+          0.0
+        ],
+        [
+          1182.524,
+          2552.168,
+          0.0
+        ],
+        [
+          1179.746,
+          2551.461,
+          0.0
+        ],
+        [
+          1179.024,
+          2554.31,
+          0.0
+        ],
+        [
+          1178.061,
+          2554.174,
+          0.0
+        ],
+        [
+          1177.785,
+          2554.437,
+          0.0
+        ],
+        [
+          1176.797,
+          2555.661,
+          0.0
+        ],
+        [
+          1176.088,
+          2556.873,
+          0.0
+        ],
+        [
+          1175.361,
+          2558.591,
+          0.0
+        ],
+        [
+          1174.903,
+          2560.457,
+          0.0
+        ],
+        [
+          1174.834,
+          2562.36,
+          0.0
+        ],
+        [
+          1174.99,
+          2563.881,
+          0.0
+        ],
+        [
+          1175.202,
+          2565.416,
+          0.0
+        ],
+        [
+          1175.955,
+          2565.591,
+          0.0
+        ],
+        [
+          1175.429,
+          2568.277,
+          0.0
+        ],
+        [
+          1177.199,
+          2568.778,
+          0.0
+        ],
+        [
+          1176.776,
+          2570.774,
+          0.0
+        ],
+        [
+          1178.19,
+          2571.187,
+          0.0
+        ],
+        [
+          1176.828,
+          2575.766,
+          0.0
+        ],
+        [
+          1179.687,
+          2576.468,
+          0.0
+        ],
+        [
+          1178.738,
+          2578.994,
+          0.0
+        ],
+        [
+          1178.759,
+          2579.0,
+          0.0
+        ],
+        [
+          1177.378,
+          2583.982,
+          0.0
+        ],
+        [
+          1177.433,
+          2583.996,
+          0.0
+        ],
+        [
+          1176.734,
+          2586.474,
+          0.0
+        ],
+        [
+          1176.723,
+          2586.485,
+          0.0
+        ],
+        [
+          1175.721,
+          2590.692,
+          0.0
+        ],
+        [
+          1181.92,
+          2592.462,
+          0.0
+        ],
+        [
+          1182.922,
+          2588.257,
+          0.0
+        ]
+      ],
+      "sha256": "80dd0199b1cd2e6d27a5b97757f26c00ccf1b0fc930d6fbbf6070a6398c20be7",
+      "bytes": 140356,
+      "source_geometry_sha256": "3de567af25f4c57669272927585abdcfcf276d0675ec8ea5b8a31e7c6f7c63e0",
+      "source_note": "Original approximate fluted tower and observation arcade above its observed DataSF base footprint. Overall height follows the Recreation and Parks brochure. Shaft radius, tower center within the footprint, arch details and facade proportions are illustrative, not a surveyed architectural model.",
+      "height_reference": {
+        "url": "https://sfrecpark.org/DocumentCenter/View/7387/CoitTowerBrochure_V5",
+        "title": "San Francisco Recreation and Parks Coit Tower brochure",
+        "reported_height_feet": 212,
+        "note": "The department brochure reports 212 feet; other references report 210. This model explicitly follows the brochure rather than silently mixing height references."
+      },
+      "building_reference": {
+        "url": "https://data.sfgov.org/d/ynuv-fyni",
+        "title": "San Francisco building footprints",
+        "source_id": "201006.0006230",
+        "license": "Open Data Commons Public Domain Dedication and License 1.0",
+        "license_url": "https://opendatacommons.org/licenses/pddl/1-0/",
+        "observation_note": "2010 Pictometry-origin geometry refined in 2017; source refresh dates are not new surveys."
+      },
+      "replaces_building_ids": [
+        "sf-building:201006.0006230"
+      ],
+      "source_file": "assets/source/sf-skyline-landmarks.blend",
+      "blender_version": "5.2.1 LTS",
+      "mesh_count": 4,
+      "vertex_count": 2604,
+      "mesh_bounds": {
+        "min": [
+          -9.890975952148438,
+          -16.206993103027344,
+          0.0
+        ],
+        "max": [
+          12.482024192810059,
+          25.170007705688477,
+          64.61759948730469
+        ]
+      },
+      "walk_position": [
+        1193.32,
+        2596.151,
+        0.0
+      ],
+      "walk_node_id": "sf-bend:12479001:0:1",
+      "walk_target_distance_m": 30.112
+    },
+    {
+      "schema_version": 1,
+      "id": "sf-building:201006.0009087",
+      "label": "Sutro Tower",
+      "asset": "res://assets/sutro-tower-geographic.glb",
+      "origin": {
+        "latitude": 37.7793,
+        "longitude": -122.4193
+      },
+      "position": [
+        -2956.462,
+        -2669.477,
+        0.0
+      ],
+      "place_on_terrain": true,
+      "height_m": 297.7896,
+      "footprint": [
+        [
+          -2946.251,
+          -2653.456,
+          0.0
+        ],
+        [
+          -2933.219,
+          -2646.054,
+          0.0
+        ],
+        [
+          -2932.149,
+          -2647.938,
+          0.0
+        ],
+        [
+          -2946.246,
+          -2655.945,
+          0.0
+        ],
+        [
+          -2946.195,
+          -2683.637,
+          0.0
+        ],
+        [
+          -2934.865,
+          -2690.164,
+          0.0
+        ],
+        [
+          -2935.222,
+          -2690.15,
+          0.0
+        ],
+        [
+          -2935.437,
+          -2690.398,
+          0.0
+        ],
+        [
+          -2939.263,
+          -2690.472,
+          0.0
+        ],
+        [
+          -2946.19,
+          -2686.482,
+          0.0
+        ],
+        [
+          -2946.161,
+          -2701.894,
+          0.0
+        ],
+        [
+          -2948.463,
+          -2701.898,
+          0.0
+        ],
+        [
+          -2948.494,
+          -2685.154,
+          0.0
+        ],
+        [
+          -2972.911,
+          -2671.09,
+          0.0
+        ],
+        [
+          -2986.804,
+          -2678.98,
+          0.0
+        ],
+        [
+          -2987.873,
+          -2677.097,
+          0.0
+        ],
+        [
+          -2975.088,
+          -2669.835,
+          0.0
+        ],
+        [
+          -2988.36,
+          -2662.19,
+          0.0
+        ],
+        [
+          -2987.131,
+          -2660.057,
+          0.0
+        ],
+        [
+          -2972.605,
+          -2668.425,
+          0.0
+        ],
+        [
+          -2948.55,
+          -2654.762,
+          0.0
+        ],
+        [
+          -2948.581,
+          -2637.873,
+          0.0
+        ],
+        [
+          -2946.28,
+          -2637.869,
+          0.0
+        ]
+      ],
+      "sha256": "47937e879e1eee0463002720891577cf1c7782b2d45d1fc7f02331d84a1b5928",
+      "bytes": 525812,
+      "source_geometry_sha256": "ab9840e4a6326bc1a426d1977d0fa7534b34441c9b601171ee8aa05f38bd25b1",
+      "source_note": "Original illustrative three-legged open-truss structure aligned to the observed DataSF tower footprint group. Overall height follows the tower operator. Leg widths, taper, bracing, platforms, antennas and red/white pattern are approximations, not current antenna inventories or structural engineering data. Three identified overlapping source tower parts are replaced visually; nearby service buildings remain.",
+      "height_reference": {
+        "url": "https://www.sutrotower.com/about",
+        "title": "Sutro Tower operator: About the Tower",
+        "reported_height_feet": 977,
+        "shape_url": "https://explore.sutrotower.com/tour/design/a-unique-shape"
+      },
+      "building_reference": {
+        "url": "https://data.sfgov.org/d/ynuv-fyni",
+        "title": "San Francisco building footprints",
+        "source_id": "201006.0009087",
+        "license": "Open Data Commons Public Domain Dedication and License 1.0",
+        "license_url": "https://opendatacommons.org/licenses/pddl/1-0/",
+        "observation_note": "2010 Pictometry-origin geometry refined in 2017; source refresh dates are not new surveys."
+      },
+      "replaces_building_ids": [
+        "sf-building:201006.0009087",
+        "sf-building:201006.0062170",
+        "sf-building:201006.0168289"
+      ],
+      "source_file": "assets/source/sf-skyline-landmarks.blend",
+      "blender_version": "5.2.1 LTS",
+      "mesh_count": 3,
+      "vertex_count": 17208,
+      "mesh_bounds": {
+        "min": [
+          -29.399999618530273,
+          -25.86307144165039,
+          0.0
+        ],
+        "max": [
+          16.200000762939453,
+          25.86307144165039,
+          297.78961181640625
+        ]
+      },
+      "walk_position": [
+        -3026.427,
+        -2601.416,
+        0.0
+      ],
+      "walk_node_id": "sf-bend:4694000:0:2",
+      "walk_target_distance_m": 97.608
+    }
+  ]
+}

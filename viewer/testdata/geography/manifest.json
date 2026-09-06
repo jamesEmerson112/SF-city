@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "source_note": "Synthetic renderer contract fixture; not observed San Francisco data.",
+  "bounds": {"min": [500, 500], "max": [1500, 1000]},
+  "tile_size_m": 500,
+  "pilot_exclusion_bounds": {"min": [-205,-185],"max": [205,185]},
+  "land": [{"id":"test-land", "points":[[500,500,0],[1500,500,0],[1500,1000,0],[500,1000,0]]}],
+  "overview_streets": [{"id":"test-road","points":[[500,700,0],[1500,700,0]],"width_m":10}],
+  "tiles": [
+    {"id":"one","bounds":{"min":[500,500],"max":[1000,1000]},"path":"one.json","building_count":1,"street_count":1},
+    {"id":"two","bounds":{"min":[1000,500],"max":[1500,1000]},"path":"two.json","building_count":1,"street_count":1}
+  ]
+}

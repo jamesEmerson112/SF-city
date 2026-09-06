@@ -1,0 +1,4 @@
+# Optional generated native extension; source/template live in native/civic-godot.
+/bin/
+/civic_godot.gdextension
+/civic_godot.gdextension.uid

@@ -1,0 +1,6935 @@
+{
+  "schema_version": 1,
+  "id": "civic-center-walking-day-v1",
+  "label": "A working day around City Hall",
+  "seed": 7,
+  "tick_hz": 200,
+  "start_time_seconds": 28790,
+  "population": 200,
+  "population_presets": [
+    1,
+    20,
+    200,
+    1000,
+    5000
+  ],
+  "source_note": "Synthetic schedules, building uses and walking connectors on an original stylized City Hall block. Not surveyed geography or observed residents.",
+  "origin": {
+    "longitude": -122.4193,
+    "latitude": 37.7793
+  },
+  "coordinate_system": "local east, north, up; meters",
+  "nodes": [
+    {
+      "id": "sw",
+      "position": [
+        -66,
+        -66,
+        0.34
+      ]
+    },
+    {
+      "id": "se",
+      "position": [
+        66,
+        -66,
+        0.34
+      ]
+    },
+    {
+      "id": "west",
+      "position": [
+        -66,
+        0,
+        0.34
+      ]
+    },
+    {
+      "id": "east",
+      "position": [
+        66,
+        0,
+        0.34
+      ]
+    },
+    {
+      "id": "east_mid",
+      "position": [
+        66,
+        25,
+        0.34
+      ]
+    },
+    {
+      "id": "nw",
+      "position": [
+        -66,
+        77,
+        0.34
+      ]
+    },
+    {
+      "id": "ne",
+      "position": [
+        66,
+        77,
+        0.34
+      ]
+    },
+    {
+      "id": "north_w",
+      "position": [
+        -66,
+        108,
+        0.08
+      ]
+    },
+    {
+      "id": "north_e",
+      "position": [
+        66,
+        108,
+        0.08
+      ]
+    },
+    {
+      "id": "south_w",
+      "position": [
+        -66,
+        -104,
+        0.08
+      ]
+    },
+    {
+      "id": "south_e",
+      "position": [
+        66,
+        -104,
+        0.08
+      ]
+    },
+    {
+      "id": "north_w_curb",
+      "position": [
+        -66,
+        82,
+        0.34
+      ]
+    },
+    {
+      "id": "north_w_ramp",
+      "position": [
+        -66,
+        83,
+        0.08
+      ]
+    },
+    {
+      "id": "south_w_curb",
+      "position": [
+        -66,
+        -72,
+        0.34
+      ]
+    },
+    {
+      "id": "south_w_ramp",
+      "position": [
+        -66,
+        -73,
+        0.08
+      ]
+    },
+    {
+      "id": "north_e_curb",
+      "position": [
+        66,
+        82,
+        0.34
+      ]
+    },
+    {
+      "id": "north_e_ramp",
+      "position": [
+        66,
+        83,
+        0.08
+      ]
+    },
+    {
+      "id": "south_e_curb",
+      "position": [
+        66,
+        -72,
+        0.34
+      ]
+    },
+    {
+      "id": "south_e_ramp",
+      "position": [
+        66,
+        -73,
+        0.08
+      ]
+    },
+    {
+      "id": "plaza_sw_apron",
+      "position": [
+        -57,
+        -62.5,
+        0.34
+      ]
+    },
+    {
+      "id": "plaza_se_apron",
+      "position": [
+        57,
+        -62.5,
+        0.34
+      ]
+    },
+    {
+      "id": "plaza_sw_edge",
+      "position": [
+        -56,
+        -61.5,
+        0.48
+      ]
+    },
+    {
+      "id": "plaza_se_edge",
+      "position": [
+        56,
+        -61.5,
+        0.48
+      ]
+    },
+    {
+      "id": "plaza_sw",
+      "position": [
+        -50,
+        -55,
+        0.48
+      ]
+    },
+    {
+      "id": "plaza_se",
+      "position": [
+        50,
+        -55,
+        0.48
+      ]
+    },
+    {
+      "id": "plaza_inner_sw",
+      "position": [
+        -24,
+        -55,
+        0.48
+      ]
+    },
+    {
+      "id": "plaza_inner_se",
+      "position": [
+        24,
+        -55,
+        0.48
+      ]
+    },
+    {
+      "id": "plaza_inner_nw",
+      "position": [
+        -24,
+        -12,
+        0.48
+      ]
+    },
+    {
+      "id": "plaza_inner_ne",
+      "position": [
+        24,
+        -12,
+        0.48
+      ]
+    },
+    {
+      "id": "plaza_front",
+      "position": [
+        0,
+        -12,
+        0.48
+      ]
+    },
+    {
+      "id": "stair_bottom",
+      "position": [
+        0,
+        -10,
+        0.48
+      ]
+    },
+    {
+      "id": "stair_top",
+      "position": [
+        0,
+        4,
+        2.4
+      ]
+    },
+    {
+      "id": "entrance:city-hall",
+      "position": [
+        0,
+        7,
+        2.4
+      ]
+    },
+    {
+      "id": "entrance:building-0",
+      "position": [
+        -113,
+        0,
+        0.08
+      ]
+    },
+    {
+      "id": "connector:building-0",
+      "position": [
+        -103,
+        0,
+        0.08
+      ]
+    },
+    {
+      "id": "curb-outer:building-0",
+      "position": [
+        -73,
+        0,
+        0.08
+      ]
+    },
+    {
+      "id": "curb-inner:building-0",
+      "position": [
+        -72,
+        0,
+        0.34
+      ]
+    },
+    {
+      "id": "entrance:building-1",
+      "position": [
+        113,
+        25,
+        0.08
+      ]
+    },
+    {
+      "id": "connector:building-1",
+      "position": [
+        103,
+        25,
+        0.08
+      ]
+    },
+    {
+      "id": "curb-outer:building-1",
+      "position": [
+        73,
+        25,
+        0.08
+      ]
+    },
+    {
+      "id": "curb-inner:building-1",
+      "position": [
+        72,
+        25,
+        0.34
+      ]
+    },
+    {
+      "id": "entrance:building-2",
+      "position": [
+        -148,
+        113,
+        0.08
+      ]
+    },
+    {
+      "id": "connector:building-2",
+      "position": [
+        -148,
+        108,
+        0.08
+      ]
+    },
+    {
+      "id": "entrance:building-3",
+      "position": [
+        -32,
+        113,
+        0.08
+      ]
+    },
+    {
+      "id": "connector:building-3",
+      "position": [
+        -32,
+        108,
+        0.08
+      ]
+    },
+    {
+      "id": "entrance:building-4",
+      "position": [
+        48,
+        113,
+        0.08
+      ]
+    },
+    {
+      "id": "connector:building-4",
+      "position": [
+        48,
+        108,
+        0.08
+      ]
+    },
+    {
+      "id": "entrance:building-5",
+      "position": [
+        156,
+        113,
+        0.08
+      ]
+    },
+    {
+      "id": "connector:building-5",
+      "position": [
+        156,
+        108,
+        0.08
+      ]
+    },
+    {
+      "id": "entrance:building-6",
+      "position": [
+        -158,
+        -111,
+        0.08
+      ]
+    },
+    {
+      "id": "connector:building-6",
+      "position": [
+        -158,
+        -104,
+        0.08
+      ]
+    },
+    {
+      "id": "entrance:building-7",
+      "position": [
+        -48,
+        -111,
+        0.08
+      ]
+    },
+    {
+      "id": "connector:building-7",
+      "position": [
+        -48,
+        -104,
+        0.08
+      ]
+    },
+    {
+      "id": "entrance:building-8",
+      "position": [
+        32,
+        -111,
+        0.08
+      ]
+    },
+    {
+      "id": "connector:building-8",
+      "position": [
+        32,
+        -104,
+        0.08
+      ]
+    },
+    {
+      "id": "entrance:building-9",
+      "position": [
+        154,
+        -111,
+        0.08
+      ]
+    },
+    {
+      "id": "connector:building-9",
+      "position": [
+        154,
+        -104,
+        0.08
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge:sw:west",
+      "from": "sw",
+      "to": "west",
+      "bidirectional": true
+    },
+    {
+      "id": "edge:west:nw",
+      "from": "west",
+      "to": "nw",
+      "bidirectional": true
+    },
+    {
+      "id": "edge:nw:ne",
+      "from": "nw",
+      "to": "ne",
+      "bidirectional": true
+    },
+    {
+      "id": "edge:ne:east_mid",
+      "from": "ne",
+      "to": "east_mid",
+      "bidirectional": true
+    },
+    {
+      "id": "edge:east_mid:east",
+      "from": "east_mid",
+      "to": "east",
+      "bidirectional": true
+    },
+    {
+      "id": "edge:east:se",
+      "from": "east",
+      "to": "se",
+      "bidirectional": true
+    },
+    {
+      "id": "edge:se:sw",
+      "from": "se",
+      "to": "sw",
+      "bidirectional": true
+    },
+    {
+      "id": "edge:nw:north_w_curb",
+      "from": "nw",
+      "to": "north_w_curb",
+      "bidirectional": true
+    },
+    {
+      "id": "edge:north_w_curb:north_w_ramp",
+      "from": "north_w_curb",
+      "to": "north_w_ramp",
+      "bidirectional": true
+    },
+    {
+      "id": "edge:north_w_ramp:north_w",
+      "from": "north_w_ramp",
+      "to": "north_w",
+      "bidirectional": true
+    },
+    {
+      "id": "edge:sw:south_w_curb",
+      "from": "sw",
+      "to": "south_w_curb",
+      "bidirectional": true
+    },
+    {
+      "id": "edge:south_w_curb:south_w_ramp",
+      "from": "south_w_curb",
+      "to": "south_w_ramp",
+      "bidirectional": true
+    },
+    {
+      "id": "edge:south_w_ramp:south_w",
+      "from": "south_w_ramp",
+      "to": "south_w",
+      "bidirectional": true
+    },
+    {
+      "id": "edge:ne:north_e_curb",
+      "from": "ne",
+      "to": "north_e_curb",
+      "bidirectional": true
+    },
+    {
+      "id": "edge:north_e_curb:north_e_ramp",
+      "from": "north_e_curb",
+      "to": "north_e_ramp",
+      "bidirectional": true
+    },
+    {
+      "id": "edge:north_e_ramp:north_e",
+      "from": "north_e_ramp",
+      "to": "north_e",
+      "bidirectional": true
+    },
+    {
+      "id": "edge:se:south_e_curb",
+      "from": "se",
+      "to": "south_e_curb",
+      "bidirectional": true
+    },
+    {
+      "id": "edge:south_e_curb:south_e_ramp",
+      "from": "south_e_curb",
+      "to": "south_e_ramp",
+      "bidirectional": true
+    },
+    {
+      "id": "edge:south_e_ramp:south_e",
+      "from": "south_e_ramp",
+      "to": "south_e",
+      "bidirectional": true
+    },
+    {
+      "id": "edge:north_w:north_e",
+      "from": "north_w",
+      "to": "north_e",
+      "bidirectional": true
+    },
+    {
+      "id": "edge:south_w:south_e",
+      "from": "south_w",
+      "to": "south_e",
+      "bidirectional": true
+    },
+    {
+      "id": "edge:sw:plaza_sw_apron",
+      "from": "sw",
+      "to": "plaza_sw_apron",
+      "bidirectional": true
+    },
+    {
+      "id": "edge:plaza_sw_apron:plaza_sw_edge",
+      "from": "plaza_sw_apron",
+      "to": "plaza_sw_edge",
+      "bidirectional": true
+    },
+    {
+      "id": "edge:plaza_sw_edge:plaza_sw",
+      "from": "plaza_sw_edge",
+      "to": "plaza_sw",
+      "bidirectional": true
+    },
+    {
+      "id": "edge:plaza_sw:plaza_inner_sw",
+      "from": "plaza_sw",
+      "to": "plaza_inner_sw",
+      "bidirectional": true
+    },
+    {
+      "id": "edge:plaza_inner_sw:plaza_inner_nw",
+      "from": "plaza_inner_sw",
+      "to": "plaza_inner_nw",
+      "bidirectional": true
+    },
+    {
+      "id": "edge:plaza_inner_nw:plaza_front",
+      "from": "plaza_inner_nw",
+      "to": "plaza_front",
+      "bidirectional": true
+    },
+    {
+      "id": "edge:se:plaza_se_apron",
+      "from": "se",
+      "to": "plaza_se_apron",
+      "bidirectional": true
+    },
+    {
+      "id": "edge:plaza_se_apron:plaza_se_edge",
+      "from": "plaza_se_apron",
+      "to": "plaza_se_edge",
+      "bidirectional": true
+    },
+    {
+      "id": "edge:plaza_se_edge:plaza_se",
+      "from": "plaza_se_edge",
+      "to": "plaza_se",
+      "bidirectional": true
+    },
+    {
+      "id": "edge:plaza_se:plaza_inner_se",
+      "from": "plaza_se",
+      "to": "plaza_inner_se",
+      "bidirectional": true
+    },
+    {
+      "id": "edge:plaza_inner_se:plaza_inner_ne",
+      "from": "plaza_inner_se",
+      "to": "plaza_inner_ne",
+      "bidirectional": true
+    },
+    {
+      "id": "edge:plaza_inner_ne:plaza_front",
+      "from": "plaza_inner_ne",
+      "to": "plaza_front",
+      "bidirectional": true
+    },
+    {
+      "id": "edge:plaza_front:stair_bottom",
+      "from": "plaza_front",
+      "to": "stair_bottom",
+      "bidirectional": true
+    },
+    {
+      "id": "edge:stair_bottom:stair_top",
+      "from": "stair_bottom",
+      "to": "stair_top",
+      "bidirectional": true
+    },
+    {
+      "id": "edge:stair_top:entrance:city-hall",
+      "from": "stair_top",
+      "to": "entrance:city-hall",
+      "bidirectional": true
+    },
+    {
+      "id": "edge:entrance:building-0:connector:building-0",
+      "from": "entrance:building-0",
+      "to": "connector:building-0",
+      "bidirectional": true
+    },
+    {
+      "id": "edge:connector:building-0:curb-outer:building-0",
+      "from": "connector:building-0",
+      "to": "curb-outer:building-0",
+      "bidirectional": true
+    },
+    {
+      "id": "edge:curb-outer:building-0:curb-inner:building-0",
+      "from": "curb-outer:building-0",
+      "to": "curb-inner:building-0",
+      "bidirectional": true
+    },
+    {
+      "id": "edge:curb-inner:building-0:west",
+      "from": "curb-inner:building-0",
+      "to": "west",
+      "bidirectional": true
+    },
+    {
+      "id": "edge:entrance:building-1:connector:building-1",
+      "from": "entrance:building-1",
+      "to": "connector:building-1",
+      "bidirectional": true
+    },
+    {
+      "id": "edge:connector:building-1:curb-outer:building-1",
+      "from": "connector:building-1",
+      "to": "curb-outer:building-1",
+      "bidirectional": true
+    },
+    {
+      "id": "edge:curb-outer:building-1:curb-inner:building-1",
+      "from": "curb-outer:building-1",
+      "to": "curb-inner:building-1",
+      "bidirectional": true
+    },
+    {
+      "id": "edge:curb-inner:building-1:east_mid",
+      "from": "curb-inner:building-1",
+      "to": "east_mid",
+      "bidirectional": true
+    },
+    {
+      "id": "edge:entrance:building-2:connector:building-2",
+      "from": "entrance:building-2",
+      "to": "connector:building-2",
+      "bidirectional": true
+    },
+    {
+      "id": "edge:connector:building-2:north_w",
+      "from": "connector:building-2",
+      "to": "north_w",
+      "bidirectional": true
+    },
+    {
+      "id": "edge:entrance:building-3:connector:building-3",
+      "from": "entrance:building-3",
+      "to": "connector:building-3",
+      "bidirectional": true
+    },
+    {
+      "id": "edge:connector:building-3:north_w",
+      "from": "connector:building-3",
+      "to": "north_w",
+      "bidirectional": true
+    },
+    {
+      "id": "edge:entrance:building-4:connector:building-4",
+      "from": "entrance:building-4",
+      "to": "connector:building-4",
+      "bidirectional": true
+    },
+    {
+      "id": "edge:connector:building-4:north_e",
+      "from": "connector:building-4",
+      "to": "north_e",
+      "bidirectional": true
+    },
+    {
+      "id": "edge:entrance:building-5:connector:building-5",
+      "from": "entrance:building-5",
+      "to": "connector:building-5",
+      "bidirectional": true
+    },
+    {
+      "id": "edge:connector:building-5:north_e",
+      "from": "connector:building-5",
+      "to": "north_e",
+      "bidirectional": true
+    },
+    {
+      "id": "edge:entrance:building-6:connector:building-6",
+      "from": "entrance:building-6",
+      "to": "connector:building-6",
+      "bidirectional": true
+    },
+    {
+      "id": "edge:connector:building-6:south_w",
+      "from": "connector:building-6",
+      "to": "south_w",
+      "bidirectional": true
+    },
+    {
+      "id": "edge:entrance:building-7:connector:building-7",
+      "from": "entrance:building-7",
+      "to": "connector:building-7",
+      "bidirectional": true
+    },
+    {
+      "id": "edge:connector:building-7:south_w",
+      "from": "connector:building-7",
+      "to": "south_w",
+      "bidirectional": true
+    },
+    {
+      "id": "edge:entrance:building-8:connector:building-8",
+      "from": "entrance:building-8",
+      "to": "connector:building-8",
+      "bidirectional": true
+    },
+    {
+      "id": "edge:connector:building-8:south_e",
+      "from": "connector:building-8",
+      "to": "south_e",
+      "bidirectional": true
+    },
+    {
+      "id": "edge:entrance:building-9:connector:building-9",
+      "from": "entrance:building-9",
+      "to": "connector:building-9",
+      "bidirectional": true
+    },
+    {
+      "id": "edge:connector:building-9:south_e",
+      "from": "connector:building-9",
+      "to": "south_e",
+      "bidirectional": true
+    }
+  ],
+  "buildings": [
+    {
+      "id": "city-hall",
+      "label": "City Hall",
+      "kind": "work",
+      "entrance_node_id": "entrance:city-hall",
+      "capacity": 200,
+      "source": "original visual study; generated entrance"
+    },
+    {
+      "id": "building-0",
+      "label": "West residences",
+      "kind": "home",
+      "entrance_node_id": "entrance:building-0",
+      "capacity": 200,
+      "source": "original visual study; generated use and entrance"
+    },
+    {
+      "id": "building-1",
+      "label": "East offices",
+      "kind": "work",
+      "entrance_node_id": "entrance:building-1",
+      "capacity": 200,
+      "source": "original visual study; generated use and entrance"
+    },
+    {
+      "id": "building-2",
+      "label": "Northwest offices",
+      "kind": "work",
+      "entrance_node_id": "entrance:building-2",
+      "capacity": 200,
+      "source": "original visual study; generated use and entrance"
+    },
+    {
+      "id": "building-3",
+      "label": "North residences",
+      "kind": "home",
+      "entrance_node_id": "entrance:building-3",
+      "capacity": 200,
+      "source": "original visual study; generated use and entrance"
+    },
+    {
+      "id": "building-4",
+      "label": "North offices",
+      "kind": "work",
+      "entrance_node_id": "entrance:building-4",
+      "capacity": 200,
+      "source": "original visual study; generated use and entrance"
+    },
+    {
+      "id": "building-5",
+      "label": "Northeast offices",
+      "kind": "work",
+      "entrance_node_id": "entrance:building-5",
+      "capacity": 200,
+      "source": "original visual study; generated use and entrance"
+    },
+    {
+      "id": "building-6",
+      "label": "Southwest residences",
+      "kind": "home",
+      "entrance_node_id": "entrance:building-6",
+      "capacity": 200,
+      "source": "original visual study; generated use and entrance"
+    },
+    {
+      "id": "building-7",
+      "label": "Southwest workshops",
+      "kind": "work",
+      "entrance_node_id": "entrance:building-7",
+      "capacity": 200,
+      "source": "original visual study; generated use and entrance"
+    },
+    {
+      "id": "building-8",
+      "label": "South offices",
+      "kind": "work",
+      "entrance_node_id": "entrance:building-8",
+      "capacity": 200,
+      "source": "original visual study; generated use and entrance"
+    },
+    {
+      "id": "building-9",
+      "label": "Southeast residences",
+      "kind": "home",
+      "entrance_node_id": "entrance:building-9",
+      "capacity": 200,
+      "source": "original visual study; generated use and entrance"
+    }
+  ],
+  "residents": [
+    {
+      "id": "resident-0000",
+      "label": "Resident 0001",
+      "home_id": "building-0",
+      "work_id": "city-hall",
+      "departure_tick": 2000,
+      "return_tick": 6482000,
+      "speed_mps": 1.45,
+      "phase": 0.0,
+      "color": [
+        0.88,
+        0.48,
+        0.17
+      ],
+      "skin_color": [
+        0.63,
+        0.39,
+        0.25
+      ],
+      "trouser_color": [
+        0.08,
+        0.12,
+        0.18
+      ],
+      "bag_color": [
+        0.3,
+        0.21,
+        0.12
+      ]
+    },
+    {
+      "id": "resident-0001",
+      "label": "Resident 0002",
+      "home_id": "building-3",
+      "work_id": "building-1",
+      "departure_tick": 134600,
+      "return_tick": 6543600,
+      "speed_mps": 1.347,
+      "phase": 0.61803398875,
+      "color": [
+        0.12,
+        0.43,
+        0.46
+      ],
+      "skin_color": [
+        0.63,
+        0.39,
+        0.25
+      ],
+      "trouser_color": [
+        0.21,
+        0.22,
+        0.2
+      ],
+      "bag_color": [
+        0.15,
+        0.18,
+        0.2
+      ]
+    },
+    {
+      "id": "resident-0002",
+      "label": "Resident 0003",
+      "home_id": "building-6",
+      "work_id": "building-2",
+      "departure_tick": 21600,
+      "return_tick": 6511600,
+      "speed_mps": 1.561,
+      "phase": 0.23606797750000008,
+      "color": [
+        0.65,
+        0.22,
+        0.17
+      ],
+      "skin_color": [
+        0.87,
+        0.67,
+        0.49
+      ],
+      "trouser_color": [
+        0.08,
+        0.12,
+        0.18
+      ],
+      "bag_color": [
+        0.3,
+        0.21,
+        0.12
+      ]
+    },
+    {
+      "id": "resident-0003",
+      "label": "Resident 0004",
+      "home_id": "building-9",
+      "work_id": "building-4",
+      "departure_tick": 40400,
+      "return_tick": 6631600,
+      "speed_mps": 1.441,
+      "phase": 0.85410196625,
+      "color": [
+        0.88,
+        0.48,
+        0.17
+      ],
+      "skin_color": [
+        0.87,
+        0.67,
+        0.49
+      ],
+      "trouser_color": [
+        0.21,
+        0.22,
+        0.2
+      ],
+      "bag_color": [
+        0.15,
+        0.18,
+        0.2
+      ]
+    },
+    {
+      "id": "resident-0004",
+      "label": "Resident 0005",
+      "home_id": "building-0",
+      "work_id": "building-5",
+      "departure_tick": 209800,
+      "return_tick": 6569800,
+      "speed_mps": 1.169,
+      "phase": 0.47213595500000016,
+      "color": [
+        0.12,
+        0.43,
+        0.46
+      ],
+      "skin_color": [
+        0.38,
+        0.23,
+        0.16
+      ],
+      "trouser_color": [
+        0.08,
+        0.12,
+        0.18
+      ],
+      "bag_color": [
+        0.3,
+        0.21,
+        0.12
+      ]
+    },
+    {
+      "id": "resident-0005",
+      "label": "Resident 0006",
+      "home_id": "building-3",
+      "work_id": "building-7",
+      "departure_tick": 179600,
+      "return_tick": 6653200,
+      "speed_mps": 1.185,
+      "phase": 0.09016994375000031,
+      "color": [
+        0.65,
+        0.22,
+        0.17
+      ],
+      "skin_color": [
+        0.38,
+        0.23,
+        0.16
+      ],
+      "trouser_color": [
+        0.21,
+        0.22,
+        0.2
+      ],
+      "bag_color": [
+        0.15,
+        0.18,
+        0.2
+      ]
+    },
+    {
+      "id": "resident-0006",
+      "label": "Resident 0007",
+      "home_id": "building-6",
+      "work_id": "building-8",
+      "departure_tick": 39000,
+      "return_tick": 6707600,
+      "speed_mps": 1.362,
+      "phase": 0.7082039325,
+      "color": [
+        0.88,
+        0.48,
+        0.17
+      ],
+      "skin_color": [
+        0.74,
+        0.51,
+        0.34
+      ],
+      "trouser_color": [
+        0.08,
+        0.12,
+        0.18
+      ],
+      "bag_color": [
+        0.3,
+        0.21,
+        0.12
+      ]
+    },
+    {
+      "id": "resident-0007",
+      "label": "Resident 0008",
+      "home_id": "building-9",
+      "work_id": "city-hall",
+      "departure_tick": 233600,
+      "return_tick": 6532600,
+      "speed_mps": 1.624,
+      "phase": 0.3262379212500006,
+      "color": [
+        0.12,
+        0.43,
+        0.46
+      ],
+      "skin_color": [
+        0.74,
+        0.51,
+        0.34
+      ],
+      "trouser_color": [
+        0.21,
+        0.22,
+        0.2
+      ],
+      "bag_color": [
+        0.15,
+        0.18,
+        0.2
+      ]
+    },
+    {
+      "id": "resident-0008",
+      "label": "Resident 0009",
+      "home_id": "building-0",
+      "work_id": "building-1",
+      "departure_tick": 240600,
+      "return_tick": 6507200,
+      "speed_mps": 1.439,
+      "phase": 0.9442719100000003,
+      "color": [
+        0.65,
+        0.22,
+        0.17
+      ],
+      "skin_color": [
+        0.63,
+        0.39,
+        0.25
+      ],
+      "trouser_color": [
+        0.08,
+        0.12,
+        0.18
+      ],
+      "bag_color": [
+        0.3,
+        0.21,
+        0.12
+      ]
+    },
+    {
+      "id": "resident-0009",
+      "label": "Resident 0010",
+      "home_id": "building-3",
+      "work_id": "building-2",
+      "departure_tick": 164400,
+      "return_tick": 6502200,
+      "speed_mps": 1.638,
+      "phase": 0.56230589875,
+      "color": [
+        0.88,
+        0.48,
+        0.17
+      ],
+      "skin_color": [
+        0.63,
+        0.39,
+        0.25
+      ],
+      "trouser_color": [
+        0.21,
+        0.22,
+        0.2
+      ],
+      "bag_color": [
+        0.15,
+        0.18,
+        0.2
+      ]
+    },
+    {
+      "id": "resident-0010",
+      "label": "Resident 0011",
+      "home_id": "building-6",
+      "work_id": "building-4",
+      "departure_tick": 21000,
+      "return_tick": 6710000,
+      "speed_mps": 1.579,
+      "phase": 0.18033988750000063,
+      "color": [
+        0.12,
+        0.43,
+        0.46
+      ],
+      "skin_color": [
+        0.87,
+        0.67,
+        0.49
+      ],
+      "trouser_color": [
+        0.08,
+        0.12,
+        0.18
+      ],
+      "bag_color": [
+        0.3,
+        0.21,
+        0.12
+      ]
+    },
+    {
+      "id": "resident-0011",
+      "label": "Resident 0012",
+      "home_id": "building-9",
+      "work_id": "building-5",
+      "departure_tick": 120600,
+      "return_tick": 6653600,
+      "speed_mps": 1.222,
+      "phase": 0.7983738762500003,
+      "color": [
+        0.65,
+        0.22,
+        0.17
+      ],
+      "skin_color": [
+        0.87,
+        0.67,
+        0.49
+      ],
+      "trouser_color": [
+        0.21,
+        0.22,
+        0.2
+      ],
+      "bag_color": [
+        0.15,
+        0.18,
+        0.2
+      ]
+    },
+    {
+      "id": "resident-0012",
+      "label": "Resident 0013",
+      "home_id": "building-0",
+      "work_id": "building-7",
+      "departure_tick": 50200,
+      "return_tick": 6715800,
+      "speed_mps": 1.304,
+      "phase": 0.41640786500000004,
+      "color": [
+        0.88,
+        0.48,
+        0.17
+      ],
+      "skin_color": [
+        0.38,
+        0.23,
+        0.16
+      ],
+      "trouser_color": [
+        0.08,
+        0.12,
+        0.18
+      ],
+      "bag_color": [
+        0.3,
+        0.21,
+        0.12
+      ]
+    },
+    {
+      "id": "resident-0013",
+      "label": "Resident 0014",
+      "home_id": "building-3",
+      "work_id": "building-8",
+      "departure_tick": 76000,
+      "return_tick": 6524200,
+      "speed_mps": 1.441,
+      "phase": 0.03444185374999975,
+      "color": [
+        0.12,
+        0.43,
+        0.46
+      ],
+      "skin_color": [
+        0.38,
+        0.23,
+        0.16
+      ],
+      "trouser_color": [
+        0.21,
+        0.22,
+        0.2
+      ],
+      "bag_color": [
+        0.15,
+        0.18,
+        0.2
+      ]
+    },
+    {
+      "id": "resident-0014",
+      "label": "Resident 0015",
+      "home_id": "building-6",
+      "work_id": "city-hall",
+      "departure_tick": 78800,
+      "return_tick": 6634400,
+      "speed_mps": 1.199,
+      "phase": 0.6524758425000012,
+      "color": [
+        0.65,
+        0.22,
+        0.17
+      ],
+      "skin_color": [
+        0.74,
+        0.51,
+        0.34
+      ],
+      "trouser_color": [
+        0.08,
+        0.12,
+        0.18
+      ],
+      "bag_color": [
+        0.3,
+        0.21,
+        0.12
+      ]
+    },
+    {
+      "id": "resident-0015",
+      "label": "Resident 0016",
+      "home_id": "building-9",
+      "work_id": "building-1",
+      "departure_tick": 27600,
+      "return_tick": 6713000,
+      "speed_mps": 1.18,
+      "phase": 0.27050983125000094,
+      "color": [
+        0.88,
+        0.48,
+        0.17
+      ],
+      "skin_color": [
+        0.74,
+        0.51,
+        0.34
+      ],
+      "trouser_color": [
+        0.21,
+        0.22,
+        0.2
+      ],
+      "bag_color": [
+        0.15,
+        0.18,
+        0.2
+      ]
+    },
+    {
+      "id": "resident-0016",
+      "label": "Resident 0017",
+      "home_id": "building-0",
+      "work_id": "building-2",
+      "departure_tick": 86200,
+      "return_tick": 6685200,
+      "speed_mps": 1.49,
+      "phase": 0.8885438200000007,
+      "color": [
+        0.12,
+        0.43,
+        0.46
+      ],
+      "skin_color": [
+        0.63,
+        0.39,
+        0.25
+      ],
+      "trouser_color": [
+        0.08,
+        0.12,
+        0.18
+      ],
+      "bag_color": [
+        0.3,
+        0.21,
+        0.12
+      ]
+    },
+    {
+      "id": "resident-0017",
+      "label": "Resident 0018",
+      "home_id": "building-3",
+      "work_id": "building-4",
+      "departure_tick": 177000,
+      "return_tick": 6800200,
+      "speed_mps": 1.307,
+      "phase": 0.5065778087500004,
+      "color": [
+        0.65,
+        0.22,
+        0.17
+      ],
+      "skin_color": [
+        0.63,
+        0.39,
+        0.25
+      ],
+      "trouser_color": [
+        0.21,
+        0.22,
+        0.2
+      ],
+      "bag_color": [
+        0.15,
+        0.18,
+        0.2
+      ]
+    },
+    {
+      "id": "resident-0018",
+      "label": "Resident 0019",
+      "home_id": "building-6",
+      "work_id": "building-5",
+      "departure_tick": 241800,
+      "return_tick": 6667600,
+      "speed_mps": 1.331,
+      "phase": 0.12461179750000007,
+      "color": [
+        0.88,
+        0.48,
+        0.17
+      ],
+      "skin_color": [
+        0.87,
+        0.67,
+        0.49
+      ],
+      "trouser_color": [
+        0.08,
+        0.12,
+        0.18
+      ],
+      "bag_color": [
+        0.3,
+        0.21,
+        0.12
+      ]
+    },
+    {
+      "id": "resident-0019",
+      "label": "Resident 0020",
+      "home_id": "building-9",
+      "work_id": "building-7",
+      "departure_tick": 103600,
+      "return_tick": 6807200,
+      "speed_mps": 1.24,
+      "phase": 0.7426457862500015,
+      "color": [
+        0.12,
+        0.43,
+        0.46
+      ],
+      "skin_color": [
+        0.87,
+        0.67,
+        0.49
+      ],
+      "trouser_color": [
+        0.21,
+        0.22,
+        0.2
+      ],
+      "bag_color": [
+        0.15,
+        0.18,
+        0.2
+      ]
+    },
+    {
+      "id": "resident-0020",
+      "label": "Resident 0021",
+      "home_id": "building-0",
+      "work_id": "building-8",
+      "departure_tick": 101800,
+      "return_tick": 6515400,
+      "speed_mps": 1.437,
+      "phase": 0.36067977500000126,
+      "color": [
+        0.65,
+        0.22,
+        0.17
+      ],
+      "skin_color": [
+        0.38,
+        0.23,
+        0.16
+      ],
+      "trouser_color": [
+        0.08,
+        0.12,
+        0.18
+      ],
+      "bag_color": [
+        0.3,
+        0.21,
+        0.12
+      ]
+    },
+    {
+      "id": "resident-0021",
+      "label": "Resident 0022",
+      "home_id": "building-3",
+      "work_id": "city-hall",
+      "departure_tick": 217000,
+      "return_tick": 6684600,
+      "speed_mps": 1.588,
+      "phase": 0.978713763750001,
+      "color": [
+        0.88,
+        0.48,
+        0.17
+      ],
+      "skin_color": [
+        0.38,
+        0.23,
+        0.16
+      ],
+      "trouser_color": [
+        0.21,
+        0.22,
+        0.2
+      ],
+      "bag_color": [
+        0.15,
+        0.18,
+        0.2
+      ]
+    },
+    {
+      "id": "resident-0022",
+      "label": "Resident 0023",
+      "home_id": "building-6",
+      "work_id": "building-1",
+      "departure_tick": 185800,
+      "return_tick": 6599800,
+      "speed_mps": 1.454,
+      "phase": 0.5967477525000007,
+      "color": [
+        0.12,
+        0.43,
+        0.46
+      ],
+      "skin_color": [
+        0.74,
+        0.51,
+        0.34
+      ],
+      "trouser_color": [
+        0.08,
+        0.12,
+        0.18
+      ],
+      "bag_color": [
+        0.3,
+        0.21,
+        0.12
+      ]
+    },
+    {
+      "id": "resident-0023",
+      "label": "Resident 0024",
+      "home_id": "building-9",
+      "work_id": "building-2",
+      "departure_tick": 31800,
+      "return_tick": 6530200,
+      "speed_mps": 1.406,
+      "phase": 0.21478174125000038,
+      "color": [
+        0.65,
+        0.22,
+        0.17
+      ],
+      "skin_color": [
+        0.74,
+        0.51,
+        0.34
+      ],
+      "trouser_color": [
+        0.21,
+        0.22,
+        0.2
+      ],
+      "bag_color": [
+        0.15,
+        0.18,
+        0.2
+      ]
+    },
+    {
+      "id": "resident-0024",
+      "label": "Resident 0025",
+      "home_id": "building-0",
+      "work_id": "building-4",
+      "departure_tick": 69400,
+      "return_tick": 6792000,
+      "speed_mps": 1.321,
+      "phase": 0.8328157300000001,
+      "color": [
+        0.88,
+        0.48,
+        0.17
+      ],
+      "skin_color": [
+        0.63,
+        0.39,
+        0.25
+      ],
+      "trouser_color": [
+        0.08,
+        0.12,
+        0.18
+      ],
+      "bag_color": [
+        0.3,
+        0.21,
+        0.12
+      ]
+    },
+    {
+      "id": "resident-0025",
+      "label": "Resident 0026",
+      "home_id": "building-3",
+      "work_id": "building-5",
+      "departure_tick": 202200,
+      "return_tick": 6654600,
+      "speed_mps": 1.17,
+      "phase": 0.45084971875000157,
+      "color": [
+        0.12,
+        0.43,
+        0.46
+      ],
+      "skin_color": [
+        0.63,
+        0.39,
+        0.25
+      ],
+      "trouser_color": [
+        0.21,
+        0.22,
+        0.2
+      ],
+      "bag_color": [
+        0.15,
+        0.18,
+        0.2
+      ]
+    },
+    {
+      "id": "resident-0026",
+      "label": "Resident 0027",
+      "home_id": "building-6",
+      "work_id": "building-7",
+      "departure_tick": 33600,
+      "return_tick": 6795000,
+      "speed_mps": 1.429,
+      "phase": 0.0688837074999995,
+      "color": [
+        0.65,
+        0.22,
+        0.17
+      ],
+      "skin_color": [
+        0.87,
+        0.67,
+        0.49
+      ],
+      "trouser_color": [
+        0.08,
+        0.12,
+        0.18
+      ],
+      "bag_color": [
+        0.3,
+        0.21,
+        0.12
+      ]
+    },
+    {
+      "id": "resident-0027",
+      "label": "Resident 0028",
+      "home_id": "building-9",
+      "work_id": "building-8",
+      "departure_tick": 130400,
+      "return_tick": 6621200,
+      "speed_mps": 1.498,
+      "phase": 0.6869176962500028,
+      "color": [
+        0.88,
+        0.48,
+        0.17
+      ],
+      "skin_color": [
+        0.87,
+        0.67,
+        0.49
+      ],
+      "trouser_color": [
+        0.21,
+        0.22,
+        0.2
+      ],
+      "bag_color": [
+        0.15,
+        0.18,
+        0.2
+      ]
+    },
+    {
+      "id": "resident-0028",
+      "label": "Resident 0029",
+      "home_id": "building-0",
+      "work_id": "city-hall",
+      "departure_tick": 205400,
+      "return_tick": 6719400,
+      "speed_mps": 1.548,
+      "phase": 0.30495168500000247,
+      "color": [
+        0.12,
+        0.43,
+        0.46
+      ],
+      "skin_color": [
+        0.38,
+        0.23,
+        0.16
+      ],
+      "trouser_color": [
+        0.08,
+        0.12,
+        0.18
+      ],
+      "bag_color": [
+        0.3,
+        0.21,
+        0.12
+      ]
+    },
+    {
+      "id": "resident-0029",
+      "label": "Resident 0030",
+      "home_id": "building-3",
+      "work_id": "building-1",
+      "departure_tick": 30000,
+      "return_tick": 6826000,
+      "speed_mps": 1.197,
+      "phase": 0.9229856737500022,
+      "color": [
+        0.65,
+        0.22,
+        0.17
+      ],
+      "skin_color": [
+        0.38,
+        0.23,
+        0.16
+      ],
+      "trouser_color": [
+        0.21,
+        0.22,
+        0.2
+      ],
+      "bag_color": [
+        0.15,
+        0.18,
+        0.2
+      ]
+    },
+    {
+      "id": "resident-0030",
+      "label": "Resident 0031",
+      "home_id": "building-6",
+      "work_id": "building-2",
+      "departure_tick": 112400,
+      "return_tick": 6676000,
+      "speed_mps": 1.499,
+      "phase": 0.5410196625000019,
+      "color": [
+        0.88,
+        0.48,
+        0.17
+      ],
+      "skin_color": [
+        0.74,
+        0.51,
+        0.34
+      ],
+      "trouser_color": [
+        0.08,
+        0.12,
+        0.18
+      ],
+      "bag_color": [
+        0.3,
+        0.21,
+        0.12
+      ]
+    },
+    {
+      "id": "resident-0031",
+      "label": "Resident 0032",
+      "home_id": "building-9",
+      "work_id": "building-4",
+      "departure_tick": 28600,
+      "return_tick": 6506800,
+      "speed_mps": 1.516,
+      "phase": 0.1590536512500016,
+      "color": [
+        0.12,
+        0.43,
+        0.46
+      ],
+      "skin_color": [
+        0.74,
+        0.51,
+        0.34
+      ],
+      "trouser_color": [
+        0.21,
+        0.22,
+        0.2
+      ],
+      "bag_color": [
+        0.15,
+        0.18,
+        0.2
+      ]
+    },
+    {
+      "id": "resident-0032",
+      "label": "Resident 0033",
+      "home_id": "building-0",
+      "work_id": "building-5",
+      "departure_tick": 128800,
+      "return_tick": 6747000,
+      "speed_mps": 1.439,
+      "phase": 0.7770876400000013,
+      "color": [
+        0.65,
+        0.22,
+        0.17
+      ],
+      "skin_color": [
+        0.63,
+        0.39,
+        0.25
+      ],
+      "trouser_color": [
+        0.08,
+        0.12,
+        0.18
+      ],
+      "bag_color": [
+        0.3,
+        0.21,
+        0.12
+      ]
+    },
+    {
+      "id": "resident-0033",
+      "label": "Resident 0034",
+      "home_id": "building-3",
+      "work_id": "building-7",
+      "departure_tick": 184400,
+      "return_tick": 6598400,
+      "speed_mps": 1.508,
+      "phase": 0.395121628750001,
+      "color": [
+        0.88,
+        0.48,
+        0.17
+      ],
+      "skin_color": [
+        0.63,
+        0.39,
+        0.25
+      ],
+      "trouser_color": [
+        0.21,
+        0.22,
+        0.2
+      ],
+      "bag_color": [
+        0.15,
+        0.18,
+        0.2
+      ]
+    },
+    {
+      "id": "resident-0034",
+      "label": "Resident 0035",
+      "home_id": "building-6",
+      "work_id": "building-8",
+      "departure_tick": 144000,
+      "return_tick": 6491200,
+      "speed_mps": 1.62,
+      "phase": 0.013155617500000716,
+      "color": [
+        0.12,
+        0.43,
+        0.46
+      ],
+      "skin_color": [
+        0.87,
+        0.67,
+        0.49
+      ],
+      "trouser_color": [
+        0.08,
+        0.12,
+        0.18
+      ],
+      "bag_color": [
+        0.3,
+        0.21,
+        0.12
+      ]
+    },
+    {
+      "id": "resident-0035",
+      "label": "Resident 0036",
+      "home_id": "building-9",
+      "work_id": "city-hall",
+      "departure_tick": 147400,
+      "return_tick": 6550800,
+      "speed_mps": 1.455,
+      "phase": 0.6311896062500004,
+      "color": [
+        0.65,
+        0.22,
+        0.17
+      ],
+      "skin_color": [
+        0.87,
+        0.67,
+        0.49
+      ],
+      "trouser_color": [
+        0.21,
+        0.22,
+        0.2
+      ],
+      "bag_color": [
+        0.15,
+        0.18,
+        0.2
+      ]
+    },
+    {
+      "id": "resident-0036",
+      "label": "Resident 0037",
+      "home_id": "building-0",
+      "work_id": "building-1",
+      "departure_tick": 204200,
+      "return_tick": 6506000,
+      "speed_mps": 1.259,
+      "phase": 0.24922359500000013,
+      "color": [
+        0.88,
+        0.48,
+        0.17
+      ],
+      "skin_color": [
+        0.38,
+        0.23,
+        0.16
+      ],
+      "trouser_color": [
+        0.08,
+        0.12,
+        0.18
+      ],
+      "bag_color": [
+        0.3,
+        0.21,
+        0.12
+      ]
+    },
+    {
+      "id": "resident-0037",
+      "label": "Resident 0038",
+      "home_id": "building-3",
+      "work_id": "building-2",
+      "departure_tick": 119600,
+      "return_tick": 6534800,
+      "speed_mps": 1.519,
+      "phase": 0.8672575837499998,
+      "color": [
+        0.12,
+        0.43,
+        0.46
+      ],
+      "skin_color": [
+        0.38,
+        0.23,
+        0.16
+      ],
+      "trouser_color": [
+        0.21,
+        0.22,
+        0.2
+      ],
+      "bag_color": [
+        0.15,
+        0.18,
+        0.2
+      ]
+    },
+    {
+      "id": "resident-0038",
+      "label": "Resident 0039",
+      "home_id": "building-6",
+      "work_id": "building-4",
+      "departure_tick": 164800,
+      "return_tick": 6642000,
+      "speed_mps": 1.608,
+      "phase": 0.4852915725000031,
+      "color": [
+        0.65,
+        0.22,
+        0.17
+      ],
+      "skin_color": [
+        0.74,
+        0.51,
+        0.34
+      ],
+      "trouser_color": [
+        0.08,
+        0.12,
+        0.18
+      ],
+      "bag_color": [
+        0.3,
+        0.21,
+        0.12
+      ]
+    },
+    {
+      "id": "resident-0039",
+      "label": "Resident 0040",
+      "home_id": "building-9",
+      "work_id": "building-5",
+      "departure_tick": 205200,
+      "return_tick": 6515000,
+      "speed_mps": 1.233,
+      "phase": 0.1033255612500028,
+      "color": [
+        0.88,
+        0.48,
+        0.17
+      ],
+      "skin_color": [
+        0.74,
+        0.51,
+        0.34
+      ],
+      "trouser_color": [
+        0.21,
+        0.22,
+        0.2
+      ],
+      "bag_color": [
+        0.15,
+        0.18,
+        0.2
+      ]
+    },
+    {
+      "id": "resident-0040",
+      "label": "Resident 0041",
+      "home_id": "building-0",
+      "work_id": "building-7",
+      "departure_tick": 166400,
+      "return_tick": 6707000,
+      "speed_mps": 1.289,
+      "phase": 0.7213595500000025,
+      "color": [
+        0.12,
+        0.43,
+        0.46
+      ],
+      "skin_color": [
+        0.63,
+        0.39,
+        0.25
+      ],
+      "trouser_color": [
+        0.08,
+        0.12,
+        0.18
+      ],
+      "bag_color": [
+        0.3,
+        0.21,
+        0.12
+      ]
+    },
+    {
+      "id": "resident-0041",
+      "label": "Resident 0042",
+      "home_id": "building-3",
+      "work_id": "building-8",
+      "departure_tick": 58000,
+      "return_tick": 6817400,
+      "speed_mps": 1.365,
+      "phase": 0.3393935387500022,
+      "color": [
+        0.65,
+        0.22,
+        0.17
+      ],
+      "skin_color": [
+        0.63,
+        0.39,
+        0.25
+      ],
+      "trouser_color": [
+        0.21,
+        0.22,
+        0.2
+      ],
+      "bag_color": [
+        0.15,
+        0.18,
+        0.2
+      ]
+    },
+    {
+      "id": "resident-0042",
+      "label": "Resident 0043",
+      "home_id": "building-6",
+      "work_id": "city-hall",
+      "departure_tick": 227200,
+      "return_tick": 6596000,
+      "speed_mps": 1.503,
+      "phase": 0.9574275275000019,
+      "color": [
+        0.88,
+        0.48,
+        0.17
+      ],
+      "skin_color": [
+        0.87,
+        0.67,
+        0.49
+      ],
+      "trouser_color": [
+        0.08,
+        0.12,
+        0.18
+      ],
+      "bag_color": [
+        0.3,
+        0.21,
+        0.12
+      ]
+    },
+    {
+      "id": "resident-0043",
+      "label": "Resident 0044",
+      "home_id": "building-9",
+      "work_id": "building-1",
+      "departure_tick": 148800,
+      "return_tick": 6761600,
+      "speed_mps": 1.592,
+      "phase": 0.5754615162500016,
+      "color": [
+        0.12,
+        0.43,
+        0.46
+      ],
+      "skin_color": [
+        0.87,
+        0.67,
+        0.49
+      ],
+      "trouser_color": [
+        0.21,
+        0.22,
+        0.2
+      ],
+      "bag_color": [
+        0.15,
+        0.18,
+        0.2
+      ]
+    },
+    {
+      "id": "resident-0044",
+      "label": "Resident 0045",
+      "home_id": "building-0",
+      "work_id": "building-2",
+      "departure_tick": 96400,
+      "return_tick": 6543800,
+      "speed_mps": 1.191,
+      "phase": 0.19349550500000134,
+      "color": [
+        0.65,
+        0.22,
+        0.17
+      ],
+      "skin_color": [
+        0.38,
+        0.23,
+        0.16
+      ],
+      "trouser_color": [
+        0.08,
+        0.12,
+        0.18
+      ],
+      "bag_color": [
+        0.3,
+        0.21,
+        0.12
+      ]
+    },
+    {
+      "id": "resident-0045",
+      "label": "Resident 0046",
+      "home_id": "building-3",
+      "work_id": "building-4",
+      "departure_tick": 63800,
+      "return_tick": 6577000,
+      "speed_mps": 1.479,
+      "phase": 0.811529493750001,
+      "color": [
+        0.88,
+        0.48,
+        0.17
+      ],
+      "skin_color": [
+        0.38,
+        0.23,
+        0.16
+      ],
+      "trouser_color": [
+        0.21,
+        0.22,
+        0.2
+      ],
+      "bag_color": [
+        0.15,
+        0.18,
+        0.2
+      ]
+    },
+    {
+      "id": "resident-0046",
+      "label": "Resident 0047",
+      "home_id": "building-6",
+      "work_id": "building-5",
+      "departure_tick": 6800,
+      "return_tick": 6680600,
+      "speed_mps": 1.566,
+      "phase": 0.42956348250000076,
+      "color": [
+        0.12,
+        0.43,
+        0.46
+      ],
+      "skin_color": [
+        0.74,
+        0.51,
+        0.34
+      ],
+      "trouser_color": [
+        0.08,
+        0.12,
+        0.18
+      ],
+      "bag_color": [
+        0.3,
+        0.21,
+        0.12
+      ]
+    },
+    {
+      "id": "resident-0047",
+      "label": "Resident 0048",
+      "home_id": "building-9",
+      "work_id": "building-7",
+      "departure_tick": 76600,
+      "return_tick": 6589600,
+      "speed_mps": 1.291,
+      "phase": 0.04759747125000047,
+      "color": [
+        0.65,
+        0.22,
+        0.17
+      ],
+      "skin_color": [
+        0.74,
+        0.51,
+        0.34
+      ],
+      "trouser_color": [
+        0.21,
+        0.22,
+        0.2
+      ],
+      "bag_color": [
+        0.15,
+        0.18,
+        0.2
+      ]
+    },
+    {
+      "id": "resident-0048",
+      "label": "Resident 0049",
+      "home_id": "building-0",
+      "work_id": "building-8",
+      "departure_tick": 61600,
+      "return_tick": 6653600,
+      "speed_mps": 1.417,
+      "phase": 0.6656314600000002,
+      "color": [
+        0.88,
+        0.48,
+        0.17
+      ],
+      "skin_color": [
+        0.63,
+        0.39,
+        0.25
+      ],
+      "trouser_color": [
+        0.08,
+        0.12,
+        0.18
+      ],
+      "bag_color": [
+        0.3,
+        0.21,
+        0.12
+      ]
+    },
+    {
+      "id": "resident-0049",
+      "label": "Resident 0050",
+      "home_id": "building-3",
+      "work_id": "city-hall",
+      "departure_tick": 233800,
+      "return_tick": 6612400,
+      "speed_mps": 1.627,
+      "phase": 0.28366544875000343,
+      "color": [
+        0.12,
+        0.43,
+        0.46
+      ],
+      "skin_color": [
+        0.63,
+        0.39,
+        0.25
+      ],
+      "trouser_color": [
+        0.21,
+        0.22,
+        0.2
+      ],
+      "bag_color": [
+        0.15,
+        0.18,
+        0.2
+      ]
+    },
+    {
+      "id": "resident-0050",
+      "label": "Resident 0051",
+      "home_id": "building-6",
+      "work_id": "building-1",
+      "departure_tick": 213000,
+      "return_tick": 6734800,
+      "speed_mps": 1.477,
+      "phase": 0.9016994375000031,
+      "color": [
+        0.65,
+        0.22,
+        0.17
+      ],
+      "skin_color": [
+        0.87,
+        0.67,
+        0.49
+      ],
+      "trouser_color": [
+        0.08,
+        0.12,
+        0.18
+      ],
+      "bag_color": [
+        0.3,
+        0.21,
+        0.12
+      ]
+    },
+    {
+      "id": "resident-0051",
+      "label": "Resident 0052",
+      "home_id": "building-9",
+      "work_id": "building-2",
+      "departure_tick": 24000,
+      "return_tick": 6669000,
+      "speed_mps": 1.6,
+      "phase": 0.5197334262500029,
+      "color": [
+        0.88,
+        0.48,
+        0.17
+      ],
+      "skin_color": [
+        0.87,
+        0.67,
+        0.49
+      ],
+      "trouser_color": [
+        0.21,
+        0.22,
+        0.2
+      ],
+      "bag_color": [
+        0.15,
+        0.18,
+        0.2
+      ]
+    },
+    {
+      "id": "resident-0052",
+      "label": "Resident 0053",
+      "home_id": "building-0",
+      "work_id": "building-4",
+      "departure_tick": 231000,
+      "return_tick": 6642600,
+      "speed_mps": 1.349,
+      "phase": 0.137767414999999,
+      "color": [
+        0.12,
+        0.43,
+        0.46
+      ],
+      "skin_color": [
+        0.38,
+        0.23,
+        0.16
+      ],
+      "trouser_color": [
+        0.08,
+        0.12,
+        0.18
+      ],
+      "bag_color": [
+        0.3,
+        0.21,
+        0.12
+      ]
+    },
+    {
+      "id": "resident-0053",
+      "label": "Resident 0054",
+      "home_id": "building-3",
+      "work_id": "building-5",
+      "departure_tick": 163400,
+      "return_tick": 6524400,
+      "speed_mps": 1.391,
+      "phase": 0.7558014037499987,
+      "color": [
+        0.65,
+        0.22,
+        0.17
+      ],
+      "skin_color": [
+        0.38,
+        0.23,
+        0.16
+      ],
+      "trouser_color": [
+        0.21,
+        0.22,
+        0.2
+      ],
+      "bag_color": [
+        0.15,
+        0.18,
+        0.2
+      ]
+    },
+    {
+      "id": "resident-0054",
+      "label": "Resident 0055",
+      "home_id": "building-6",
+      "work_id": "building-7",
+      "departure_tick": 166000,
+      "return_tick": 6507400,
+      "speed_mps": 1.245,
+      "phase": 0.3738353925000055,
+      "color": [
+        0.88,
+        0.48,
+        0.17
+      ],
+      "skin_color": [
+        0.74,
+        0.51,
+        0.34
+      ],
+      "trouser_color": [
+        0.08,
+        0.12,
+        0.18
+      ],
+      "bag_color": [
+        0.3,
+        0.21,
+        0.12
+      ]
+    },
+    {
+      "id": "resident-0055",
+      "label": "Resident 0056",
+      "home_id": "building-9",
+      "work_id": "building-8",
+      "departure_tick": 87400,
+      "return_tick": 6662400,
+      "speed_mps": 1.231,
+      "phase": 0.9918693812500052,
+      "color": [
+        0.12,
+        0.43,
+        0.46
+      ],
+      "skin_color": [
+        0.74,
+        0.51,
+        0.34
+      ],
+      "trouser_color": [
+        0.21,
+        0.22,
+        0.2
+      ],
+      "bag_color": [
+        0.15,
+        0.18,
+        0.2
+      ]
+    },
+    {
+      "id": "resident-0056",
+      "label": "Resident 0057",
+      "home_id": "building-0",
+      "work_id": "city-hall",
+      "departure_tick": 141200,
+      "return_tick": 6728000,
+      "speed_mps": 1.176,
+      "phase": 0.6099033700000049,
+      "color": [
+        0.65,
+        0.22,
+        0.17
+      ],
+      "skin_color": [
+        0.63,
+        0.39,
+        0.25
+      ],
+      "trouser_color": [
+        0.08,
+        0.12,
+        0.18
+      ],
+      "bag_color": [
+        0.3,
+        0.21,
+        0.12
+      ]
+    },
+    {
+      "id": "resident-0057",
+      "label": "Resident 0058",
+      "home_id": "building-3",
+      "work_id": "building-1",
+      "departure_tick": 2000,
+      "return_tick": 6714000,
+      "speed_mps": 1.226,
+      "phase": 0.22793735875000465,
+      "color": [
+        0.88,
+        0.48,
+        0.17
+      ],
+      "skin_color": [
+        0.63,
+        0.39,
+        0.25
+      ],
+      "trouser_color": [
+        0.21,
+        0.22,
+        0.2
+      ],
+      "bag_color": [
+        0.15,
+        0.18,
+        0.2
+      ]
+    },
+    {
+      "id": "resident-0058",
+      "label": "Resident 0059",
+      "home_id": "building-6",
+      "work_id": "building-2",
+      "departure_tick": 43400,
+      "return_tick": 6630800,
+      "speed_mps": 1.457,
+      "phase": 0.8459713475000044,
+      "color": [
+        0.12,
+        0.43,
+        0.46
+      ],
+      "skin_color": [
+        0.87,
+        0.67,
+        0.49
+      ],
+      "trouser_color": [
+        0.08,
+        0.12,
+        0.18
+      ],
+      "bag_color": [
+        0.3,
+        0.21,
+        0.12
+      ]
+    },
+    {
+      "id": "resident-0059",
+      "label": "Resident 0060",
+      "home_id": "building-9",
+      "work_id": "building-4",
+      "departure_tick": 30800,
+      "return_tick": 6840000,
+      "speed_mps": 1.254,
+      "phase": 0.46400533625000406,
+      "color": [
+        0.65,
+        0.22,
+        0.17
+      ],
+      "skin_color": [
+        0.87,
+        0.67,
+        0.49
+      ],
+      "trouser_color": [
+        0.21,
+        0.22,
+        0.2
+      ],
+      "bag_color": [
+        0.15,
+        0.18,
+        0.2
+      ]
+    },
+    {
+      "id": "resident-0060",
+      "label": "Resident 0061",
+      "home_id": "building-0",
+      "work_id": "building-5",
+      "departure_tick": 156000,
+      "return_tick": 6542800,
+      "speed_mps": 1.467,
+      "phase": 0.08203932500000377,
+      "color": [
+        0.88,
+        0.48,
+        0.17
+      ],
+      "skin_color": [
+        0.38,
+        0.23,
+        0.16
+      ],
+      "trouser_color": [
+        0.08,
+        0.12,
+        0.18
+      ],
+      "bag_color": [
+        0.3,
+        0.21,
+        0.12
+      ]
+    },
+    {
+      "id": "resident-0061",
+      "label": "Resident 0062",
+      "home_id": "building-3",
+      "work_id": "building-7",
+      "departure_tick": 144200,
+      "return_tick": 6728600,
+      "speed_mps": 1.332,
+      "phase": 0.7000733137500035,
+      "color": [
+        0.12,
+        0.43,
+        0.46
+      ],
+      "skin_color": [
+        0.38,
+        0.23,
+        0.16
+      ],
+      "trouser_color": [
+        0.21,
+        0.22,
+        0.2
+      ],
+      "bag_color": [
+        0.15,
+        0.18,
+        0.2
+      ]
+    },
+    {
+      "id": "resident-0062",
+      "label": "Resident 0063",
+      "home_id": "building-6",
+      "work_id": "building-8",
+      "departure_tick": 52200,
+      "return_tick": 6529200,
+      "speed_mps": 1.574,
+      "phase": 0.3181073025000032,
+      "color": [
+        0.65,
+        0.22,
+        0.17
+      ],
+      "skin_color": [
+        0.74,
+        0.51,
+        0.34
+      ],
+      "trouser_color": [
+        0.08,
+        0.12,
+        0.18
+      ],
+      "bag_color": [
+        0.3,
+        0.21,
+        0.12
+      ]
+    },
+    {
+      "id": "resident-0063",
+      "label": "Resident 0064",
+      "home_id": "building-9",
+      "work_id": "city-hall",
+      "departure_tick": 192800,
+      "return_tick": 6678600,
+      "speed_mps": 1.392,
+      "phase": 0.9361412912500029,
+      "color": [
+        0.88,
+        0.48,
+        0.17
+      ],
+      "skin_color": [
+        0.74,
+        0.51,
+        0.34
+      ],
+      "trouser_color": [
+        0.21,
+        0.22,
+        0.2
+      ],
+      "bag_color": [
+        0.15,
+        0.18,
+        0.2
+      ]
+    },
+    {
+      "id": "resident-0064",
+      "label": "Resident 0065",
+      "home_id": "building-0",
+      "work_id": "building-1",
+      "departure_tick": 37000,
+      "return_tick": 6541000,
+      "speed_mps": 1.201,
+      "phase": 0.5541752800000026,
+      "color": [
+        0.12,
+        0.43,
+        0.46
+      ],
+      "skin_color": [
+        0.63,
+        0.39,
+        0.25
+      ],
+      "trouser_color": [
+        0.08,
+        0.12,
+        0.18
+      ],
+      "bag_color": [
+        0.3,
+        0.21,
+        0.12
+      ]
+    },
+    {
+      "id": "resident-0065",
+      "label": "Resident 0066",
+      "home_id": "building-3",
+      "work_id": "building-2",
+      "departure_tick": 142200,
+      "return_tick": 6785200,
+      "speed_mps": 1.282,
+      "phase": 0.1722092687500023,
+      "color": [
+        0.65,
+        0.22,
+        0.17
+      ],
+      "skin_color": [
+        0.63,
+        0.39,
+        0.25
+      ],
+      "trouser_color": [
+        0.21,
+        0.22,
+        0.2
+      ],
+      "bag_color": [
+        0.15,
+        0.18,
+        0.2
+      ]
+    },
+    {
+      "id": "resident-0066",
+      "label": "Resident 0067",
+      "home_id": "building-6",
+      "work_id": "building-4",
+      "departure_tick": 68000,
+      "return_tick": 6693400,
+      "speed_mps": 1.162,
+      "phase": 0.790243257500002,
+      "color": [
+        0.88,
+        0.48,
+        0.17
+      ],
+      "skin_color": [
+        0.87,
+        0.67,
+        0.49
+      ],
+      "trouser_color": [
+        0.08,
+        0.12,
+        0.18
+      ],
+      "bag_color": [
+        0.3,
+        0.21,
+        0.12
+      ]
+    },
+    {
+      "id": "resident-0067",
+      "label": "Resident 0068",
+      "home_id": "building-9",
+      "work_id": "building-5",
+      "departure_tick": 218200,
+      "return_tick": 6630000,
+      "speed_mps": 1.223,
+      "phase": 0.4082772462500017,
+      "color": [
+        0.12,
+        0.43,
+        0.46
+      ],
+      "skin_color": [
+        0.87,
+        0.67,
+        0.49
+      ],
+      "trouser_color": [
+        0.21,
+        0.22,
+        0.2
+      ],
+      "bag_color": [
+        0.15,
+        0.18,
+        0.2
+      ]
+    },
+    {
+      "id": "resident-0068",
+      "label": "Resident 0069",
+      "home_id": "building-0",
+      "work_id": "building-7",
+      "departure_tick": 224400,
+      "return_tick": 6493000,
+      "speed_mps": 1.529,
+      "phase": 0.02631123500000143,
+      "color": [
+        0.65,
+        0.22,
+        0.17
+      ],
+      "skin_color": [
+        0.38,
+        0.23,
+        0.16
+      ],
+      "trouser_color": [
+        0.08,
+        0.12,
+        0.18
+      ],
+      "bag_color": [
+        0.3,
+        0.21,
+        0.12
+      ]
+    },
+    {
+      "id": "resident-0069",
+      "label": "Resident 0070",
+      "home_id": "building-3",
+      "work_id": "building-8",
+      "departure_tick": 124000,
+      "return_tick": 6745200,
+      "speed_mps": 1.582,
+      "phase": 0.6443452237500011,
+      "color": [
+        0.88,
+        0.48,
+        0.17
+      ],
+      "skin_color": [
+        0.38,
+        0.23,
+        0.16
+      ],
+      "trouser_color": [
+        0.21,
+        0.22,
+        0.2
+      ],
+      "bag_color": [
+        0.15,
+        0.18,
+        0.2
+      ]
+    },
+    {
+      "id": "resident-0070",
+      "label": "Resident 0071",
+      "home_id": "building-6",
+      "work_id": "city-hall",
+      "departure_tick": 108800,
+      "return_tick": 6694200,
+      "speed_mps": 1.333,
+      "phase": 0.26237921250000085,
+      "color": [
+        0.12,
+        0.43,
+        0.46
+      ],
+      "skin_color": [
+        0.74,
+        0.51,
+        0.34
+      ],
+      "trouser_color": [
+        0.08,
+        0.12,
+        0.18
+      ],
+      "bag_color": [
+        0.3,
+        0.21,
+        0.12
+      ]
+    },
+    {
+      "id": "resident-0071",
+      "label": "Resident 0072",
+      "home_id": "building-9",
+      "work_id": "building-1",
+      "departure_tick": 70400,
+      "return_tick": 6627600,
+      "speed_mps": 1.536,
+      "phase": 0.8804132012500006,
+      "color": [
+        0.65,
+        0.22,
+        0.17
+      ],
+      "skin_color": [
+        0.74,
+        0.51,
+        0.34
+      ],
+      "trouser_color": [
+        0.21,
+        0.22,
+        0.2
+      ],
+      "bag_color": [
+        0.15,
+        0.18,
+        0.2
+      ]
+    },
+    {
+      "id": "resident-0072",
+      "label": "Resident 0073",
+      "home_id": "building-0",
+      "work_id": "building-2",
+      "departure_tick": 220000,
+      "return_tick": 6703800,
+      "speed_mps": 1.54,
+      "phase": 0.49844719000000026,
+      "color": [
+        0.88,
+        0.48,
+        0.17
+      ],
+      "skin_color": [
+        0.63,
+        0.39,
+        0.25
+      ],
+      "trouser_color": [
+        0.08,
+        0.12,
+        0.18
+      ],
+      "bag_color": [
+        0.3,
+        0.21,
+        0.12
+      ]
+    },
+    {
+      "id": "resident-0073",
+      "label": "Resident 0074",
+      "home_id": "building-3",
+      "work_id": "building-4",
+      "departure_tick": 137000,
+      "return_tick": 6742600,
+      "speed_mps": 1.262,
+      "phase": 0.11648117874999997,
+      "color": [
+        0.12,
+        0.43,
+        0.46
+      ],
+      "skin_color": [
+        0.63,
+        0.39,
+        0.25
+      ],
+      "trouser_color": [
+        0.21,
+        0.22,
+        0.2
+      ],
+      "bag_color": [
+        0.15,
+        0.18,
+        0.2
+      ]
+    },
+    {
+      "id": "resident-0074",
+      "label": "Resident 0075",
+      "home_id": "building-6",
+      "work_id": "building-5",
+      "departure_tick": 81800,
+      "return_tick": 6812000,
+      "speed_mps": 1.27,
+      "phase": 0.7345151674999997,
+      "color": [
+        0.65,
+        0.22,
+        0.17
+      ],
+      "skin_color": [
+        0.87,
+        0.67,
+        0.49
+      ],
+      "trouser_color": [
+        0.08,
+        0.12,
+        0.18
+      ],
+      "bag_color": [
+        0.3,
+        0.21,
+        0.12
+      ]
+    },
+    {
+      "id": "resident-0075",
+      "label": "Resident 0076",
+      "home_id": "building-9",
+      "work_id": "building-7",
+      "departure_tick": 166000,
+      "return_tick": 6785000,
+      "speed_mps": 1.552,
+      "phase": 0.3525491562500065,
+      "color": [
+        0.88,
+        0.48,
+        0.17
+      ],
+      "skin_color": [
+        0.87,
+        0.67,
+        0.49
+      ],
+      "trouser_color": [
+        0.21,
+        0.22,
+        0.2
+      ],
+      "bag_color": [
+        0.15,
+        0.18,
+        0.2
+      ]
+    },
+    {
+      "id": "resident-0076",
+      "label": "Resident 0077",
+      "home_id": "building-0",
+      "work_id": "building-8",
+      "departure_tick": 83800,
+      "return_tick": 6694000,
+      "speed_mps": 1.396,
+      "phase": 0.9705831450000062,
+      "color": [
+        0.12,
+        0.43,
+        0.46
+      ],
+      "skin_color": [
+        0.38,
+        0.23,
+        0.16
+      ],
+      "trouser_color": [
+        0.08,
+        0.12,
+        0.18
+      ],
+      "bag_color": [
+        0.3,
+        0.21,
+        0.12
+      ]
+    },
+    {
+      "id": "resident-0077",
+      "label": "Resident 0078",
+      "home_id": "building-3",
+      "work_id": "city-hall",
+      "departure_tick": 13800,
+      "return_tick": 6493400,
+      "speed_mps": 1.545,
+      "phase": 0.5886171337500059,
+      "color": [
+        0.65,
+        0.22,
+        0.17
+      ],
+      "skin_color": [
+        0.38,
+        0.23,
+        0.16
+      ],
+      "trouser_color": [
+        0.21,
+        0.22,
+        0.2
+      ],
+      "bag_color": [
+        0.15,
+        0.18,
+        0.2
+      ]
+    },
+    {
+      "id": "resident-0078",
+      "label": "Resident 0079",
+      "home_id": "building-6",
+      "work_id": "building-1",
+      "departure_tick": 195400,
+      "return_tick": 6588000,
+      "speed_mps": 1.247,
+      "phase": 0.2066511225000056,
+      "color": [
+        0.88,
+        0.48,
+        0.17
+      ],
+      "skin_color": [
+        0.74,
+        0.51,
+        0.34
+      ],
+      "trouser_color": [
+        0.08,
+        0.12,
+        0.18
+      ],
+      "bag_color": [
+        0.3,
+        0.21,
+        0.12
+      ]
+    },
+    {
+      "id": "resident-0079",
+      "label": "Resident 0080",
+      "home_id": "building-9",
+      "work_id": "building-2",
+      "departure_tick": 143000,
+      "return_tick": 6665000,
+      "speed_mps": 1.554,
+      "phase": 0.8246851112500053,
+      "color": [
+        0.12,
+        0.43,
+        0.46
+      ],
+      "skin_color": [
+        0.74,
+        0.51,
+        0.34
+      ],
+      "trouser_color": [
+        0.21,
+        0.22,
+        0.2
+      ],
+      "bag_color": [
+        0.15,
+        0.18,
+        0.2
+      ]
+    },
+    {
+      "id": "resident-0080",
+      "label": "Resident 0081",
+      "home_id": "building-0",
+      "work_id": "building-4",
+      "departure_tick": 145000,
+      "return_tick": 6631200,
+      "speed_mps": 1.19,
+      "phase": 0.44271910000000503,
+      "color": [
+        0.65,
+        0.22,
+        0.17
+      ],
+      "skin_color": [
+        0.63,
+        0.39,
+        0.25
+      ],
+      "trouser_color": [
+        0.08,
+        0.12,
+        0.18
+      ],
+      "bag_color": [
+        0.3,
+        0.21,
+        0.12
+      ]
+    },
+    {
+      "id": "resident-0081",
+      "label": "Resident 0082",
+      "home_id": "building-3",
+      "work_id": "building-5",
+      "departure_tick": 43800,
+      "return_tick": 6574800,
+      "speed_mps": 1.385,
+      "phase": 0.060753088750004736,
+      "color": [
+        0.88,
+        0.48,
+        0.17
+      ],
+      "skin_color": [
+        0.63,
+        0.39,
+        0.25
+      ],
+      "trouser_color": [
+        0.21,
+        0.22,
+        0.2
+      ],
+      "bag_color": [
+        0.15,
+        0.18,
+        0.2
+      ]
+    },
+    {
+      "id": "resident-0082",
+      "label": "Resident 0083",
+      "home_id": "building-6",
+      "work_id": "building-7",
+      "departure_tick": 140200,
+      "return_tick": 6565600,
+      "speed_mps": 1.391,
+      "phase": 0.6787870775000044,
+      "color": [
+        0.12,
+        0.43,
+        0.46
+      ],
+      "skin_color": [
+        0.87,
+        0.67,
+        0.49
+      ],
+      "trouser_color": [
+        0.08,
+        0.12,
+        0.18
+      ],
+      "bag_color": [
+        0.3,
+        0.21,
+        0.12
+      ]
+    },
+    {
+      "id": "resident-0083",
+      "label": "Resident 0084",
+      "home_id": "building-9",
+      "work_id": "building-8",
+      "departure_tick": 2600,
+      "return_tick": 6678200,
+      "speed_mps": 1.605,
+      "phase": 0.29682106625000415,
+      "color": [
+        0.65,
+        0.22,
+        0.17
+      ],
+      "skin_color": [
+        0.87,
+        0.67,
+        0.49
+      ],
+      "trouser_color": [
+        0.21,
+        0.22,
+        0.2
+      ],
+      "bag_color": [
+        0.15,
+        0.18,
+        0.2
+      ]
+    },
+    {
+      "id": "resident-0084",
+      "label": "Resident 0085",
+      "home_id": "building-0",
+      "work_id": "city-hall",
+      "departure_tick": 142800,
+      "return_tick": 6809400,
+      "speed_mps": 1.472,
+      "phase": 0.9148550550000039,
+      "color": [
+        0.88,
+        0.48,
+        0.17
+      ],
+      "skin_color": [
+        0.38,
+        0.23,
+        0.16
+      ],
+      "trouser_color": [
+        0.08,
+        0.12,
+        0.18
+      ],
+      "bag_color": [
+        0.3,
+        0.21,
+        0.12
+      ]
+    },
+    {
+      "id": "resident-0085",
+      "label": "Resident 0086",
+      "home_id": "building-3",
+      "work_id": "building-1",
+      "departure_tick": 51000,
+      "return_tick": 6641000,
+      "speed_mps": 1.541,
+      "phase": 0.5328890437500036,
+      "color": [
+        0.12,
+        0.43,
+        0.46
+      ],
+      "skin_color": [
+        0.38,
+        0.23,
+        0.16
+      ],
+      "trouser_color": [
+        0.21,
+        0.22,
+        0.2
+      ],
+      "bag_color": [
+        0.15,
+        0.18,
+        0.2
+      ]
+    },
+    {
+      "id": "resident-0086",
+      "label": "Resident 0087",
+      "home_id": "building-6",
+      "work_id": "building-2",
+      "departure_tick": 83600,
+      "return_tick": 6677800,
+      "speed_mps": 1.595,
+      "phase": 0.15092303250000327,
+      "color": [
+        0.65,
+        0.22,
+        0.17
+      ],
+      "skin_color": [
+        0.74,
+        0.51,
+        0.34
+      ],
+      "trouser_color": [
+        0.08,
+        0.12,
+        0.18
+      ],
+      "bag_color": [
+        0.3,
+        0.21,
+        0.12
+      ]
+    },
+    {
+      "id": "resident-0087",
+      "label": "Resident 0088",
+      "home_id": "building-9",
+      "work_id": "building-4",
+      "departure_tick": 179600,
+      "return_tick": 6805200,
+      "speed_mps": 1.468,
+      "phase": 0.768957021250003,
+      "color": [
+        0.88,
+        0.48,
+        0.17
+      ],
+      "skin_color": [
+        0.74,
+        0.51,
+        0.34
+      ],
+      "trouser_color": [
+        0.21,
+        0.22,
+        0.2
+      ],
+      "bag_color": [
+        0.15,
+        0.18,
+        0.2
+      ]
+    },
+    {
+      "id": "resident-0088",
+      "label": "Resident 0089",
+      "home_id": "building-0",
+      "work_id": "building-5",
+      "departure_tick": 37400,
+      "return_tick": 6810000,
+      "speed_mps": 1.623,
+      "phase": 0.3869910100000027,
+      "color": [
+        0.12,
+        0.43,
+        0.46
+      ],
+      "skin_color": [
+        0.63,
+        0.39,
+        0.25
+      ],
+      "trouser_color": [
+        0.08,
+        0.12,
+        0.18
+      ],
+      "bag_color": [
+        0.3,
+        0.21,
+        0.12
+      ]
+    },
+    {
+      "id": "resident-0089",
+      "label": "Resident 0090",
+      "home_id": "building-3",
+      "work_id": "building-7",
+      "departure_tick": 164000,
+      "return_tick": 6671600,
+      "speed_mps": 1.351,
+      "phase": 0.005024998750002396,
+      "color": [
+        0.65,
+        0.22,
+        0.17
+      ],
+      "skin_color": [
+        0.63,
+        0.39,
+        0.25
+      ],
+      "trouser_color": [
+        0.21,
+        0.22,
+        0.2
+      ],
+      "bag_color": [
+        0.15,
+        0.18,
+        0.2
+      ]
+    },
+    {
+      "id": "resident-0090",
+      "label": "Resident 0091",
+      "home_id": "building-6",
+      "work_id": "building-8",
+      "departure_tick": 36600,
+      "return_tick": 6778800,
+      "speed_mps": 1.229,
+      "phase": 0.6230589875000021,
+      "color": [
+        0.88,
+        0.48,
+        0.17
+      ],
+      "skin_color": [
+        0.87,
+        0.67,
+        0.49
+      ],
+      "trouser_color": [
+        0.08,
+        0.12,
+        0.18
+      ],
+      "bag_color": [
+        0.3,
+        0.21,
+        0.12
+      ]
+    },
+    {
+      "id": "resident-0091",
+      "label": "Resident 0092",
+      "home_id": "building-9",
+      "work_id": "city-hall",
+      "departure_tick": 54000,
+      "return_tick": 6493200,
+      "speed_mps": 1.226,
+      "phase": 0.2410929762500018,
+      "color": [
+        0.12,
+        0.43,
+        0.46
+      ],
+      "skin_color": [
+        0.87,
+        0.67,
+        0.49
+      ],
+      "trouser_color": [
+        0.21,
+        0.22,
+        0.2
+      ],
+      "bag_color": [
+        0.15,
+        0.18,
+        0.2
+      ]
+    },
+    {
+      "id": "resident-0092",
+      "label": "Resident 0093",
+      "home_id": "building-0",
+      "work_id": "building-1",
+      "departure_tick": 192600,
+      "return_tick": 6812200,
+      "speed_mps": 1.478,
+      "phase": 0.8591269650000015,
+      "color": [
+        0.65,
+        0.22,
+        0.17
+      ],
+      "skin_color": [
+        0.38,
+        0.23,
+        0.16
+      ],
+      "trouser_color": [
+        0.08,
+        0.12,
+        0.18
+      ],
+      "bag_color": [
+        0.3,
+        0.21,
+        0.12
+      ]
+    },
+    {
+      "id": "resident-0093",
+      "label": "Resident 0094",
+      "home_id": "building-3",
+      "work_id": "building-2",
+      "departure_tick": 196200,
+      "return_tick": 6751200,
+      "speed_mps": 1.619,
+      "phase": 0.4771609537500012,
+      "color": [
+        0.88,
+        0.48,
+        0.17
+      ],
+      "skin_color": [
+        0.38,
+        0.23,
+        0.16
+      ],
+      "trouser_color": [
+        0.21,
+        0.22,
+        0.2
+      ],
+      "bag_color": [
+        0.15,
+        0.18,
+        0.2
+      ]
+    },
+    {
+      "id": "resident-0094",
+      "label": "Resident 0095",
+      "home_id": "building-6",
+      "work_id": "building-4",
+      "departure_tick": 65800,
+      "return_tick": 6706600,
+      "speed_mps": 1.424,
+      "phase": 0.09519494250000093,
+      "color": [
+        0.12,
+        0.43,
+        0.46
+      ],
+      "skin_color": [
+        0.74,
+        0.51,
+        0.34
+      ],
+      "trouser_color": [
+        0.08,
+        0.12,
+        0.18
+      ],
+      "bag_color": [
+        0.3,
+        0.21,
+        0.12
+      ]
+    },
+    {
+      "id": "resident-0095",
+      "label": "Resident 0096",
+      "home_id": "building-9",
+      "work_id": "building-5",
+      "departure_tick": 10600,
+      "return_tick": 6487800,
+      "speed_mps": 1.55,
+      "phase": 0.7132289312500006,
+      "color": [
+        0.65,
+        0.22,
+        0.17
+      ],
+      "skin_color": [
+        0.74,
+        0.51,
+        0.34
+      ],
+      "trouser_color": [
+        0.21,
+        0.22,
+        0.2
+      ],
+      "bag_color": [
+        0.15,
+        0.18,
+        0.2
+      ]
+    },
+    {
+      "id": "resident-0096",
+      "label": "Resident 0097",
+      "home_id": "building-0",
+      "work_id": "building-7",
+      "departure_tick": 44000,
+      "return_tick": 6697600,
+      "speed_mps": 1.525,
+      "phase": 0.33126292000000035,
+      "color": [
+        0.88,
+        0.48,
+        0.17
+      ],
+      "skin_color": [
+        0.63,
+        0.39,
+        0.25
+      ],
+      "trouser_color": [
+        0.08,
+        0.12,
+        0.18
+      ],
+      "bag_color": [
+        0.3,
+        0.21,
+        0.12
+      ]
+    },
+    {
+      "id": "resident-0097",
+      "label": "Resident 0098",
+      "home_id": "building-3",
+      "work_id": "building-8",
+      "departure_tick": 59000,
+      "return_tick": 6659600,
+      "speed_mps": 1.643,
+      "phase": 0.9492969087500072,
+      "color": [
+        0.12,
+        0.43,
+        0.46
+      ],
+      "skin_color": [
+        0.63,
+        0.39,
+        0.25
+      ],
+      "trouser_color": [
+        0.21,
+        0.22,
+        0.2
+      ],
+      "bag_color": [
+        0.15,
+        0.18,
+        0.2
+      ]
+    },
+    {
+      "id": "resident-0098",
+      "label": "Resident 0099",
+      "home_id": "building-6",
+      "work_id": "city-hall",
+      "departure_tick": 81600,
+      "return_tick": 6820200,
+      "speed_mps": 1.587,
+      "phase": 0.5673308975000069,
+      "color": [
+        0.65,
+        0.22,
+        0.17
+      ],
+      "skin_color": [
+        0.87,
+        0.67,
+        0.49
+      ],
+      "trouser_color": [
+        0.08,
+        0.12,
+        0.18
+      ],
+      "bag_color": [
+        0.3,
+        0.21,
+        0.12
+      ]
+    },
+    {
+      "id": "resident-0099",
+      "label": "Resident 0100",
+      "home_id": "building-9",
+      "work_id": "building-1",
+      "departure_tick": 13400,
+      "return_tick": 6585000,
+      "speed_mps": 1.256,
+      "phase": 0.18536488625000658,
+      "color": [
+        0.88,
+        0.48,
+        0.17
+      ],
+      "skin_color": [
+        0.87,
+        0.67,
+        0.49
+      ],
+      "trouser_color": [
+        0.21,
+        0.22,
+        0.2
+      ],
+      "bag_color": [
+        0.15,
+        0.18,
+        0.2
+      ]
+    },
+    {
+      "id": "resident-0100",
+      "label": "Resident 0101",
+      "home_id": "building-0",
+      "work_id": "building-2",
+      "departure_tick": 207200,
+      "return_tick": 6580400,
+      "speed_mps": 1.532,
+      "phase": 0.8033988750000063,
+      "color": [
+        0.12,
+        0.43,
+        0.46
+      ],
+      "skin_color": [
+        0.38,
+        0.23,
+        0.16
+      ],
+      "trouser_color": [
+        0.08,
+        0.12,
+        0.18
+      ],
+      "bag_color": [
+        0.3,
+        0.21,
+        0.12
+      ]
+    },
+    {
+      "id": "resident-0101",
+      "label": "Resident 0102",
+      "home_id": "building-3",
+      "work_id": "building-4",
+      "departure_tick": 135400,
+      "return_tick": 6588200,
+      "speed_mps": 1.422,
+      "phase": 0.421432863750006,
+      "color": [
+        0.65,
+        0.22,
+        0.17
+      ],
+      "skin_color": [
+        0.38,
+        0.23,
+        0.16
+      ],
+      "trouser_color": [
+        0.21,
+        0.22,
+        0.2
+      ],
+      "bag_color": [
+        0.15,
+        0.18,
+        0.2
+      ]
+    },
+    {
+      "id": "resident-0102",
+      "label": "Resident 0103",
+      "home_id": "building-6",
+      "work_id": "building-5",
+      "departure_tick": 55600,
+      "return_tick": 6506800,
+      "speed_mps": 1.605,
+      "phase": 0.0394668525000057,
+      "color": [
+        0.88,
+        0.48,
+        0.17
+      ],
+      "skin_color": [
+        0.74,
+        0.51,
+        0.34
+      ],
+      "trouser_color": [
+        0.08,
+        0.12,
+        0.18
+      ],
+      "bag_color": [
+        0.3,
+        0.21,
+        0.12
+      ]
+    },
+    {
+      "id": "resident-0103",
+      "label": "Resident 0104",
+      "home_id": "building-9",
+      "work_id": "building-7",
+      "departure_tick": 146800,
+      "return_tick": 6669600,
+      "speed_mps": 1.481,
+      "phase": 0.6575008412500054,
+      "color": [
+        0.12,
+        0.43,
+        0.46
+      ],
+      "skin_color": [
+        0.74,
+        0.51,
+        0.34
+      ],
+      "trouser_color": [
+        0.21,
+        0.22,
+        0.2
+      ],
+      "bag_color": [
+        0.15,
+        0.18,
+        0.2
+      ]
+    },
+    {
+      "id": "resident-0104",
+      "label": "Resident 0105",
+      "home_id": "building-0",
+      "work_id": "building-8",
+      "departure_tick": 213600,
+      "return_tick": 6654200,
+      "speed_mps": 1.564,
+      "phase": 0.275534829999998,
+      "color": [
+        0.65,
+        0.22,
+        0.17
+      ],
+      "skin_color": [
+        0.63,
+        0.39,
+        0.25
+      ],
+      "trouser_color": [
+        0.08,
+        0.12,
+        0.18
+      ],
+      "bag_color": [
+        0.3,
+        0.21,
+        0.12
+      ]
+    },
+    {
+      "id": "resident-0105",
+      "label": "Resident 0106",
+      "home_id": "building-3",
+      "work_id": "city-hall",
+      "departure_tick": 207400,
+      "return_tick": 6535400,
+      "speed_mps": 1.416,
+      "phase": 0.8935688187499977,
+      "color": [
+        0.88,
+        0.48,
+        0.17
+      ],
+      "skin_color": [
+        0.63,
+        0.39,
+        0.25
+      ],
+      "trouser_color": [
+        0.21,
+        0.22,
+        0.2
+      ],
+      "bag_color": [
+        0.15,
+        0.18,
+        0.2
+      ]
+    },
+    {
+      "id": "resident-0106",
+      "label": "Resident 0107",
+      "home_id": "building-6",
+      "work_id": "building-1",
+      "departure_tick": 216400,
+      "return_tick": 6691000,
+      "speed_mps": 1.159,
+      "phase": 0.5116028074999974,
+      "color": [
+        0.12,
+        0.43,
+        0.46
+      ],
+      "skin_color": [
+        0.87,
+        0.67,
+        0.49
+      ],
+      "trouser_color": [
+        0.08,
+        0.12,
+        0.18
+      ],
+      "bag_color": [
+        0.3,
+        0.21,
+        0.12
+      ]
+    },
+    {
+      "id": "resident-0107",
+      "label": "Resident 0108",
+      "home_id": "building-9",
+      "work_id": "building-2",
+      "departure_tick": 182200,
+      "return_tick": 6800000,
+      "speed_mps": 1.242,
+      "phase": 0.12963679625001134,
+      "color": [
+        0.65,
+        0.22,
+        0.17
+      ],
+      "skin_color": [
+        0.87,
+        0.67,
+        0.49
+      ],
+      "trouser_color": [
+        0.21,
+        0.22,
+        0.2
+      ],
+      "bag_color": [
+        0.15,
+        0.18,
+        0.2
+      ]
+    },
+    {
+      "id": "resident-0108",
+      "label": "Resident 0109",
+      "home_id": "building-0",
+      "work_id": "building-4",
+      "departure_tick": 3600,
+      "return_tick": 6799800,
+      "speed_mps": 1.55,
+      "phase": 0.747670785000011,
+      "color": [
+        0.88,
+        0.48,
+        0.17
+      ],
+      "skin_color": [
+        0.38,
+        0.23,
+        0.16
+      ],
+      "trouser_color": [
+        0.08,
+        0.12,
+        0.18
+      ],
+      "bag_color": [
+        0.3,
+        0.21,
+        0.12
+      ]
+    },
+    {
+      "id": "resident-0109",
+      "label": "Resident 0110",
+      "home_id": "building-3",
+      "work_id": "building-5",
+      "departure_tick": 72400,
+      "return_tick": 6539800,
+      "speed_mps": 1.387,
+      "phase": 0.36570477375001076,
+      "color": [
+        0.12,
+        0.43,
+        0.46
+      ],
+      "skin_color": [
+        0.38,
+        0.23,
+        0.16
+      ],
+      "trouser_color": [
+        0.21,
+        0.22,
+        0.2
+      ],
+      "bag_color": [
+        0.15,
+        0.18,
+        0.2
+      ]
+    },
+    {
+      "id": "resident-0110",
+      "label": "Resident 0111",
+      "home_id": "building-6",
+      "work_id": "building-7",
+      "departure_tick": 51200,
+      "return_tick": 6709800,
+      "speed_mps": 1.181,
+      "phase": 0.9837387625000105,
+      "color": [
+        0.65,
+        0.22,
+        0.17
+      ],
+      "skin_color": [
+        0.74,
+        0.51,
+        0.34
+      ],
+      "trouser_color": [
+        0.08,
+        0.12,
+        0.18
+      ],
+      "bag_color": [
+        0.3,
+        0.21,
+        0.12
+      ]
+    },
+    {
+      "id": "resident-0111",
+      "label": "Resident 0112",
+      "home_id": "building-9",
+      "work_id": "building-8",
+      "departure_tick": 214200,
+      "return_tick": 6699200,
+      "speed_mps": 1.428,
+      "phase": 0.6017727512500102,
+      "color": [
+        0.88,
+        0.48,
+        0.17
+      ],
+      "skin_color": [
+        0.74,
+        0.51,
+        0.34
+      ],
+      "trouser_color": [
+        0.21,
+        0.22,
+        0.2
+      ],
+      "bag_color": [
+        0.15,
+        0.18,
+        0.2
+      ]
+    },
+    {
+      "id": "resident-0112",
+      "label": "Resident 0113",
+      "home_id": "building-0",
+      "work_id": "city-hall",
+      "departure_tick": 45400,
+      "return_tick": 6711400,
+      "speed_mps": 1.178,
+      "phase": 0.21980674000000988,
+      "color": [
+        0.12,
+        0.43,
+        0.46
+      ],
+      "skin_color": [
+        0.63,
+        0.39,
+        0.25
+      ],
+      "trouser_color": [
+        0.08,
+        0.12,
+        0.18
+      ],
+      "bag_color": [
+        0.3,
+        0.21,
+        0.12
+      ]
+    },
+    {
+      "id": "resident-0113",
+      "label": "Resident 0114",
+      "home_id": "building-3",
+      "work_id": "building-1",
+      "departure_tick": 80200,
+      "return_tick": 6595400,
+      "speed_mps": 1.171,
+      "phase": 0.8378407287500096,
+      "color": [
+        0.65,
+        0.22,
+        0.17
+      ],
+      "skin_color": [
+        0.63,
+        0.39,
+        0.25
+      ],
+      "trouser_color": [
+        0.21,
+        0.22,
+        0.2
+      ],
+      "bag_color": [
+        0.15,
+        0.18,
+        0.2
+      ]
+    },
+    {
+      "id": "resident-0114",
+      "label": "Resident 0115",
+      "home_id": "building-6",
+      "work_id": "building-2",
+      "departure_tick": 42000,
+      "return_tick": 6689800,
+      "speed_mps": 1.376,
+      "phase": 0.4558747175000093,
+      "color": [
+        0.88,
+        0.48,
+        0.17
+      ],
+      "skin_color": [
+        0.87,
+        0.67,
+        0.49
+      ],
+      "trouser_color": [
+        0.08,
+        0.12,
+        0.18
+      ],
+      "bag_color": [
+        0.3,
+        0.21,
+        0.12
+      ]
+    },
+    {
+      "id": "resident-0115",
+      "label": "Resident 0116",
+      "home_id": "building-9",
+      "work_id": "building-4",
+      "departure_tick": 13400,
+      "return_tick": 6793200,
+      "speed_mps": 1.597,
+      "phase": 0.073908706250009,
+      "color": [
+        0.12,
+        0.43,
+        0.46
+      ],
+      "skin_color": [
+        0.87,
+        0.67,
+        0.49
+      ],
+      "trouser_color": [
+        0.21,
+        0.22,
+        0.2
+      ],
+      "bag_color": [
+        0.15,
+        0.18,
+        0.2
+      ]
+    },
+    {
+      "id": "resident-0116",
+      "label": "Resident 0117",
+      "home_id": "building-0",
+      "work_id": "building-5",
+      "departure_tick": 27800,
+      "return_tick": 6663400,
+      "speed_mps": 1.313,
+      "phase": 0.6919426950000087,
+      "color": [
+        0.65,
+        0.22,
+        0.17
+      ],
+      "skin_color": [
+        0.38,
+        0.23,
+        0.16
+      ],
+      "trouser_color": [
+        0.08,
+        0.12,
+        0.18
+      ],
+      "bag_color": [
+        0.3,
+        0.21,
+        0.12
+      ]
+    },
+    {
+      "id": "resident-0117",
+      "label": "Resident 0118",
+      "home_id": "building-3",
+      "work_id": "building-7",
+      "departure_tick": 209000,
+      "return_tick": 6730200,
+      "speed_mps": 1.406,
+      "phase": 0.3099766837500084,
+      "color": [
+        0.88,
+        0.48,
+        0.17
+      ],
+      "skin_color": [
+        0.38,
+        0.23,
+        0.16
+      ],
+      "trouser_color": [
+        0.21,
+        0.22,
+        0.2
+      ],
+      "bag_color": [
+        0.15,
+        0.18,
+        0.2
+      ]
+    },
+    {
+      "id": "resident-0118",
+      "label": "Resident 0119",
+      "home_id": "building-6",
+      "work_id": "building-8",
+      "departure_tick": 115400,
+      "return_tick": 6667200,
+      "speed_mps": 1.404,
+      "phase": 0.9280106725000081,
+      "color": [
+        0.12,
+        0.43,
+        0.46
+      ],
+      "skin_color": [
+        0.74,
+        0.51,
+        0.34
+      ],
+      "trouser_color": [
+        0.08,
+        0.12,
+        0.18
+      ],
+      "bag_color": [
+        0.3,
+        0.21,
+        0.12
+      ]
+    },
+    {
+      "id": "resident-0119",
+      "label": "Resident 0120",
+      "home_id": "building-9",
+      "work_id": "city-hall",
+      "departure_tick": 197800,
+      "return_tick": 6689800,
+      "speed_mps": 1.621,
+      "phase": 0.5460446612500078,
+      "color": [
+        0.65,
+        0.22,
+        0.17
+      ],
+      "skin_color": [
+        0.74,
+        0.51,
+        0.34
+      ],
+      "trouser_color": [
+        0.21,
+        0.22,
+        0.2
+      ],
+      "bag_color": [
+        0.15,
+        0.18,
+        0.2
+      ]
+    },
+    {
+      "id": "resident-0120",
+      "label": "Resident 0121",
+      "home_id": "building-0",
+      "work_id": "building-1",
+      "departure_tick": 216200,
+      "return_tick": 6841000,
+      "speed_mps": 1.588,
+      "phase": 0.16407865000000754,
+      "color": [
+        0.88,
+        0.48,
+        0.17
+      ],
+      "skin_color": [
+        0.63,
+        0.39,
+        0.25
+      ],
+      "trouser_color": [
+        0.08,
+        0.12,
+        0.18
+      ],
+      "bag_color": [
+        0.3,
+        0.21,
+        0.12
+      ]
+    },
+    {
+      "id": "resident-0121",
+      "label": "Resident 0122",
+      "home_id": "building-3",
+      "work_id": "building-2",
+      "departure_tick": 108200,
+      "return_tick": 6711000,
+      "speed_mps": 1.596,
+      "phase": 0.7821126387500072,
+      "color": [
+        0.12,
+        0.43,
+        0.46
+      ],
+      "skin_color": [
+        0.63,
+        0.39,
+        0.25
+      ],
+      "trouser_color": [
+        0.21,
+        0.22,
+        0.2
+      ],
+      "bag_color": [
+        0.15,
+        0.18,
+        0.2
+      ]
+    },
+    {
+      "id": "resident-0122",
+      "label": "Resident 0123",
+      "home_id": "building-6",
+      "work_id": "building-4",
+      "departure_tick": 84800,
+      "return_tick": 6826000,
+      "speed_mps": 1.374,
+      "phase": 0.40014662750000696,
+      "color": [
+        0.65,
+        0.22,
+        0.17
+      ],
+      "skin_color": [
+        0.87,
+        0.67,
+        0.49
+      ],
+      "trouser_color": [
+        0.08,
+        0.12,
+        0.18
+      ],
+      "bag_color": [
+        0.3,
+        0.21,
+        0.12
+      ]
+    },
+    {
+      "id": "resident-0123",
+      "label": "Resident 0124",
+      "home_id": "building-9",
+      "work_id": "building-5",
+      "departure_tick": 172600,
+      "return_tick": 6531800,
+      "speed_mps": 1.346,
+      "phase": 0.018180616250006665,
+      "color": [
+        0.88,
+        0.48,
+        0.17
+      ],
+      "skin_color": [
+        0.87,
+        0.67,
+        0.49
+      ],
+      "trouser_color": [
+        0.21,
+        0.22,
+        0.2
+      ],
+      "bag_color": [
+        0.15,
+        0.18,
+        0.2
+      ]
+    },
+    {
+      "id": "resident-0124",
+      "label": "Resident 0125",
+      "home_id": "building-0",
+      "work_id": "building-7",
+      "departure_tick": 131400,
+      "return_tick": 6511600,
+      "speed_mps": 1.486,
+      "phase": 0.6362146050000064,
+      "color": [
+        0.12,
+        0.43,
+        0.46
+      ],
+      "skin_color": [
+        0.38,
+        0.23,
+        0.16
+      ],
+      "trouser_color": [
+        0.08,
+        0.12,
+        0.18
+      ],
+      "bag_color": [
+        0.3,
+        0.21,
+        0.12
+      ]
+    },
+    {
+      "id": "resident-0125",
+      "label": "Resident 0126",
+      "home_id": "building-3",
+      "work_id": "building-8",
+      "departure_tick": 177400,
+      "return_tick": 6511800,
+      "speed_mps": 1.256,
+      "phase": 0.2542485937500061,
+      "color": [
+        0.65,
+        0.22,
+        0.17
+      ],
+      "skin_color": [
+        0.38,
+        0.23,
+        0.16
+      ],
+      "trouser_color": [
+        0.21,
+        0.22,
+        0.2
+      ],
+      "bag_color": [
+        0.15,
+        0.18,
+        0.2
+      ]
+    },
+    {
+      "id": "resident-0126",
+      "label": "Resident 0127",
+      "home_id": "building-6",
+      "work_id": "city-hall",
+      "departure_tick": 126000,
+      "return_tick": 6803000,
+      "speed_mps": 1.211,
+      "phase": 0.8722825825000058,
+      "color": [
+        0.88,
+        0.48,
+        0.17
+      ],
+      "skin_color": [
+        0.74,
+        0.51,
+        0.34
+      ],
+      "trouser_color": [
+        0.08,
+        0.12,
+        0.18
+      ],
+      "bag_color": [
+        0.3,
+        0.21,
+        0.12
+      ]
+    },
+    {
+      "id": "resident-0127",
+      "label": "Resident 0128",
+      "home_id": "building-9",
+      "work_id": "building-1",
+      "departure_tick": 65200,
+      "return_tick": 6775200,
+      "speed_mps": 1.472,
+      "phase": 0.4903165712500055,
+      "color": [
+        0.12,
+        0.43,
+        0.46
+      ],
+      "skin_color": [
+        0.74,
+        0.51,
+        0.34
+      ],
+      "trouser_color": [
+        0.21,
+        0.22,
+        0.2
+      ],
+      "bag_color": [
+        0.15,
+        0.18,
+        0.2
+      ]
+    },
+    {
+      "id": "resident-0128",
+      "label": "Resident 0129",
+      "home_id": "building-0",
+      "work_id": "building-2",
+      "departure_tick": 151800,
+      "return_tick": 6540400,
+      "speed_mps": 1.277,
+      "phase": 0.1083505600000052,
+      "color": [
+        0.65,
+        0.22,
+        0.17
+      ],
+      "skin_color": [
+        0.63,
+        0.39,
+        0.25
+      ],
+      "trouser_color": [
+        0.08,
+        0.12,
+        0.18
+      ],
+      "bag_color": [
+        0.3,
+        0.21,
+        0.12
+      ]
+    },
+    {
+      "id": "resident-0129",
+      "label": "Resident 0130",
+      "home_id": "building-3",
+      "work_id": "building-4",
+      "departure_tick": 58200,
+      "return_tick": 6673400,
+      "speed_mps": 1.26,
+      "phase": 0.7263845487500049,
+      "color": [
+        0.88,
+        0.48,
+        0.17
+      ],
+      "skin_color": [
+        0.63,
+        0.39,
+        0.25
+      ],
+      "trouser_color": [
+        0.21,
+        0.22,
+        0.2
+      ],
+      "bag_color": [
+        0.15,
+        0.18,
+        0.2
+      ]
+    },
+    {
+      "id": "resident-0130",
+      "label": "Resident 0131",
+      "home_id": "building-6",
+      "work_id": "building-5",
+      "departure_tick": 40400,
+      "return_tick": 6645000,
+      "speed_mps": 1.592,
+      "phase": 0.3444185375000046,
+      "color": [
+        0.12,
+        0.43,
+        0.46
+      ],
+      "skin_color": [
+        0.87,
+        0.67,
+        0.49
+      ],
+      "trouser_color": [
+        0.08,
+        0.12,
+        0.18
+      ],
+      "bag_color": [
+        0.3,
+        0.21,
+        0.12
+      ]
+    },
+    {
+      "id": "resident-0131",
+      "label": "Resident 0132",
+      "home_id": "building-9",
+      "work_id": "building-7",
+      "departure_tick": 68600,
+      "return_tick": 6755400,
+      "speed_mps": 1.566,
+      "phase": 0.9624525262500043,
+      "color": [
+        0.65,
+        0.22,
+        0.17
+      ],
+      "skin_color": [
+        0.87,
+        0.67,
+        0.49
+      ],
+      "trouser_color": [
+        0.21,
+        0.22,
+        0.2
+      ],
+      "bag_color": [
+        0.15,
+        0.18,
+        0.2
+      ]
+    },
+    {
+      "id": "resident-0132",
+      "label": "Resident 0133",
+      "home_id": "building-0",
+      "work_id": "building-8",
+      "departure_tick": 68000,
+      "return_tick": 6771200,
+      "speed_mps": 1.366,
+      "phase": 0.580486515000004,
+      "color": [
+        0.88,
+        0.48,
+        0.17
+      ],
+      "skin_color": [
+        0.38,
+        0.23,
+        0.16
+      ],
+      "trouser_color": [
+        0.08,
+        0.12,
+        0.18
+      ],
+      "bag_color": [
+        0.3,
+        0.21,
+        0.12
+      ]
+    },
+    {
+      "id": "resident-0133",
+      "label": "Resident 0134",
+      "home_id": "building-3",
+      "work_id": "city-hall",
+      "departure_tick": 213000,
+      "return_tick": 6647400,
+      "speed_mps": 1.32,
+      "phase": 0.19852050375000374,
+      "color": [
+        0.12,
+        0.43,
+        0.46
+      ],
+      "skin_color": [
+        0.38,
+        0.23,
+        0.16
+      ],
+      "trouser_color": [
+        0.21,
+        0.22,
+        0.2
+      ],
+      "bag_color": [
+        0.15,
+        0.18,
+        0.2
+      ]
+    },
+    {
+      "id": "resident-0134",
+      "label": "Resident 0135",
+      "home_id": "building-6",
+      "work_id": "building-1",
+      "departure_tick": 82000,
+      "return_tick": 6628000,
+      "speed_mps": 1.309,
+      "phase": 0.8165544925000034,
+      "color": [
+        0.65,
+        0.22,
+        0.17
+      ],
+      "skin_color": [
+        0.74,
+        0.51,
+        0.34
+      ],
+      "trouser_color": [
+        0.08,
+        0.12,
+        0.18
+      ],
+      "bag_color": [
+        0.3,
+        0.21,
+        0.12
+      ]
+    },
+    {
+      "id": "resident-0135",
+      "label": "Resident 0136",
+      "home_id": "building-9",
+      "work_id": "building-2",
+      "departure_tick": 151800,
+      "return_tick": 6489800,
+      "speed_mps": 1.319,
+      "phase": 0.43458848125000316,
+      "color": [
+        0.88,
+        0.48,
+        0.17
+      ],
+      "skin_color": [
+        0.74,
+        0.51,
+        0.34
+      ],
+      "trouser_color": [
+        0.21,
+        0.22,
+        0.2
+      ],
+      "bag_color": [
+        0.15,
+        0.18,
+        0.2
+      ]
+    },
+    {
+      "id": "resident-0136",
+      "label": "Resident 0137",
+      "home_id": "building-0",
+      "work_id": "building-4",
+      "departure_tick": 189800,
+      "return_tick": 6662400,
+      "speed_mps": 1.502,
+      "phase": 0.05262247000000286,
+      "color": [
+        0.12,
+        0.43,
+        0.46
+      ],
+      "skin_color": [
+        0.63,
+        0.39,
+        0.25
+      ],
+      "trouser_color": [
+        0.08,
+        0.12,
+        0.18
+      ],
+      "bag_color": [
+        0.3,
+        0.21,
+        0.12
+      ]
+    },
+    {
+      "id": "resident-0137",
+      "label": "Resident 0138",
+      "home_id": "building-3",
+      "work_id": "building-5",
+      "departure_tick": 159400,
+      "return_tick": 6617600,
+      "speed_mps": 1.409,
+      "phase": 0.6706564587500026,
+      "color": [
+        0.65,
+        0.22,
+        0.17
+      ],
+      "skin_color": [
+        0.63,
+        0.39,
+        0.25
+      ],
+      "trouser_color": [
+        0.21,
+        0.22,
+        0.2
+      ],
+      "bag_color": [
+        0.15,
+        0.18,
+        0.2
+      ]
+    },
+    {
+      "id": "resident-0138",
+      "label": "Resident 0139",
+      "home_id": "building-6",
+      "work_id": "building-7",
+      "departure_tick": 123000,
+      "return_tick": 6691800,
+      "speed_mps": 1.63,
+      "phase": 0.2886904475000023,
+      "color": [
+        0.88,
+        0.48,
+        0.17
+      ],
+      "skin_color": [
+        0.87,
+        0.67,
+        0.49
+      ],
+      "trouser_color": [
+        0.08,
+        0.12,
+        0.18
+      ],
+      "bag_color": [
+        0.3,
+        0.21,
+        0.12
+      ]
+    },
+    {
+      "id": "resident-0139",
+      "label": "Resident 0140",
+      "home_id": "building-9",
+      "work_id": "building-8",
+      "departure_tick": 48200,
+      "return_tick": 6804800,
+      "speed_mps": 1.264,
+      "phase": 0.906724436250002,
+      "color": [
+        0.12,
+        0.43,
+        0.46
+      ],
+      "skin_color": [
+        0.87,
+        0.67,
+        0.49
+      ],
+      "trouser_color": [
+        0.21,
+        0.22,
+        0.2
+      ],
+      "bag_color": [
+        0.15,
+        0.18,
+        0.2
+      ]
+    },
+    {
+      "id": "resident-0140",
+      "label": "Resident 0141",
+      "home_id": "building-0",
+      "work_id": "city-hall",
+      "departure_tick": 44800,
+      "return_tick": 6516400,
+      "speed_mps": 1.283,
+      "phase": 0.5247584250000017,
+      "color": [
+        0.65,
+        0.22,
+        0.17
+      ],
+      "skin_color": [
+        0.38,
+        0.23,
+        0.16
+      ],
+      "trouser_color": [
+        0.08,
+        0.12,
+        0.18
+      ],
+      "bag_color": [
+        0.3,
+        0.21,
+        0.12
+      ]
+    },
+    {
+      "id": "resident-0141",
+      "label": "Resident 0142",
+      "home_id": "building-3",
+      "work_id": "building-1",
+      "departure_tick": 18200,
+      "return_tick": 6801000,
+      "speed_mps": 1.241,
+      "phase": 0.1427924137500014,
+      "color": [
+        0.88,
+        0.48,
+        0.17
+      ],
+      "skin_color": [
+        0.38,
+        0.23,
+        0.16
+      ],
+      "trouser_color": [
+        0.21,
+        0.22,
+        0.2
+      ],
+      "bag_color": [
+        0.15,
+        0.18,
+        0.2
+      ]
+    },
+    {
+      "id": "resident-0142",
+      "label": "Resident 0143",
+      "home_id": "building-6",
+      "work_id": "building-2",
+      "departure_tick": 55000,
+      "return_tick": 6817600,
+      "speed_mps": 1.361,
+      "phase": 0.7608264025000011,
+      "color": [
+        0.12,
+        0.43,
+        0.46
+      ],
+      "skin_color": [
+        0.74,
+        0.51,
+        0.34
+      ],
+      "trouser_color": [
+        0.08,
+        0.12,
+        0.18
+      ],
+      "bag_color": [
+        0.3,
+        0.21,
+        0.12
+      ]
+    },
+    {
+      "id": "resident-0143",
+      "label": "Resident 0144",
+      "home_id": "building-9",
+      "work_id": "building-4",
+      "departure_tick": 107800,
+      "return_tick": 6648200,
+      "speed_mps": 1.225,
+      "phase": 0.3788603912500008,
+      "color": [
+        0.65,
+        0.22,
+        0.17
+      ],
+      "skin_color": [
+        0.74,
+        0.51,
+        0.34
+      ],
+      "trouser_color": [
+        0.21,
+        0.22,
+        0.2
+      ],
+      "bag_color": [
+        0.15,
+        0.18,
+        0.2
+      ]
+    },
+    {
+      "id": "resident-0144",
+      "label": "Resident 0145",
+      "home_id": "building-0",
+      "work_id": "building-5",
+      "departure_tick": 212800,
+      "return_tick": 6715600,
+      "speed_mps": 1.397,
+      "phase": 0.9968943800000005,
+      "color": [
+        0.88,
+        0.48,
+        0.17
+      ],
+      "skin_color": [
+        0.63,
+        0.39,
+        0.25
+      ],
+      "trouser_color": [
+        0.08,
+        0.12,
+        0.18
+      ],
+      "bag_color": [
+        0.3,
+        0.21,
+        0.12
+      ]
+    },
+    {
+      "id": "resident-0145",
+      "label": "Resident 0146",
+      "home_id": "building-3",
+      "work_id": "building-7",
+      "departure_tick": 135800,
+      "return_tick": 6518600,
+      "speed_mps": 1.29,
+      "phase": 0.6149283687500002,
+      "color": [
+        0.12,
+        0.43,
+        0.46
+      ],
+      "skin_color": [
+        0.63,
+        0.39,
+        0.25
+      ],
+      "trouser_color": [
+        0.21,
+        0.22,
+        0.2
+      ],
+      "bag_color": [
+        0.15,
+        0.18,
+        0.2
+      ]
+    },
+    {
+      "id": "resident-0146",
+      "label": "Resident 0147",
+      "home_id": "building-6",
+      "work_id": "building-8",
+      "departure_tick": 77000,
+      "return_tick": 6656200,
+      "speed_mps": 1.598,
+      "phase": 0.23296235749999994,
+      "color": [
+        0.65,
+        0.22,
+        0.17
+      ],
+      "skin_color": [
+        0.87,
+        0.67,
+        0.49
+      ],
+      "trouser_color": [
+        0.08,
+        0.12,
+        0.18
+      ],
+      "bag_color": [
+        0.3,
+        0.21,
+        0.12
+      ]
+    },
+    {
+      "id": "resident-0147",
+      "label": "Resident 0148",
+      "home_id": "building-9",
+      "work_id": "city-hall",
+      "departure_tick": 112000,
+      "return_tick": 6488800,
+      "speed_mps": 1.467,
+      "phase": 0.8509963462499996,
+      "color": [
+        0.88,
+        0.48,
+        0.17
+      ],
+      "skin_color": [
+        0.87,
+        0.67,
+        0.49
+      ],
+      "trouser_color": [
+        0.21,
+        0.22,
+        0.2
+      ],
+      "bag_color": [
+        0.15,
+        0.18,
+        0.2
+      ]
+    },
+    {
+      "id": "resident-0148",
+      "label": "Resident 0149",
+      "home_id": "building-0",
+      "work_id": "building-1",
+      "departure_tick": 108600,
+      "return_tick": 6516200,
+      "speed_mps": 1.454,
+      "phase": 0.46903033499999935,
+      "color": [
+        0.12,
+        0.43,
+        0.46
+      ],
+      "skin_color": [
+        0.38,
+        0.23,
+        0.16
+      ],
+      "trouser_color": [
+        0.08,
+        0.12,
+        0.18
+      ],
+      "bag_color": [
+        0.3,
+        0.21,
+        0.12
+      ]
+    },
+    {
+      "id": "resident-0149",
+      "label": "Resident 0150",
+      "home_id": "building-3",
+      "work_id": "building-2",
+      "departure_tick": 93000,
+      "return_tick": 6509200,
+      "speed_mps": 1.282,
+      "phase": 0.08706432374999906,
+      "color": [
+        0.65,
+        0.22,
+        0.17
+      ],
+      "skin_color": [
+        0.38,
+        0.23,
+        0.16
+      ],
+      "trouser_color": [
+        0.21,
+        0.22,
+        0.2
+      ],
+      "bag_color": [
+        0.15,
+        0.18,
+        0.2
+      ]
+    },
+    {
+      "id": "resident-0150",
+      "label": "Resident 0151",
+      "home_id": "building-6",
+      "work_id": "building-4",
+      "departure_tick": 51800,
+      "return_tick": 6667800,
+      "speed_mps": 1.156,
+      "phase": 0.705098312500013,
+      "color": [
+        0.88,
+        0.48,
+        0.17
+      ],
+      "skin_color": [
+        0.74,
+        0.51,
+        0.34
+      ],
+      "trouser_color": [
+        0.08,
+        0.12,
+        0.18
+      ],
+      "bag_color": [
+        0.3,
+        0.21,
+        0.12
+      ]
+    },
+    {
+      "id": "resident-0151",
+      "label": "Resident 0152",
+      "home_id": "building-9",
+      "work_id": "building-5",
+      "departure_tick": 228400,
+      "return_tick": 6653000,
+      "speed_mps": 1.613,
+      "phase": 0.3231323012500127,
+      "color": [
+        0.12,
+        0.43,
+        0.46
+      ],
+      "skin_color": [
+        0.74,
+        0.51,
+        0.34
+      ],
+      "trouser_color": [
+        0.21,
+        0.22,
+        0.2
+      ],
+      "bag_color": [
+        0.15,
+        0.18,
+        0.2
+      ]
+    },
+    {
+      "id": "resident-0152",
+      "label": "Resident 0153",
+      "home_id": "building-0",
+      "work_id": "building-7",
+      "departure_tick": 111600,
+      "return_tick": 6736600,
+      "speed_mps": 1.215,
+      "phase": 0.9411662900000124,
+      "color": [
+        0.65,
+        0.22,
+        0.17
+      ],
+      "skin_color": [
+        0.63,
+        0.39,
+        0.25
+      ],
+      "trouser_color": [
+        0.08,
+        0.12,
+        0.18
+      ],
+      "bag_color": [
+        0.3,
+        0.21,
+        0.12
+      ]
+    },
+    {
+      "id": "resident-0153",
+      "label": "Resident 0154",
+      "home_id": "building-3",
+      "work_id": "building-8",
+      "departure_tick": 217800,
+      "return_tick": 6772600,
+      "speed_mps": 1.269,
+      "phase": 0.5592002787500121,
+      "color": [
+        0.88,
+        0.48,
+        0.17
+      ],
+      "skin_color": [
+        0.63,
+        0.39,
+        0.25
+      ],
+      "trouser_color": [
+        0.21,
+        0.22,
+        0.2
+      ],
+      "bag_color": [
+        0.15,
+        0.18,
+        0.2
+      ]
+    },
+    {
+      "id": "resident-0154",
+      "label": "Resident 0155",
+      "home_id": "building-6",
+      "work_id": "city-hall",
+      "departure_tick": 46800,
+      "return_tick": 6548000,
+      "speed_mps": 1.281,
+      "phase": 0.1772342675000118,
+      "color": [
+        0.12,
+        0.43,
+        0.46
+      ],
+      "skin_color": [
+        0.87,
+        0.67,
+        0.49
+      ],
+      "trouser_color": [
+        0.08,
+        0.12,
+        0.18
+      ],
+      "bag_color": [
+        0.3,
+        0.21,
+        0.12
+      ]
+    },
+    {
+      "id": "resident-0155",
+      "label": "Resident 0156",
+      "home_id": "building-9",
+      "work_id": "building-1",
+      "departure_tick": 76000,
+      "return_tick": 6564600,
+      "speed_mps": 1.616,
+      "phase": 0.7952682562500115,
+      "color": [
+        0.65,
+        0.22,
+        0.17
+      ],
+      "skin_color": [
+        0.87,
+        0.67,
+        0.49
+      ],
+      "trouser_color": [
+        0.21,
+        0.22,
+        0.2
+      ],
+      "bag_color": [
+        0.15,
+        0.18,
+        0.2
+      ]
+    },
+    {
+      "id": "resident-0156",
+      "label": "Resident 0157",
+      "home_id": "building-0",
+      "work_id": "building-2",
+      "departure_tick": 126800,
+      "return_tick": 6699400,
+      "speed_mps": 1.53,
+      "phase": 0.4133022450000112,
+      "color": [
+        0.88,
+        0.48,
+        0.17
+      ],
+      "skin_color": [
+        0.38,
+        0.23,
+        0.16
+      ],
+      "trouser_color": [
+        0.08,
+        0.12,
+        0.18
+      ],
+      "bag_color": [
+        0.3,
+        0.21,
+        0.12
+      ]
+    },
+    {
+      "id": "resident-0157",
+      "label": "Resident 0158",
+      "home_id": "building-3",
+      "work_id": "building-4",
+      "departure_tick": 120600,
+      "return_tick": 6664400,
+      "speed_mps": 1.4,
+      "phase": 0.03133623375001093,
+      "color": [
+        0.12,
+        0.43,
+        0.46
+      ],
+      "skin_color": [
+        0.38,
+        0.23,
+        0.16
+      ],
+      "trouser_color": [
+        0.21,
+        0.22,
+        0.2
+      ],
+      "bag_color": [
+        0.15,
+        0.18,
+        0.2
+      ]
+    },
+    {
+      "id": "resident-0158",
+      "label": "Resident 0159",
+      "home_id": "building-6",
+      "work_id": "building-5",
+      "departure_tick": 74800,
+      "return_tick": 6592800,
+      "speed_mps": 1.324,
+      "phase": 0.6493702225000106,
+      "color": [
+        0.65,
+        0.22,
+        0.17
+      ],
+      "skin_color": [
+        0.74,
+        0.51,
+        0.34
+      ],
+      "trouser_color": [
+        0.08,
+        0.12,
+        0.18
+      ],
+      "bag_color": [
+        0.3,
+        0.21,
+        0.12
+      ]
+    },
+    {
+      "id": "resident-0159",
+      "label": "Resident 0160",
+      "home_id": "building-9",
+      "work_id": "building-7",
+      "departure_tick": 9400,
+      "return_tick": 6584400,
+      "speed_mps": 1.168,
+      "phase": 0.26740421125001035,
+      "color": [
+        0.88,
+        0.48,
+        0.17
+      ],
+      "skin_color": [
+        0.74,
+        0.51,
+        0.34
+      ],
+      "trouser_color": [
+        0.21,
+        0.22,
+        0.2
+      ],
+      "bag_color": [
+        0.15,
+        0.18,
+        0.2
+      ]
+    },
+    {
+      "id": "resident-0160",
+      "label": "Resident 0161",
+      "home_id": "building-0",
+      "work_id": "building-8",
+      "departure_tick": 9400,
+      "return_tick": 6782200,
+      "speed_mps": 1.403,
+      "phase": 0.8854382000000101,
+      "color": [
+        0.12,
+        0.43,
+        0.46
+      ],
+      "skin_color": [
+        0.63,
+        0.39,
+        0.25
+      ],
+      "trouser_color": [
+        0.08,
+        0.12,
+        0.18
+      ],
+      "bag_color": [
+        0.3,
+        0.21,
+        0.12
+      ]
+    },
+    {
+      "id": "resident-0161",
+      "label": "Resident 0162",
+      "home_id": "building-3",
+      "work_id": "city-hall",
+      "departure_tick": 79600,
+      "return_tick": 6692600,
+      "speed_mps": 1.387,
+      "phase": 0.5034721887500098,
+      "color": [
+        0.65,
+        0.22,
+        0.17
+      ],
+      "skin_color": [
+        0.63,
+        0.39,
+        0.25
+      ],
+      "trouser_color": [
+        0.21,
+        0.22,
+        0.2
+      ],
+      "bag_color": [
+        0.15,
+        0.18,
+        0.2
+      ]
+    },
+    {
+      "id": "resident-0162",
+      "label": "Resident 0163",
+      "home_id": "building-6",
+      "work_id": "building-1",
+      "departure_tick": 185000,
+      "return_tick": 6525400,
+      "speed_mps": 1.479,
+      "phase": 0.12150617750000947,
+      "color": [
+        0.88,
+        0.48,
+        0.17
+      ],
+      "skin_color": [
+        0.87,
+        0.67,
+        0.49
+      ],
+      "trouser_color": [
+        0.08,
+        0.12,
+        0.18
+      ],
+      "bag_color": [
+        0.3,
+        0.21,
+        0.12
+      ]
+    },
+    {
+      "id": "resident-0163",
+      "label": "Resident 0164",
+      "home_id": "building-9",
+      "work_id": "building-2",
+      "departure_tick": 179000,
+      "return_tick": 6750800,
+      "speed_mps": 1.398,
+      "phase": 0.7395401662500092,
+      "color": [
+        0.12,
+        0.43,
+        0.46
+      ],
+      "skin_color": [
+        0.87,
+        0.67,
+        0.49
+      ],
+      "trouser_color": [
+        0.21,
+        0.22,
+        0.2
+      ],
+      "bag_color": [
+        0.15,
+        0.18,
+        0.2
+      ]
+    },
+    {
+      "id": "resident-0164",
+      "label": "Resident 0165",
+      "home_id": "building-0",
+      "work_id": "building-4",
+      "departure_tick": 163000,
+      "return_tick": 6689400,
+      "speed_mps": 1.304,
+      "phase": 0.3575741550000089,
+      "color": [
+        0.65,
+        0.22,
+        0.17
+      ],
+      "skin_color": [
+        0.38,
+        0.23,
+        0.16
+      ],
+      "trouser_color": [
+        0.08,
+        0.12,
+        0.18
+      ],
+      "bag_color": [
+        0.3,
+        0.21,
+        0.12
+      ]
+    },
+    {
+      "id": "resident-0165",
+      "label": "Resident 0166",
+      "home_id": "building-3",
+      "work_id": "building-5",
+      "departure_tick": 90000,
+      "return_tick": 6576000,
+      "speed_mps": 1.321,
+      "phase": 0.9756081437500086,
+      "color": [
+        0.88,
+        0.48,
+        0.17
+      ],
+      "skin_color": [
+        0.38,
+        0.23,
+        0.16
+      ],
+      "trouser_color": [
+        0.21,
+        0.22,
+        0.2
+      ],
+      "bag_color": [
+        0.15,
+        0.18,
+        0.2
+      ]
+    },
+    {
+      "id": "resident-0166",
+      "label": "Resident 0167",
+      "home_id": "building-6",
+      "work_id": "building-7",
+      "departure_tick": 59200,
+      "return_tick": 6647600,
+      "speed_mps": 1.645,
+      "phase": 0.5936421325000083,
+      "color": [
+        0.12,
+        0.43,
+        0.46
+      ],
+      "skin_color": [
+        0.74,
+        0.51,
+        0.34
+      ],
+      "trouser_color": [
+        0.08,
+        0.12,
+        0.18
+      ],
+      "bag_color": [
+        0.3,
+        0.21,
+        0.12
+      ]
+    },
+    {
+      "id": "resident-0167",
+      "label": "Resident 0168",
+      "home_id": "building-9",
+      "work_id": "building-8",
+      "departure_tick": 24200,
+      "return_tick": 6824800,
+      "speed_mps": 1.215,
+      "phase": 0.211676121250008,
+      "color": [
+        0.65,
+        0.22,
+        0.17
+      ],
+      "skin_color": [
+        0.74,
+        0.51,
+        0.34
+      ],
+      "trouser_color": [
+        0.21,
+        0.22,
+        0.2
+      ],
+      "bag_color": [
+        0.15,
+        0.18,
+        0.2
+      ]
+    },
+    {
+      "id": "resident-0168",
+      "label": "Resident 0169",
+      "home_id": "building-0",
+      "work_id": "city-hall",
+      "departure_tick": 30800,
+      "return_tick": 6738000,
+      "speed_mps": 1.52,
+      "phase": 0.8297101100000077,
+      "color": [
+        0.88,
+        0.48,
+        0.17
+      ],
+      "skin_color": [
+        0.63,
+        0.39,
+        0.25
+      ],
+      "trouser_color": [
+        0.08,
+        0.12,
+        0.18
+      ],
+      "bag_color": [
+        0.3,
+        0.21,
+        0.12
+      ]
+    },
+    {
+      "id": "resident-0169",
+      "label": "Resident 0170",
+      "home_id": "building-3",
+      "work_id": "building-1",
+      "departure_tick": 106600,
+      "return_tick": 6658400,
+      "speed_mps": 1.232,
+      "phase": 0.4477440987500074,
+      "color": [
+        0.12,
+        0.43,
+        0.46
+      ],
+      "skin_color": [
+        0.63,
+        0.39,
+        0.25
+      ],
+      "trouser_color": [
+        0.21,
+        0.22,
+        0.2
+      ],
+      "bag_color": [
+        0.15,
+        0.18,
+        0.2
+      ]
+    },
+    {
+      "id": "resident-0170",
+      "label": "Resident 0171",
+      "home_id": "building-6",
+      "work_id": "building-2",
+      "departure_tick": 36600,
+      "return_tick": 6754400,
+      "speed_mps": 1.571,
+      "phase": 0.06577808750000713,
+      "color": [
+        0.65,
+        0.22,
+        0.17
+      ],
+      "skin_color": [
+        0.87,
+        0.67,
+        0.49
+      ],
+      "trouser_color": [
+        0.08,
+        0.12,
+        0.18
+      ],
+      "bag_color": [
+        0.3,
+        0.21,
+        0.12
+      ]
+    },
+    {
+      "id": "resident-0171",
+      "label": "Resident 0172",
+      "home_id": "building-9",
+      "work_id": "building-4",
+      "departure_tick": 209200,
+      "return_tick": 6756600,
+      "speed_mps": 1.635,
+      "phase": 0.6838120762500068,
+      "color": [
+        0.88,
+        0.48,
+        0.17
+      ],
+      "skin_color": [
+        0.87,
+        0.67,
+        0.49
+      ],
+      "trouser_color": [
+        0.21,
+        0.22,
+        0.2
+      ],
+      "bag_color": [
+        0.15,
+        0.18,
+        0.2
+      ]
+    },
+    {
+      "id": "resident-0172",
+      "label": "Resident 0173",
+      "home_id": "building-0",
+      "work_id": "building-5",
+      "departure_tick": 101200,
+      "return_tick": 6765600,
+      "speed_mps": 1.297,
+      "phase": 0.30184606500000655,
+      "color": [
+        0.12,
+        0.43,
+        0.46
+      ],
+      "skin_color": [
+        0.38,
+        0.23,
+        0.16
+      ],
+      "trouser_color": [
+        0.08,
+        0.12,
+        0.18
+      ],
+      "bag_color": [
+        0.3,
+        0.21,
+        0.12
+      ]
+    },
+    {
+      "id": "resident-0173",
+      "label": "Resident 0174",
+      "home_id": "building-3",
+      "work_id": "building-7",
+      "departure_tick": 190000,
+      "return_tick": 6557800,
+      "speed_mps": 1.229,
+      "phase": 0.9198800537500063,
+      "color": [
+        0.65,
+        0.22,
+        0.17
+      ],
+      "skin_color": [
+        0.38,
+        0.23,
+        0.16
+      ],
+      "trouser_color": [
+        0.21,
+        0.22,
+        0.2
+      ],
+      "bag_color": [
+        0.15,
+        0.18,
+        0.2
+      ]
+    },
+    {
+      "id": "resident-0174",
+      "label": "Resident 0175",
+      "home_id": "building-6",
+      "work_id": "building-8",
+      "departure_tick": 184600,
+      "return_tick": 6483400,
+      "speed_mps": 1.282,
+      "phase": 0.537914042500006,
+      "color": [
+        0.88,
+        0.48,
+        0.17
+      ],
+      "skin_color": [
+        0.74,
+        0.51,
+        0.34
+      ],
+      "trouser_color": [
+        0.08,
+        0.12,
+        0.18
+      ],
+      "bag_color": [
+        0.3,
+        0.21,
+        0.12
+      ]
+    },
+    {
+      "id": "resident-0175",
+      "label": "Resident 0176",
+      "home_id": "building-9",
+      "work_id": "city-hall",
+      "departure_tick": 136600,
+      "return_tick": 6706000,
+      "speed_mps": 1.312,
+      "phase": 0.15594803125000567,
+      "color": [
+        0.12,
+        0.43,
+        0.46
+      ],
+      "skin_color": [
+        0.74,
+        0.51,
+        0.34
+      ],
+      "trouser_color": [
+        0.21,
+        0.22,
+        0.2
+      ],
+      "bag_color": [
+        0.15,
+        0.18,
+        0.2
+      ]
+    },
+    {
+      "id": "resident-0176",
+      "label": "Resident 0177",
+      "home_id": "building-0",
+      "work_id": "building-1",
+      "departure_tick": 16000,
+      "return_tick": 6608600,
+      "speed_mps": 1.259,
+      "phase": 0.7739820200000054,
+      "color": [
+        0.65,
+        0.22,
+        0.17
+      ],
+      "skin_color": [
+        0.63,
+        0.39,
+        0.25
+      ],
+      "trouser_color": [
+        0.08,
+        0.12,
+        0.18
+      ],
+      "bag_color": [
+        0.3,
+        0.21,
+        0.12
+      ]
+    },
+    {
+      "id": "resident-0177",
+      "label": "Resident 0178",
+      "home_id": "building-3",
+      "work_id": "building-2",
+      "departure_tick": 76800,
+      "return_tick": 6482400,
+      "speed_mps": 1.318,
+      "phase": 0.3920160087500051,
+      "color": [
+        0.88,
+        0.48,
+        0.17
+      ],
+      "skin_color": [
+        0.63,
+        0.39,
+        0.25
+      ],
+      "trouser_color": [
+        0.21,
+        0.22,
+        0.2
+      ],
+      "bag_color": [
+        0.15,
+        0.18,
+        0.2
+      ]
+    },
+    {
+      "id": "resident-0178",
+      "label": "Resident 0179",
+      "home_id": "building-6",
+      "work_id": "building-4",
+      "departure_tick": 36200,
+      "return_tick": 6676400,
+      "speed_mps": 1.289,
+      "phase": 0.010049997500004793,
+      "color": [
+        0.12,
+        0.43,
+        0.46
+      ],
+      "skin_color": [
+        0.87,
+        0.67,
+        0.49
+      ],
+      "trouser_color": [
+        0.08,
+        0.12,
+        0.18
+      ],
+      "bag_color": [
+        0.3,
+        0.21,
+        0.12
+      ]
+    },
+    {
+      "id": "resident-0179",
+      "label": "Resident 0180",
+      "home_id": "building-9",
+      "work_id": "building-5",
+      "departure_tick": 84200,
+      "return_tick": 6583600,
+      "speed_mps": 1.402,
+      "phase": 0.6280839862500045,
+      "color": [
+        0.65,
+        0.22,
+        0.17
+      ],
+      "skin_color": [
+        0.87,
+        0.67,
+        0.49
+      ],
+      "trouser_color": [
+        0.21,
+        0.22,
+        0.2
+      ],
+      "bag_color": [
+        0.15,
+        0.18,
+        0.2
+      ]
+    },
+    {
+      "id": "resident-0180",
+      "label": "Resident 0181",
+      "home_id": "building-0",
+      "work_id": "building-7",
+      "departure_tick": 4000,
+      "return_tick": 6519200,
+      "speed_mps": 1.282,
+      "phase": 0.2461179750000042,
+      "color": [
+        0.88,
+        0.48,
+        0.17
+      ],
+      "skin_color": [
+        0.38,
+        0.23,
+        0.16
+      ],
+      "trouser_color": [
+        0.08,
+        0.12,
+        0.18
+      ],
+      "bag_color": [
+        0.3,
+        0.21,
+        0.12
+      ]
+    },
+    {
+      "id": "resident-0181",
+      "label": "Resident 0182",
+      "home_id": "building-3",
+      "work_id": "building-8",
+      "departure_tick": 38600,
+      "return_tick": 6540800,
+      "speed_mps": 1.35,
+      "phase": 0.8641519637500039,
+      "color": [
+        0.12,
+        0.43,
+        0.46
+      ],
+      "skin_color": [
+        0.38,
+        0.23,
+        0.16
+      ],
+      "trouser_color": [
+        0.21,
+        0.22,
+        0.2
+      ],
+      "bag_color": [
+        0.15,
+        0.18,
+        0.2
+      ]
+    },
+    {
+      "id": "resident-0182",
+      "label": "Resident 0183",
+      "home_id": "building-6",
+      "work_id": "city-hall",
+      "departure_tick": 19000,
+      "return_tick": 6643200,
+      "speed_mps": 1.161,
+      "phase": 0.4821859525000036,
+      "color": [
+        0.65,
+        0.22,
+        0.17
+      ],
+      "skin_color": [
+        0.74,
+        0.51,
+        0.34
+      ],
+      "trouser_color": [
+        0.08,
+        0.12,
+        0.18
+      ],
+      "bag_color": [
+        0.3,
+        0.21,
+        0.12
+      ]
+    },
+    {
+      "id": "resident-0183",
+      "label": "Resident 0184",
+      "home_id": "building-9",
+      "work_id": "building-1",
+      "departure_tick": 126600,
+      "return_tick": 6739800,
+      "speed_mps": 1.266,
+      "phase": 0.10021994125000333,
+      "color": [
+        0.88,
+        0.48,
+        0.17
+      ],
+      "skin_color": [
+        0.74,
+        0.51,
+        0.34
+      ],
+      "trouser_color": [
+        0.21,
+        0.22,
+        0.2
+      ],
+      "bag_color": [
+        0.15,
+        0.18,
+        0.2
+      ]
+    },
+    {
+      "id": "resident-0184",
+      "label": "Resident 0185",
+      "home_id": "building-0",
+      "work_id": "building-2",
+      "departure_tick": 241800,
+      "return_tick": 6698600,
+      "speed_mps": 1.577,
+      "phase": 0.718253930000003,
+      "color": [
+        0.12,
+        0.43,
+        0.46
+      ],
+      "skin_color": [
+        0.63,
+        0.39,
+        0.25
+      ],
+      "trouser_color": [
+        0.08,
+        0.12,
+        0.18
+      ],
+      "bag_color": [
+        0.3,
+        0.21,
+        0.12
+      ]
+    },
+    {
+      "id": "resident-0185",
+      "label": "Resident 0186",
+      "home_id": "building-3",
+      "work_id": "building-4",
+      "departure_tick": 65400,
+      "return_tick": 6751200,
+      "speed_mps": 1.596,
+      "phase": 0.33628791875000275,
+      "color": [
+        0.65,
+        0.22,
+        0.17
+      ],
+      "skin_color": [
+        0.63,
+        0.39,
+        0.25
+      ],
+      "trouser_color": [
+        0.21,
+        0.22,
+        0.2
+      ],
+      "bag_color": [
+        0.15,
+        0.18,
+        0.2
+      ]
+    },
+    {
+      "id": "resident-0186",
+      "label": "Resident 0187",
+      "home_id": "building-6",
+      "work_id": "building-5",
+      "departure_tick": 161400,
+      "return_tick": 6795000,
+      "speed_mps": 1.313,
+      "phase": 0.9543219075000025,
+      "color": [
+        0.88,
+        0.48,
+        0.17
+      ],
+      "skin_color": [
+        0.87,
+        0.67,
+        0.49
+      ],
+      "trouser_color": [
+        0.08,
+        0.12,
+        0.18
+      ],
+      "bag_color": [
+        0.3,
+        0.21,
+        0.12
+      ]
+    },
+    {
+      "id": "resident-0187",
+      "label": "Resident 0188",
+      "home_id": "building-9",
+      "work_id": "building-7",
+      "departure_tick": 204400,
+      "return_tick": 6543200,
+      "speed_mps": 1.292,
+      "phase": 0.5723558962500022,
+      "color": [
+        0.12,
+        0.43,
+        0.46
+      ],
+      "skin_color": [
+        0.87,
+        0.67,
+        0.49
+      ],
+      "trouser_color": [
+        0.21,
+        0.22,
+        0.2
+      ],
+      "bag_color": [
+        0.15,
+        0.18,
+        0.2
+      ]
+    },
+    {
+      "id": "resident-0188",
+      "label": "Resident 0189",
+      "home_id": "building-0",
+      "work_id": "building-8",
+      "departure_tick": 61200,
+      "return_tick": 6499800,
+      "speed_mps": 1.562,
+      "phase": 0.19038988500000187,
+      "color": [
+        0.65,
+        0.22,
+        0.17
+      ],
+      "skin_color": [
+        0.38,
+        0.23,
+        0.16
+      ],
+      "trouser_color": [
+        0.08,
+        0.12,
+        0.18
+      ],
+      "bag_color": [
+        0.3,
+        0.21,
+        0.12
+      ]
+    },
+    {
+      "id": "resident-0189",
+      "label": "Resident 0190",
+      "home_id": "building-3",
+      "work_id": "city-hall",
+      "departure_tick": 212000,
+      "return_tick": 6738800,
+      "speed_mps": 1.365,
+      "phase": 0.8084238737500016,
+      "color": [
+        0.88,
+        0.48,
+        0.17
+      ],
+      "skin_color": [
+        0.38,
+        0.23,
+        0.16
+      ],
+      "trouser_color": [
+        0.21,
+        0.22,
+        0.2
+      ],
+      "bag_color": [
+        0.15,
+        0.18,
+        0.2
+      ]
+    },
+    {
+      "id": "resident-0190",
+      "label": "Resident 0191",
+      "home_id": "building-6",
+      "work_id": "building-1",
+      "departure_tick": 209000,
+      "return_tick": 6539000,
+      "speed_mps": 1.605,
+      "phase": 0.4264578625000013,
+      "color": [
+        0.12,
+        0.43,
+        0.46
+      ],
+      "skin_color": [
+        0.74,
+        0.51,
+        0.34
+      ],
+      "trouser_color": [
+        0.08,
+        0.12,
+        0.18
+      ],
+      "bag_color": [
+        0.3,
+        0.21,
+        0.12
+      ]
+    },
+    {
+      "id": "resident-0191",
+      "label": "Resident 0192",
+      "home_id": "building-9",
+      "work_id": "building-2",
+      "departure_tick": 208400,
+      "return_tick": 6714800,
+      "speed_mps": 1.567,
+      "phase": 0.04449185125000099,
+      "color": [
+        0.65,
+        0.22,
+        0.17
+      ],
+      "skin_color": [
+        0.74,
+        0.51,
+        0.34
+      ],
+      "trouser_color": [
+        0.21,
+        0.22,
+        0.2
+      ],
+      "bag_color": [
+        0.15,
+        0.18,
+        0.2
+      ]
+    },
+    {
+      "id": "resident-0192",
+      "label": "Resident 0193",
+      "home_id": "building-0",
+      "work_id": "building-4",
+      "departure_tick": 8400,
+      "return_tick": 6820400,
+      "speed_mps": 1.493,
+      "phase": 0.6625258400000007,
+      "color": [
+        0.88,
+        0.48,
+        0.17
+      ],
+      "skin_color": [
+        0.63,
+        0.39,
+        0.25
+      ],
+      "trouser_color": [
+        0.08,
+        0.12,
+        0.18
+      ],
+      "bag_color": [
+        0.3,
+        0.21,
+        0.12
+      ]
+    },
+    {
+      "id": "resident-0193",
+      "label": "Resident 0194",
+      "home_id": "building-3",
+      "work_id": "building-5",
+      "departure_tick": 96000,
+      "return_tick": 6516800,
+      "speed_mps": 1.166,
+      "phase": 0.2805598287500146,
+      "color": [
+        0.12,
+        0.43,
+        0.46
+      ],
+      "skin_color": [
+        0.63,
+        0.39,
+        0.25
+      ],
+      "trouser_color": [
+        0.21,
+        0.22,
+        0.2
+      ],
+      "bag_color": [
+        0.15,
+        0.18,
+        0.2
+      ]
+    },
+    {
+      "id": "resident-0194",
+      "label": "Resident 0195",
+      "home_id": "building-6",
+      "work_id": "building-7",
+      "departure_tick": 56400,
+      "return_tick": 6742800,
+      "speed_mps": 1.33,
+      "phase": 0.8985938175000143,
+      "color": [
+        0.65,
+        0.22,
+        0.17
+      ],
+      "skin_color": [
+        0.87,
+        0.67,
+        0.49
+      ],
+      "trouser_color": [
+        0.08,
+        0.12,
+        0.18
+      ],
+      "bag_color": [
+        0.3,
+        0.21,
+        0.12
+      ]
+    },
+    {
+      "id": "resident-0195",
+      "label": "Resident 0196",
+      "home_id": "building-9",
+      "work_id": "building-8",
+      "departure_tick": 44800,
+      "return_tick": 6636200,
+      "speed_mps": 1.568,
+      "phase": 0.516627806250014,
+      "color": [
+        0.88,
+        0.48,
+        0.17
+      ],
+      "skin_color": [
+        0.87,
+        0.67,
+        0.49
+      ],
+      "trouser_color": [
+        0.21,
+        0.22,
+        0.2
+      ],
+      "bag_color": [
+        0.15,
+        0.18,
+        0.2
+      ]
+    },
+    {
+      "id": "resident-0196",
+      "label": "Resident 0197",
+      "home_id": "building-0",
+      "work_id": "city-hall",
+      "departure_tick": 230600,
+      "return_tick": 6502600,
+      "speed_mps": 1.464,
+      "phase": 0.13466179500001374,
+      "color": [
+        0.12,
+        0.43,
+        0.46
+      ],
+      "skin_color": [
+        0.38,
+        0.23,
+        0.16
+      ],
+      "trouser_color": [
+        0.08,
+        0.12,
+        0.18
+      ],
+      "bag_color": [
+        0.3,
+        0.21,
+        0.12
+      ]
+    },
+    {
+      "id": "resident-0197",
+      "label": "Resident 0198",
+      "home_id": "building-3",
+      "work_id": "building-1",
+      "departure_tick": 219600,
+      "return_tick": 6760800,
+      "speed_mps": 1.272,
+      "phase": 0.7526957837500134,
+      "color": [
+        0.65,
+        0.22,
+        0.17
+      ],
+      "skin_color": [
+        0.38,
+        0.23,
+        0.16
+      ],
+      "trouser_color": [
+        0.21,
+        0.22,
+        0.2
+      ],
+      "bag_color": [
+        0.15,
+        0.18,
+        0.2
+      ]
+    },
+    {
+      "id": "resident-0198",
+      "label": "Resident 0199",
+      "home_id": "building-6",
+      "work_id": "building-2",
+      "departure_tick": 110000,
+      "return_tick": 6483200,
+      "speed_mps": 1.378,
+      "phase": 0.37072977250001315,
+      "color": [
+        0.88,
+        0.48,
+        0.17
+      ],
+      "skin_color": [
+        0.74,
+        0.51,
+        0.34
+      ],
+      "trouser_color": [
+        0.08,
+        0.12,
+        0.18
+      ],
+      "bag_color": [
+        0.3,
+        0.21,
+        0.12
+      ]
+    },
+    {
+      "id": "resident-0199",
+      "label": "Resident 0200",
+      "home_id": "building-9",
+      "work_id": "building-4",
+      "departure_tick": 30600,
+      "return_tick": 6788400,
+      "speed_mps": 1.616,
+      "phase": 0.9887637612500129,
+      "color": [
+        0.12,
+        0.43,
+        0.46
+      ],
+      "skin_color": [
+        0.74,
+        0.51,
+        0.34
+      ],
+      "trouser_color": [
+        0.21,
+        0.22,
+        0.2
+      ],
+      "bag_color": [
+        0.15,
+        0.18,
+        0.2
+      ]
+    }
+  ],
+  "sha256": "995210def32db0c1d8697c05ef17878225e21d3bee17dd94a35be87180abf531"
+}

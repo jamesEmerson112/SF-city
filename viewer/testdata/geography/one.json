@@ -1,0 +1,1 @@
+{"schema_version":1,"id":"one","buildings":[{"id":"building-test-a","footprint":[[600,600,0],[620,600,0],[620,620,0],[600,620,0]],"height_m":12,"height_source":"synthetic_test"}],"streets":[{"id":"road-test-a","points":[[500,700,0],[1000,700,0]],"width_m":10,"width_source":"synthetic_test"}]}

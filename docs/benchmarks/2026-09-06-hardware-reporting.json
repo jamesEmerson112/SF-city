@@ -1,0 +1,104 @@
+{
+  "schema_version": 1,
+  "title": "Local hardware diagnostics validation",
+  "observed_at": "2026-09-06T22:04:16.813+00:00",
+  "evidence_type": "One rendered pilot smoke run; capability and collection cost observation",
+  "command": [
+    "venv/Scripts/python.exe",
+    "-m",
+    "civic_center",
+    "--world",
+    "pilot",
+    "--no-geography",
+    "--population",
+    "20",
+    "--mode",
+    "overhead",
+    "--smoke-test",
+    "--log-dir",
+    ".cache\\hardware-validation\\final-rendered"
+  ],
+  "conditions": {
+    "world": "stylized City Hall pilot",
+    "population": 20,
+    "mode": "overhead",
+    "headless": false,
+    "sampling_interval_seconds": 1.0,
+    "cpu": {
+      "model": "AMD Ryzen 5 2600X Six-Core Processor",
+      "vendor": "AuthenticAMD",
+      "logical_cores": 12,
+      "physical_cores": 6
+    },
+    "ram_bytes": 34294595584,
+    "gpu": "NVIDIA GeForce GTX 1070 Ti",
+    "driver": "582.66",
+    "engine": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org",
+    "renderer": "OpenGL API 3.3.0 NVIDIA 582.66 - Compatibility - Using Device: NVIDIA - NVIDIA GeForce GTX 1070 Ti"
+  },
+  "results": {
+    "run_status": "completed",
+    "hardware_status": "stopped",
+    "samples_recorded": 7,
+    "samples_with_viewer_context": 2,
+    "process_roles": [
+      "child",
+      "launcher",
+      "viewer",
+      "worker"
+    ],
+    "hardware_errors": 0,
+    "log_bytes": 126662,
+    "summary_keys": 98,
+    "inventory_collection_ms": 265.4,
+    "sensor_collection_ms": {
+      "samples": 7,
+      "first": 928.19,
+      "median_all": 44.109,
+      "median_after_first": 39.024,
+      "max_all": 928.19,
+      "max_after_first": 164.658
+    }
+  },
+  "limitations": [
+    "One short run on one machine; no monitoring-on/off frame-rate or total CPU overhead comparison.",
+    "collection_ms covers sensor reads and queued process registration, excluding JSON serialization, persistence, lock waits and collector inventory.",
+    "Adapter-wide GPU data includes unrelated applications; no per-process GPU attribution.",
+    "CPU temperature and motherboard fan sensors were unsupported by the Windows psutil provider; NVIDIA GPU temperature/power/fan readings were available.",
+    "Headless smoke, failed-startup logging, provider-unavailable cases, bounded history and clean shutdown were checked separately."
+  ],
+  "evidence": {
+    "file": ".cache/hardware-validation/final-rendered/run-20260906T220410.066818Z-69c509f70bd8.json",
+    "sha256": "e705df37e04cc0b2e622e6636a1863bbee17d1a5bcc391b4e1619e4e61fb6435"
+  },
+  "portable_validation": {
+    "runtime_version": "3.13.15",
+    "dependencies": [
+      {
+        "name": "psutil",
+        "version": "7.2.2",
+        "wheel_sha256": "eb7e81434c8d223ec4a219b5fc1c47d0417b12be7ea866e24fb5ad6e84b3d988"
+      },
+      {
+        "name": "nvidia-ml-py",
+        "version": "13.610.43",
+        "wheel_sha256": "f13c72698edef492f985cc225f14faafe68ae065a2e407f45bdf6f4b9b43fde8"
+      }
+    ],
+    "cached_reuse_without_network": true,
+    "extracted_files_match_wheels": true,
+    "exit_code": 0,
+    "scope": "Isolated embedded-runtime collector probe; no full-city distribution was rebuilt",
+    "evidence": {
+      "file": ".cache/hardware-validation/portable-probe/hardware-evidence.json",
+      "sha256": "38225981df157f130d57b3062a97add0f427e103b8cebc3f1d6ebdd8284850e1"
+    }
+  },
+  "validation_source_sha256": {
+    "civic_center/hardware.py": "55824d1d1914672880d903f5e09ab4e7c2722b6babb12d123e2138493d4311ae",
+    "civic_center/gpu_hardware.py": "4b0e42f38c4300d58884c26999e8155779261b83b73ff434e8b1467eebc533d1",
+    "civic_center/hardware_monitor.py": "632a7a9e66b6777a7b872f1e4ba0296715eee0f84df7f6a440b6d410a2ffd298",
+    "civic_center/run_log.py": "60c1972f2b6e9ddbb4dbfa3f15ca03ad637165dc51882ac1ad358c0d2a7067e8",
+    "civic_center/launch.py": "6a253aacd638c076a86fb77bc45de9f4a5dc9cc1227bdd26a070e8c68370388a"
+  }
+}

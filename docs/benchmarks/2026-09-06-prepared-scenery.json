@@ -1,0 +1,106 @@
+{
+  "schema_version": 1,
+  "title": "Prepared scenery and startup improvements: City Hall viewer",
+  "evidence_type": "Historical single-run before/after observation",
+  "measurement": {
+    "metric": "startup.usable_ms",
+    "unit": "milliseconds",
+    "start": "Godot application main scene _ready() begins",
+    "end": "Initial snapshot received and starting-view scenery queues settled; loading overlay finishes",
+    "excludes": [
+      "Process creation and Godot engine initialization before the scene is ready",
+      "Offline scenery preparation",
+      "Fresh live-worker or scenario preparation: these measurements replay an existing scene"
+    ]
+  },
+  "results": {
+    "before": {
+      "usable_ms": 46588.794,
+      "samples": 1,
+      "cache_state": "Historical uncached baseline; this log predates cache counter reporting"
+    },
+    "after": {
+      "usable_ms": 14088.278,
+      "samples": 1,
+      "cache_state": "Prepared scenery reused for all geography and terrain requested by the starting view"
+    },
+    "saved_ms": 32500.516,
+    "reduction_percent": 69.760372
+  },
+  "shared_conditions": {
+    "scene": "San Francisco City Hall starting view",
+    "replay_session_id": "sf-daylight-replay-v1",
+    "replay_sequence": 3,
+    "simulation_tick": 17522000,
+    "simulation_time_seconds": 87610.0,
+    "viewport_pixels": [
+      1440,
+      900
+    ],
+    "mode": "overhead",
+    "resident_count": 200,
+    "outdoor_count": 173,
+    "paused": true,
+    "speed": 1.0,
+    "rendering_3d": true,
+    "crowd_backend": "rust",
+    "facades_enabled": true,
+    "lighting_mode": "cycle",
+    "render_draw_calls": 197,
+    "render_primitives": 1383504,
+    "trees_enabled": true,
+    "displayed_tree_instances": 6000,
+    "godot_version": "4.7.2.stable.official.ed1daf0bf",
+    "renderer": "Compatibility",
+    "graphics_api": "OpenGL 3.3.0",
+    "gpu": "NVIDIA GeForce GTX 1070 Ti",
+    "graphics_driver": "NVIDIA 582.66"
+  },
+  "after_cache": {
+    "geography": {
+      "hits": 20,
+      "misses": 0,
+      "writes": 0,
+      "errors": 0
+    },
+    "terrain": {
+      "hits": 263,
+      "misses": 0,
+      "writes": 0,
+      "errors": 0
+    }
+  },
+  "offline_preparation": {
+    "samples": 1,
+    "scope": "Full installed city geography and terrain",
+    "elapsed_seconds": 267.709389,
+    "geography_tiles_processed": 576,
+    "geography_tiles_generated": 576,
+    "terrain_chunks_processed": 512,
+    "terrain_chunks_generated": 511,
+    "terrain_chunks_reused": 1,
+    "errors": 0,
+    "note": "Separate preprocessing cost; the run reused one existing terrain chunk and was not entirely cold"
+  },
+  "limitations": [
+    "Historical artifacts copied into SF-city; no new benchmarks were run for this summary.",
+    "One observation per condition; no averages, variability estimate, or general hardware guarantee.",
+    "Scene and reported runtime conditions match, but source revisions and complete launch commands were not recorded.",
+    "Startup sequencing and validation changed alongside caching, so the observed reduction cannot be attributed to caching alone.",
+    "This measures viewer startup waiting; it does not establish improved FPS, simulation capacity, or geographic accuracy."
+  ],
+  "evidence": {
+    "before": {
+      "file": ".cache/scenery-cityhall-uncached.log",
+      "sha256": "2688323b8bb1daa5601bc85d41e976a4d15dab7c4e4320cc1a7722c19f918f2e"
+    },
+    "after": {
+      "file": ".cache/scenery-cityhall-final.log",
+      "sha256": "793dffba93187f3c330ee7b89c92b03e229860cad22c37992354f497ba162a6f"
+    },
+    "preparation": {
+      "file": ".cache/scenery-city-prepared.json",
+      "sha256": "339f7d7be1a88ed9d4074350ec6b68692a7f0d5d6f9992f707db9d3909bc2c9b"
+    }
+  }
+}

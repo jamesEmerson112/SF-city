@@ -1,0 +1,13 @@
+[configuration]
+entry_symbol = "gdext_rust_init"
+compatibility_minimum = "4.5"
+reloadable = false
+
+[libraries]
+windows.debug.x86_64 = "res://native/bin/civic_godot.dll"
+windows.release.x86_64 = "res://native/bin/civic_godot.dll"
+linux.debug.x86_64 = "res://native/bin/libcivic_godot.so"
+linux.release.x86_64 = "res://native/bin/libcivic_godot.so"
+macos.debug = "res://native/bin/libcivic_godot.dylib"
+macos.release = "res://native/bin/libcivic_godot.dylib"
+

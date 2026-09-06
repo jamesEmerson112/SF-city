@@ -1,0 +1,22 @@
+config_version=5
+
+[application]
+config/name="OpenGlassBox | San Francisco"
+run/main_scene="res://main.tscn"
+config/features=PackedStringArray("4.3", "GL Compatibility")
+
+[display]
+window/size/viewport_width=1440
+window/size/viewport_height=900
+window/size/window_width_override=1440
+window/size/window_height_override=900
+window/stretch/mode="canvas_items"
+
+[rendering]
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"
+anti_aliasing/quality/msaa_3d=2
+
+[debug]
+file_logging/enable_file_logging=false
+file_logging/enable_file_logging.pc=false

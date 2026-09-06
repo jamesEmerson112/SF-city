@@ -1,0 +1,18 @@
+{
+  "source_primitives": 1977,
+  "mesh_objects": 146,
+  "material_count": 47,
+  "glb_bytes": 2439744,
+  "blender_version": "5.2.1 LTS",
+  "scene": "City Hall - Round Two",
+  "schema_version": 1,
+  "authorship": "Original generated City Hall architectural study",
+  "source_blend": "comparison/shared/civic-center.blend",
+  "coordinate_system": "standard glTF Y-up, meters",
+  "geographic_accuracy": "stylized approximation, not surveyed geography",
+  "external_assets": [],
+  "sha256": {
+    "civic-center.glb": "54ffd49ddae34ef8977ad829fdb19b71c1ef72e448239c2dbcf39f3e8ca03c79",
+    "visual.json": "cee3595f78b2c95c693b72912fdebd3280732620186c6ba6370b0e166afa90c4"
+  }
+}
