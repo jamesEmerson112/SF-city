@@ -45,6 +45,8 @@ time describe simulation time, independent of the computer's current clock.
 |---|---|
 | 1 / 2 / 3 | Overhead / walking / follow the selected resident |
 | 4 | Switch to the lightweight 2D agent map |
+| F3 / Performance | Open live performance charts, population controls, and filtered logs |
+| F11 | Toggle fullscreen; display settings and UI scale are also in Performance |
 | Drag / mouse wheel | Look or orbit / zoom in 3D; pan / zoom in the 2D map |
 | W / S / A / D | Move forward / backward / left / right relative to the view; walk in ground mode |
 | Shift | Move faster while holding WASD |
@@ -87,12 +89,16 @@ Simulation, routing and snapshot processing still run, so population capacity
 also depends on those costs. City map geometry comes from the installed source
 data; the pilot retains its illustrative geometry.
 
-Changing population restarts the scenario. It does not remove residents from a
-running household. The live city presets stop at 1,000; the older stylized pilot
-also has a 5,000-person stress preset. Those counts are not established
-interactive capacity. Nearby limb articulation is limited to 300 people within
-80 meters; other outdoor people remain represented, and indoor people remain in
-the simulation and inspector.
+The **Restart with population** presets still start a new seeded day. The
+**Performance** panel adds a separate **Apply live** control: enter a custom
+target or adjust it with the +/- buttons, then apply. Existing citizens continue
+their current day and trips while the new cohort prepares. The worker advertises
+the accepted range, initially 1-5,000 experimental residents, subject to data and
+transport limits. Successful preparation is not a guarantee of smooth interaction.
+
+Nearby limb articulation remains limited to 300 people within 80 meters; other
+outdoor people stay represented, and indoor people remain in the simulation and
+inspector.
 
 Saved days live in `.local/civic/saves/`. Resume a specific saved day at launch:
 
@@ -101,10 +107,10 @@ python -m civic_center --load .local/civic/saves/quick.json
 ```
 
 Saves capture the authoritative scenario, tick, schedules, occupancy, pause and
-speed. Version 2 compresses immutable scenario data and verifies reconstructed
-metadata and route geometry. Older version 1 saves remain readable. Save/load
-jobs run in a bounded child process; the UI reports pending and completed work.
-The current 1,000-person save is approximately 13.7 MB and restores exactly.
+speed. The new versioned restoration mode preserves live roster changes, identity
+allocation, and current resident state. Older version 1 and 2 saves remain readable.
+Save/load jobs run in a bounded child process; the UI reports pending and completed
+work. File sizes depend on the scenario and current state.
 
 The selected scope is the whole of San Francisco. The launcher automatically detects a generated
 `.local/civic/geography/sf-geography.json`; use `--geography PATH` for a different
@@ -142,6 +148,77 @@ Python when the library is absent. Native load, ABI or route errors remain
 explicit. Tested route results, checkpoints and scenario hashes are identical.
 The separate [Godot crowd helper](../native/civic-godot/README.md) is also optional.
 It packs existing render transforms; it does not own resident simulation state.
+
+## Desktop workspace and live experiments
+
+Press **F3** or **Performance** to open the diagnostics panel. On wide windows it
+sits beside the city; on narrower windows it becomes a bottom panel. Drag
+**Resize** to adjust it. The controls and inspector scroll when needed. Use
+**F11** or the display selector for fullscreen/window modes, and choose 100%,
+125%, or 150% interface scale. Normal launches remember display preferences
+locally; smoke tests and probes leave those preferences alone.
+
+```powershell
+python -m civic_center --performance --window-size 1920x1080
+python -m civic_center --mode map --performance --window-mode maximized
+python -m civic_center --ui-scale 1.25
+```
+
+Use **Target** and **Apply live** to set the number of citizens. The +/- buttons
+edit the requested target; application is explicit. New citizens reuse eligible
+home/work assignments and routes from the loaded cohort, with synthetic identity
+and appearance. They join in the schedule state appropriate to the current time:
+at home, at work, or on a trip. More citizens therefore does not necessarily mean
+more people walking at that moment; watch the outdoor and active counts too.
+
+Lowering the target removes newest additions first, then original citizens in a
+stable order if necessary. Their trips and pending events are removed. Surviving
+citizens retain their identities and state. A removed follow target releases the
+camera at its current pose. Additions use new IDs even after earlier citizens
+were removed. These are synthetic workload changes, not modeled population growth,
+deaths, migration, or Census-calibrated residents.
+
+A change is pending until the authoritative worker commits it. The clock keeps
+running during preparation unless paused. Save/load/reset and another population
+change are unavailable until the pending operation completes. Invalid or oversized
+changes leave the existing day intact and are recorded as command warnings.
+Replays expose diagnostics with live mutations
+disabled. **Reset day** remains an explicit restart of the current roster's day.
+
+The **Charts** tab shows callback frame times, simulated progress, transport
+costs, and available hardware readings. The **Logs** tab supports severity, source,
+and text filters, paused auto-scroll, and clearing the visible history. Clearing
+the panel does not erase the run log. **Record point** saves an
+aggregate observation; **Open run log** opens the report.
+
+Frame callback intervals describe application pacing, not GPU execution time.
+Worker virtual ticks describe simulated progress, not a fixed-cost CPU loop.
+Hardware readings have their own timestamps; unsupported or stale values remain
+explicit. The local telemetry feed uses the existing Python collector and does
+not repeatedly load the JSON archive.
+
+Compare population effects at the same view, resolution, clock/speed, and workload
+phase. A wide or higher-resolution window can add rendering cost independently.
+The log records experiment boundaries and separates hardware intervals that cross
+them. Keep transition costs separate from settled observations.
+
+For reproducible validation from a source checkout, run the rendered integration probe:
+
+```powershell
+venv/Scripts/python.exe scripts/benchmark_live_workspace.py --mode map --counts 200,1000,2000,5000
+```
+
+It creates an ignored `.cache/live-workspace/` evidence folder and closes its
+temporary viewer when finished. Interactive input is disabled during this automated
+run; closing its window still cancels it. The probe checks population continuity,
+save/restore, and three alternating pairs of console visibility at a paused state.
+Map comparisons keep the same map framing while the console overlays it; normal
+use still reserves space for the panel. Hardware monitoring stays enabled in both
+conditions. Reports fingerprint runtime sources and reject changed or incomplete
+comparisons. Add `--layouts` for layout checks, `--city` for installed city data,
+or `--load PATH` for an existing busy saved day. `--headless` validates behavior
+without establishing rendered performance. Successful counts are observations,
+not a supported capacity claim.
 
 ## JSON run logs
 

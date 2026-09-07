@@ -4,13 +4,16 @@ extends Node
 signal scene_received(message: Dictionary)
 signal snapshot_received(message: Dictionary)
 signal acknowledged(message: Dictionary)
+signal command_rejected(message: Dictionary)
 signal status_changed(message: String, is_error: bool)
 
 const MAX_BUFFER: int = 16 * 1024 * 1024
 const MAX_FRAME_READ: int = 1024 * 1024
 const CONNECT_TIMEOUT: float = 10.0
+const COMMAND_REJECTION_CODES: Array[String] = ["invalid_command","checkpoint_error","operation_pending","stale_session","stale_roster_revision","request_id_conflict"]
 const SceneAdapter = preload("res://scene_adapter.gd")
 const Decoder = preload("res://snapshot_decoder.gd")
+var command_client_id: String = Crypto.new().generate_random_bytes(16).hex_encode()
 var decoder = Decoder.new()
 var generation: int = 0
 var peer := StreamPeerTCP.new()
@@ -28,6 +31,8 @@ var session_id: String = ""
 var sequence: int = -1
 var request_number: int = 0
 var pending: Dictionary = {}
+var pending_actions: Dictionary = {}
+var completed_rejections: Dictionary = {}
 var last_process_ms: float = 0.0
 var last_parse_ms: float = 0.0 # Main-thread framing and synchronous delivery only.
 var last_json_decode_ms: float = 0.0 # Background CPU completed/delivered this frame.
@@ -57,6 +62,8 @@ func connect_worker(address: String, number: int, secret: String) -> void:
 	incoming.clear()
 	outgoing.clear()
 	pending.clear()
+	pending_actions.clear()
+	completed_rejections.clear()
 	generation = decoder.reset()
 	last_error = ""
 	host = address
@@ -89,7 +96,7 @@ func connect_worker(address: String, number: int, secret: String) -> void:
 			return
 		status_changed.emit("Connecting to local simulation...", false)
 
-func command(action: String, value: Variant = null) -> String:
+func command(action: String, value: Variant = null, expected_roster_revision: int = -1) -> String:
 	if not connected or session_id.is_empty():
 		status_changed.emit("Simulation is disconnected. Reconnect before changing playback.", true)
 		return ""
@@ -98,7 +105,10 @@ func command(action: String, value: Variant = null) -> String:
 	var message: Dictionary = {"type":"command", "request_id":request_id, "action":action}
 	if value != null:
 		message["value"] = value
+	if expected_roster_revision >= 0: message["expected_roster_revision"] = expected_roster_revision
+	if action == "set_population": message["expected_session_id"] = session_id
 	pending[request_id] = Time.get_ticks_msec()
+	pending_actions[request_id] = action
 	_queue(message)
 	return request_id
 
@@ -132,7 +142,7 @@ func _poll_connection() -> void:
 		return
 	connected = true
 	if not hello_sent:
-		var hello: Dictionary = {"type":"hello", "protocol_version":1, "token":token, "snapshot_encoding":requested_encoding, "command_status":true}
+		var hello: Dictionary = {"type":"hello", "protocol_version":1, "token":token, "snapshot_encoding":requested_encoding, "command_status":true, "set_population":true,"command_client_id":command_client_id}
 		if not requested_route_encoding.is_empty(): hello["route_geometry_encoding"] = requested_route_encoding
 		_queue(hello)
 		hello_sent = true
@@ -261,18 +271,32 @@ func _deliver(result: Dictionary) -> bool:
 			snapshot_received.emit(message)
 			last_delivery_ms += (Time.get_ticks_usec() - delivery_started) / 1000.0
 		"ack":
-			pending.erase(str(message.get("request_id", "")))
+			var request_id: String = str(message.get("request_id", ""))
+			pending.erase(request_id)
+			pending_actions.erase(request_id)
 			acknowledged.emit(message)
 		"command_status":
-			var label: String = {"save":"Saving day", "load":"Loading saved day", "population":"Preparing residents"}.get(str(message.get("action", "")), "Preparing simulation")
+			var label: String = {"save":"Saving day", "load":"Loading saved day", "population":"Preparing residents", "set_population":"Preparing live population"}.get(str(message.get("action", "")), "Preparing simulation")
 			status_changed.emit("%s… %.0fs" % [label, float(message.get("elapsed_seconds", 0.0))], false)
 		"geometry_status":
 			if str(message.get("session_id", "")) == session_id:
 				var label: String = {"preparing":"Preparing route geometry", "streaming":"Loading route geometry", "ready":"Live local simulation"}.get(str(message.get("status", "")), "Loading route geometry")
 				status_changed.emit(label, false)
 		"error":
-			pending.erase(str(message.get("request_id", "")))
-			status_changed.emit(str(message.get("message", message.get("error", "Simulation rejected a request."))), true)
+			var request_id: String = str(message.get("request_id", ""))
+			var fingerprint: String = JSON.stringify(message).sha256_text()
+			if completed_rejections.has(request_id) and completed_rejections[request_id] == fingerprint: return true
+			var recoverable: bool = pending.has(request_id) and str(message.get("code","")) in COMMAND_REJECTION_CODES
+			var action: String = str(pending_actions.get(request_id,message.get("action","")))
+			pending.erase(request_id)
+			pending_actions.erase(request_id)
+			if recoverable:
+				completed_rejections[request_id] = fingerprint
+				while completed_rejections.size() > 128: completed_rejections.erase(completed_rejections.keys()[0])
+				message = message.duplicate(false)
+				message["action"] = action
+				command_rejected.emit(message)
+			status_changed.emit(str(message.get("message", message.get("error", "Simulation rejected a request."))), not recoverable)
 			acknowledged.emit(message)
 		"failure":
 			_failure(str(message.message))
@@ -286,6 +310,8 @@ func _failure(message: String) -> void:
 	incoming.clear()
 	outgoing.clear()
 	pending.clear()
+	pending_actions.clear()
+	completed_rejections.clear()
 	generation = decoder.reset()
 	session_id = ""
 	sequence = -1

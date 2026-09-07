@@ -51,6 +51,7 @@ var _background_layer: StaticLayer
 var _base_layer: StaticLayer
 var _footprint_layer: StaticLayer
 var _viewport_size := Vector2.ZERO
+var content_rect := Rect2()
 var _tiles: Dictionary = {}
 var _tile_queue: Array[Dictionary] = []
 var _wanted_tiles: Dictionary = {}
@@ -248,7 +249,7 @@ func zoom_at(factor: float, screen: Vector2) -> void:
 func jump_to(point: Vector2, span_m: float) -> void:
 	if not point.is_finite() or not is_finite(span_m): return
 	center = point
-	meters_per_pixel = clampf(span_m / maxf(1.0, minf(_viewport_size.x, _viewport_size.y - 140.0)), 0.06, 160.0)
+	meters_per_pixel = clampf(span_m / maxf(1.0, minf(_content_size().x, _content_size().y)), 0.06, 160.0)
 	_view_changed()
 
 func frame_bounds(bounds: Dictionary) -> void:
@@ -259,7 +260,7 @@ func frame_bounds(bounds: Dictionary) -> void:
 	# Fit all four corners at the current bearing, retaining the user's heading.
 	var span: Vector2 = (high - low).abs()
 	var rotated_span := Vector2(absf(cos(bearing)) * span.x + absf(sin(bearing)) * span.y, absf(sin(bearing)) * span.x + absf(cos(bearing)) * span.y)
-	meters_per_pixel = clampf(maxf(rotated_span.x / maxf(1.0, _viewport_size.x - 60.0), rotated_span.y / maxf(1.0, _viewport_size.y - 140.0)) * 1.15, 0.06, 160.0)
+	meters_per_pixel = clampf(maxf(rotated_span.x / maxf(1.0, _content_size().x - 30.0), rotated_span.y / maxf(1.0, _content_size().y - 30.0)) * 1.15, 0.06, 160.0)
 	_view_changed()
 
 func frame_selected() -> void:
@@ -567,7 +568,16 @@ func _visible_world_bounds() -> Rect2:
 		bounds = bounds.expand(screen_to_world(corner))
 	return bounds.grow(meters_per_pixel * 20.0)
 
+func set_content_rect(value: Rect2) -> void:
+	if content_rect == value: return
+	content_rect = value
+	if is_inside_tree(): _view_changed()
+
+func _content_size() -> Vector2:
+	return content_rect.size if content_rect.has_area() else Vector2(_viewport_size.x,_viewport_size.y-110)
+
 func _canvas_center() -> Vector2:
+	if content_rect.has_area(): return content_rect.get_center()
 	# Keep geography above the always-present footer and map legend.
 	return Vector2(_viewport_size.x * 0.5, maxf(1.0, _viewport_size.y - 110.0) * 0.5)
 

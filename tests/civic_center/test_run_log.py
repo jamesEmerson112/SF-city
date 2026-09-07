@@ -672,3 +672,154 @@ def test_incomplete_process_totals_do_not_pollute_available_measurement_summarie
     assert process["min"] == 4.0
     assert process["max"] == 12.0
     assert process["mean"] == pytest.approx(26.0 / 3)
+
+
+def test_live_feed_payloads_are_redacted_and_finished_log_rejects_late_writes(tmp_path):
+    class Feed:
+        def __init__(self):
+            self.rows = []
+
+        def publish(self, kind, payload, source):
+            self.rows.append((kind, payload, source))
+
+    feed = Feed()
+    log = RunLog(tmp_path, {}, secrets=("private-key",))
+    log.configure_hardware(True)
+    log.attach_telemetry(feed)
+    log.hardware_inventory({"model": "private-key", "auth": "hidden"})
+    log.hardware_sample({"cpu": {"percent": 12}, "token": "hidden"})
+    log.capture(io.StringIO("WARNING: private-key\n"), source="worker", echo=False)
+    log.close_capture()
+    log.capture(io.StringIO('GODOT_APPLICATION_COMPARISON_POINT {"mode":"map"}\n'))
+    log.close_capture()
+    log.finish("completed", 0)
+    before = len(feed.rows)
+    content = log.path.read_bytes()
+    log.hardware_sample({"cpu": {"percent": 99}})
+    log.phase({"reason": "late"})
+    log.comparison_point({"reason": "late"})
+    log.error("late")
+    assert len(feed.rows) == before
+    assert log.path.read_bytes() == content
+    encoded = json.dumps(feed.rows)
+    assert "private-key" not in encoded and "hidden" not in encoded
+    assert "[redacted]" in encoded
+    assert any(kind == "log" and source == "worker" for kind, _, source in feed.rows)
+    assert len(_read(log)["experiments"]["comparison_points"]) == 1
+
+
+def test_failed_live_publisher_does_not_break_archival_logging(tmp_path):
+    class FailedFeed:
+        def publish(self, *args):
+            raise OSError("feed unavailable")
+
+    log = RunLog(tmp_path, {})
+    log.attach_telemetry(FailedFeed())
+    log.event("still-running")
+    log.finish("completed", 0)
+    assert _read(log)["status"] == "completed"
+
+
+def test_matched_command_rejection_is_one_safe_warning_without_error_state(
+    tmp_path, capsys
+):
+    class Feed:
+        def __init__(self):
+            self.rows = []
+
+        def publish(self, kind, payload, source):
+            self.rows.append((kind, payload, source))
+
+    feed = Feed()
+    log = RunLog(tmp_path, {}, secrets=("fixture-secret",))
+    log.attach_telemetry(feed)
+    rejection = {
+        "schema_version": 1,
+        "request_id": "viewer-4",
+        "action": "set_population",
+        "code": "invalid_command",
+        "message": "Budget exceeded fixture-secret",
+        "session_id": "fixture-session",
+        "at_unix": 1234.5,
+        "token": "not-retained",
+        "residents": [{"id": "not-retained"}],
+        "environment": {"key": "not-retained"},
+    }
+    lines = ["GODOT_APPLICATION_COMMAND_REJECTED " + json.dumps(rejection)]
+    lines += [
+        'GODOT_APPLICATION_RUN_METRICS {"error":"","startup":{"complete":true}}'
+    ] * 3
+    log.capture(io.StringIO("\n".join(lines) + "\n"))
+    log.close_capture()
+    assert not log.has_errors
+    log.finish("completed", 0)
+    record = _read(log)
+    assert record["diagnostics"]["error_count"] == 0
+    assert record["diagnostics"]["command_rejection_count"] == 1
+    events = [
+        event for event in record["events"] if event["name"] == "command_rejected"
+    ]
+    assert len(events) == 1
+    assert events[0]["severity"] == "warning"
+    assert events[0]["action"] == "set_population"
+    assert events[0]["code"] == "invalid_command"
+    assert events[0]["message"] == "Budget exceeded [redacted]"
+    warnings = [
+        payload
+        for kind, payload, source in feed.rows
+        if kind == "log" and source == "worker"
+    ]
+    assert len(warnings) == 1 and warnings[0]["severity"] == "warning"
+    encoded = json.dumps(record) + json.dumps(feed.rows)
+    assert "fixture-secret" not in encoded and "not-retained" not in encoded
+    assert "GODOT_APPLICATION_COMMAND_REJECTED" not in capsys.readouterr().out
+
+
+@pytest.mark.parametrize(
+    "fatal",
+    [
+        "GODOT_APPLICATION_FAIL Budget exceeded",
+        "SCRIPT ERROR: Budget exceeded",
+        'GODOT_APPLICATION_RUN_METRICS {"error":"Budget exceeded"}',
+    ],
+)
+def test_rejection_warning_never_suppresses_a_real_error_with_the_same_text(
+    tmp_path, fatal
+):
+    log = RunLog(tmp_path, {})
+    rejection = {
+        "schema_version": 1,
+        "request_id": "viewer-4",
+        "action": "set_population",
+        "code": "invalid_command",
+        "message": "Budget exceeded",
+    }
+    log.capture(
+        io.StringIO(
+            "GODOT_APPLICATION_COMMAND_REJECTED "
+            + json.dumps(rejection)
+            + "\n"
+            + fatal
+            + "\n"
+        )
+    )
+    log.close_capture()
+    assert log.has_errors
+    assert _read(log)["diagnostics"]["error_count"] > 0
+
+
+def test_malformed_command_rejection_marker_does_not_persist_arbitrary_payload(
+    tmp_path,
+):
+    log = RunLog(tmp_path, {})
+    log.capture(
+        io.StringIO(
+            'GODOT_APPLICATION_COMMAND_REJECTED {"residents":["private-row"]}\n'
+        )
+    )
+    log.close_capture()
+    log.finish("completed", 0)
+    record = _read(log)
+    assert record["diagnostics"]["malformed_marker_count"] == 1
+    assert record["diagnostics"]["command_rejection_count"] == 0
+    assert "private-row" not in json.dumps(record)

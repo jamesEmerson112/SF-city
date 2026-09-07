@@ -1,5 +1,9 @@
 # San Francisco living-city simulation plan
 
+**Planned follow-up:** [Individual citizen coordinate history and overlapping-newcomer fix](CITIZEN_COORDINATE_PLAN.md). The current growth policy can create identical walking trajectories; the recorder and remedy are planned, not delivered.
+
+**Delivered September 6, 2026:** [Widescreen layout, live population changes, and performance console](LIVE_STRESS_TEST_PLAN.md). Population changes preserve the current day; local charts, filtered logs, and per-experiment records support population trials. See [patch notes](PATCH_NOTES.md) for evidence and limits. The remaining text retains the original longer-term project plan.
+
 Planning baseline: September 5, 2026; scope expanded September 6 to the actual extent of San Francisco. Godot is selected. The dedicated application now has persistent residents, a live Python worker, inspection and save/resume. Official citywide geographic imports and terrain have been prepared; their first integrated city scenario is being validated. See [current implementation evidence](OVERNIGHT_PROGRESS.md), [launch instructions](../civic_center/README.md), and the [Godot implementation plan](GODOT_NEXT_STEPS.md). The six renderer demos remain in [comparison](../comparison/README.md).
 
 **The application.** Build a desktop 3D living-city explorer spanning San Francisco, with City Hall as the starting location and a focus for architectural detail. Users can orbit above the city, explore at ground level, select buildings, and follow residents through their home, work, and commute routines. Geography and aggregate behavior should match available real-world data as closely as practical.

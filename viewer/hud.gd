@@ -2,6 +2,7 @@ extends CanvasLayer
 signal action_requested(action: String, value: Variant)
 signal mode_requested(mode: String)
 signal resident_selected(identifier: String)
+signal layout_changed
 
 var status: Label
 var clock_label: Label
@@ -57,9 +58,17 @@ var map_summary: Label
 var map_speed: OptionButton
 var footer_label: Label
 var map_enabled: bool = false
+var root_control: Control
+var right_panel: PanelContainer
+var footer_panel: PanelContainer
+var left_scroll: ScrollContainer
+var right_scroll: ScrollContainer
+var usable_rect := Rect2()
+var compact_show_inspector: bool = false
 
 func _ready() -> void:
 	var root := Control.new()
+	root_control = root
 	root.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	root.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(root)
@@ -70,7 +79,12 @@ func _ready() -> void:
 	root.add_child(top)
 	var content := VBoxContainer.new()
 	content.add_theme_constant_override("separation",8)
-	top.add_child(content)
+	left_scroll = ScrollContainer.new()
+	left_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	left_scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	top.add_child(left_scroll)
+	content.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	left_scroll.add_child(content)
 	var heading := HBoxContainer.new()
 	content.add_child(heading)
 	var brand: Label = _label("SAN FRANCISCO",14,Color("7ee2c5"))
@@ -247,6 +261,7 @@ func _ready() -> void:
 	load.pressed.connect(func() -> void: action_requested.emit("load","quick"))
 	persistence.add_child(load)
 	var side := _panel()
+	right_panel = side
 	root.add_child(side)
 	side.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT)
 	side.offset_left = -352
@@ -255,7 +270,11 @@ func _ready() -> void:
 	side.custom_minimum_size.x = 330
 	var side_content := VBoxContainer.new()
 	side_content.add_theme_constant_override("separation",8)
-	side.add_child(side_content)
+	right_scroll = ScrollContainer.new()
+	right_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	side.add_child(right_scroll)
+	side_content.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	right_scroll.add_child(side_content)
 	var side_heading := HBoxContainer.new()
 	side_content.add_child(side_heading)
 	var side_label: Label = _label("RESIDENTS & BUILDINGS",14,Color("7ee2c5"))
@@ -300,6 +319,7 @@ func _ready() -> void:
 	)
 	side_content.add_child(height_link)
 	var footer := _panel()
+	footer_panel = footer
 	root.add_child(footer)
 	footer.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_WIDE)
 	footer.offset_left = 22
@@ -307,7 +327,23 @@ func _ready() -> void:
 	footer.offset_top = -67
 	footer.offset_bottom = -20
 	footer_label = _label("",14)
-	footer.add_child(footer_label)
+	var footer_row := HBoxContainer.new()
+	footer.add_child(footer_row)
+	footer_label.clip_text = true
+	footer_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	footer_row.add_child(footer_label)
+	var performance_button: Button = _button("F3 Performance")
+	performance_button.pressed.connect(func() -> void: action_requested.emit("performance",null))
+	footer_row.add_child(performance_button)
+	var inspect_button: Button = _button("Inspector / controls")
+	inspect_button.pressed.connect(func() -> void:
+		compact_show_inspector = not compact_show_inspector
+		layout_changed.emit()
+	)
+	footer_row.add_child(inspect_button)
+	var full_button: Button = _button("F11 Fullscreen")
+	full_button.pressed.connect(func() -> void: action_requested.emit("fullscreen",null))
+	footer_row.add_child(full_button)
 	set_map_mode(false)
 	set_controls_collapsed(false)
 	set_inspector_collapsed(false)
@@ -321,14 +357,15 @@ func set_controls_collapsed(collapsed: bool) -> void:
 	controls_toggle.text = "Controls" if collapsed else "Hide controls"
 	left_panel.custom_minimum_size.x = 330 if collapsed else 450
 	left_panel.size = Vector2.ZERO
+	layout_changed.emit()
 	use_legend.visible = collapsed and use_toggle.button_pressed and not map_enabled
 
 func set_inspector_collapsed(collapsed: bool) -> void:
 	inspector_collapsed = collapsed
 	inspector_body.visible = not collapsed
 	inspector_toggle.text = "Show" if collapsed else "Hide"
-	var panel: Control = inspector_body.get_parent().get_parent()
-	panel.size.y = 0
+	right_panel.size.y = 0
+	layout_changed.emit()
 
 func toggle_panels() -> void:
 	var collapsed: bool = not controls_collapsed or not inspector_collapsed
@@ -556,3 +593,31 @@ func _panel() -> PanelContainer:
 	style.content_margin_bottom = 14
 	panel.add_theme_stylebox_override("panel",style)
 	return panel
+
+func layout(view_size: Vector2, dock: Rect2 = Rect2()) -> void:
+	if left_panel == null or right_panel == null: return
+	var area := Rect2(Vector2(12,12),Vector2(maxf(1,view_size.x-24),maxf(120,view_size.y-98)))
+	if dock.has_area():
+		if dock.position.y <= 12.0 and dock.position.x > view_size.x*0.5:
+			area.size.x = maxf(200,dock.position.x-24)
+		else:
+			area.size.y = maxf(120,dock.position.y-24)
+	var compact: bool = area.size.x < 1150
+	left_panel.visible = not compact or not compact_show_inspector
+	right_panel.visible = not compact or compact_show_inspector
+	var left_width: float = 450.0 if not controls_collapsed else 350.0
+	left_panel.position = area.position
+	left_panel.custom_minimum_size.x = left_width
+	left_panel.size = Vector2(left_width,area.size.y)
+	right_panel.set_anchors_and_offsets_preset(Control.PRESET_TOP_LEFT)
+	right_panel.position = Vector2(area.end.x-330,area.position.y)
+	right_panel.size = Vector2(330,area.size.y)
+	footer_panel.set_anchors_and_offsets_preset(Control.PRESET_TOP_LEFT)
+	footer_panel.position = Vector2(12,view_size.y-74)
+	footer_panel.size = Vector2(view_size.x-24,62)
+	var left_edge: float = left_panel.position.x+left_panel.size.x+12 if left_panel.visible else area.position.x
+	var right_edge: float = right_panel.position.x-12 if right_panel.visible else area.end.x
+	usable_rect = Rect2(Vector2(left_edge,area.position.y),Vector2(maxf(1,right_edge-left_edge),area.size.y))
+
+func content_rect() -> Rect2:
+	return usable_rect

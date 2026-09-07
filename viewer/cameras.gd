@@ -16,6 +16,7 @@ var walk_yaw: float = 0.0
 var walk_pitch: float = 0.0
 var follow_position: Vector3 = Vector3.ZERO
 var follow_pan_offset: Vector3 = Vector3.ZERO
+var follow_detached: bool = false
 var follow_heading: float = 0.0
 var follow_available: bool = false
 var follow_indoor: bool = false
@@ -56,6 +57,7 @@ func reset_camera() -> void:
 	update_camera(0.0)
 
 func set_mode(value: String) -> void:
+	follow_detached = false
 	if value in ["overhead", "walk", "follow"]:
 		mode = value
 		if value == "follow": follow_pan_offset = Vector3.ZERO
@@ -171,6 +173,9 @@ func _move_orbit_target(displacement: Vector3) -> void:
 		if elevation != null: orbit_target.y = float(elevation)+8.0
 
 func keyboard_navigate(direction: Vector2, turn: float, delta: float, fast: bool = false) -> void:
+	if follow_detached and (not direction.is_zero_approx() or turn != 0.0):
+		follow_detached = false
+		mode = "overhead"
 	if not allow_walk_input or camera == null or not direction.is_finite() or not is_finite(turn) or not is_finite(delta): return
 	var elapsed: float = clampf(delta,0.0,0.05)
 	if elapsed == 0.0: return
@@ -201,6 +206,9 @@ func keyboard_navigate(direction: Vector2, turn: float, delta: float, fast: bool
 		_move_orbit_target(displacement)
 
 func drag(relative: Vector2) -> void:
+	if follow_detached:
+		follow_detached = false
+		mode = "overhead"
 	if mode == "walk":
 		walk_yaw += relative.x * 0.005
 		walk_pitch = clampf(walk_pitch - relative.y * 0.005, -1.35, 1.35)
@@ -212,6 +220,9 @@ func drag(relative: Vector2) -> void:
 		follow_pitch = clampf(follow_pitch + relative.y * 0.006,0.08,1.3)
 
 func zoom(direction: float) -> void:
+	if follow_detached:
+		follow_detached = false
+		mode = "overhead"
 	if mode == "overhead":
 		orbit_distance = clampf(orbit_distance * direction, 25.0, orbit_max_distance)
 	elif mode == "follow":
@@ -271,6 +282,8 @@ func update_camera(delta: float) -> void:
 		walk_position.y = _walking_eye_height(walk_position)
 		camera.position = walk_position
 		camera.look_at(walk_position + Vector3(sin(walk_yaw) * cos(walk_pitch), sin(walk_pitch), -cos(walk_yaw) * cos(walk_pitch)), Vector3.UP)
+	elif mode == "follow" and follow_detached:
+		return # Keep the actual view when an experimentally removed target disappears.
 	elif mode == "follow" and follow_available:
 		var target: Vector3 = follow_position + follow_pan_offset + Vector3.UP * _follow_target_height()
 		var heading: float = follow_heading + follow_yaw_offset
@@ -305,4 +318,16 @@ func _follow_offset(heading: float, distance_scale: float = 1.0) -> Vector3:
 	distance *= distance_scale
 	var pitch: float = maxf(follow_pitch,0.65) if follow_indoor else follow_pitch
 	return follow_position + follow_pan_offset - forward * distance * cos(pitch) + Vector3.UP * (_follow_target_height() + distance * sin(pitch))
+
+
+func detach_follow() -> void:
+	follow_available = false
+	follow_detached = true
+	# Convert the current pose into orbit parameters so later WASD/zoom can resume.
+	var forward: Vector3 = -camera.global_basis.z
+	orbit_distance = maxf(30.0,follow_distance)
+	orbit_target = camera.position+forward*orbit_distance
+	var offset: Vector3 = camera.position-orbit_target
+	orbit_pitch = asin(clampf(offset.y/orbit_distance,-1,1))
+	orbit_yaw = atan2(-offset.z,offset.x)
 

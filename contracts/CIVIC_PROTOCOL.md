@@ -255,7 +255,8 @@ and building state remains authoritative when visual snapshots are skipped.
 | pause | boolean | Pause/resume authoritative clock. |
 | speed | 1, 4, 60 or 600 | Change wall-clock playback multiplier. |
 | reset | omitted | Repeat the seeded scenario from tick zero in a new session. |
-| population | 1, 20, 200, 1000 or 5000 | Initialize a new seeded scenario/session; no deletion from a running household. |
+| population | A preset advertised by the current scenario | Initialize a new seeded scenario/session from tick zero. |
+| set_population | Integer 1..5000, plus expected_roster_revision and expected_session_id | Change the current roster at a completed tick, preserving the day and every survivor. |
 | step | integer ticks, 0..17,280,000 | Advance exactly while paused; used for inspection and deterministic checks. |
 | next_event | omitted | Advance exactly to the next scheduled activity event and pause. |
 | save | slot name, default `quick` | Atomically save the scenario, completed tick and playback state. |
@@ -271,7 +272,7 @@ An acknowledgment precedes its resulting snapshot and may arrive in an earlier
 render frame. Command tests anchor to the acknowledgment's session/tick and wait
 for the corresponding complete snapshot before checking displayed state.
 
-Save, load and population preparation run in one owned spawned child process.
+Save, load, preset population and live population preparation run in one owned spawned child process.
 A single collector thread handles its local IPC; an explicit thread backend is
 retained for deterministic test factories. The production worker uses process
 isolation so checkpoint reconstruction and JSON serialization cannot hold the
@@ -285,7 +286,7 @@ existing final acknowledgment or error.
 
 While a job runs, the current day keeps advancing and publishing snapshots, and
 pause, speed, step, next-event, reconnect and shutdown remain available. A second
-save, load, population or reset request receives `operation_pending`; the worker
+save, load, population, set_population or reset request receives `operation_pending`; the worker
 does not accumulate an unbounded preparation queue. A loaded or newly generated
 candidate replaces the active model only after background validation and a
 successful main-loop transport check. It then sends a new scene, acknowledgment,
@@ -336,10 +337,18 @@ spawn/save/load check using the isolated portable Python 3.13.15 runtime.
 Save/load slot names contain 1–48 ASCII letters, digits, underscores or hyphens.
 They resolve inside the worker's configured save directory; clients cannot send
 arbitrary filesystem paths. Their acknowledgments include `slot`. Invalid or
-missing saves leave the current simulation unchanged. Checkpoint version 1
-reconstructs the deterministic scenario at its saved tick and verifies the full
-authoritative state; future mutable schedules or random events will need a new
-checkpoint representation before those behaviors can be persisted safely.
+missing saves leave the current simulation unchanged. Checkpoint versions 1 and 2
+retain deterministic fixed-scenario restore. Version 3 (`live-roster-v1`) stores
+current assignments, roster revision, next never-reused identity, live join ticks,
+exact resident activities/trip timing/heading, and the future event queue. The
+compact authoritative state retains occupancy, the latest 256 events and lifetime
+event count. Restore validates each current schedule phase in at most one commute
+cycle, checks the exact queue and occupancy, restores that bounded journal, and
+verifies full metadata and route digests. It never replays the complete resize
+history. Runtime records share the 64 MiB expanded-byte and five-million-value
+budgets. Older checkpoints remain readable; unchanged rosters still write v2.
+Future mutable assignments, schedules or RNG behavior require explicit restoration
+rules beyond the current live-roster mode.
 
 Worker readiness prints one flushed JSON line with type=ready, protocol_version,
 port and pid. Optional ready-file output contains the same information and is
@@ -349,3 +358,89 @@ are not written to ordinary logs. CLI diagnostics go to stderr after readiness.
 Replay files use `{ "scene": <scene message>, "snapshots": [<snapshot>, ...] }`.
 They use the same state application path as live messages. A new session resets
 interpolation; stale sequences from the current session are ignored.
+
+
+## Live population adjustments
+
+Scenes advertise `capabilities.set_population`, `population_min:1`,
+`population_max:5000`, and `set_population_session_guard:true`. The 5,000 input
+bound is experimental validation scope, not a measured citywide capacity claim.
+Scenes and snapshots include `population`, `roster_revision`, and stable
+`world_identity`, a fingerprint of static geography independent of the roster.
+
+```json
+{"type":"command","request_id":"viewer-17","action":"set_population","value":350,"expected_roster_revision":0,"expected_session_id":"current-scene-session"}
+```
+
+Modern clients send a random stable `command_client_id` in `hello` and retain it
+through reconnects. Their population commands require the current scene session
+as well as roster revision, preventing delayed commands from a discarded loaded
+or reset day from matching an old revision. Legacy clients without that hello
+field retain revision-only compatibility. Revision/session mismatches return
+`stale_roster_revision`/`stale_session`; invalid integer counts return
+`invalid_command`. Booleans and fractional numbers are rejected.
+
+Only one preparation operation can be pending. A duplicate while pending returns
+`operation_pending`; it does not schedule another mutation. The last 128 completed
+population replies are cached per client namespace and request ID. Exact retries
+return their original acknowledgment; reuse with different arguments returns
+`request_id_conflict`. Live barriers retain that cache. Load, reset and preset
+restart discard it, so success from a discarded day cannot be replayed as current.
+Clients omitting a namespace receive a unique namespace per connection.
+
+Additions get deterministic `live-resident-` identities from a persisted monotonic
+allocator. Removed identities are never reused in the current saved timeline.
+Assignments and schedule templates reuse existing eligible home/work pairs and
+are labeled synthetic live experiments. A newcomer joins at the actual commit
+tick: at home before departure, at the matching position on an ongoing commute,
+at work after arrival, or on its return/home phase later in the day. Only future
+transitions enter the authoritative queue; inferred events from earlier in its
+day are not added to the city journal. Newer added identities are removed first;
+original identities use reverse lexical order as the deterministic tie-break.
+Removal clears occupancy, active trips, queued events and recurrence membership.
+Survivor resident/trip objects, tick, pause, speed, appearance and assignments remain
+unchanged. Aggregate assignment counts and explicitly synthetic capacity update;
+observed source building attributes retain their meaning.
+
+The child prepares a detached roster delta, immutable route caches, static scene
+bytes and all-phase route budgets. The main loop merges only that delta into the
+latest live state, validates current snapshot/geometry and expanded checkpoint
+budgets, and commits atomically. It never installs the child's older dynamic day.
+Preparation failure leaves the current roster/session intact. Main-loop validation
+and snapshot/route encoding still cost time; preparation isolation does not promise
+zero hitches. Legacy route bootstrap stages reliable geometry frames after the scene,
+then its captured snapshot, within the existing outgoing queue budget. Scene plus
+all route definitions need not fit in that queue simultaneously. While those
+frames drain, newer snapshots for that connection wait. Live commits reuse the
+current-tick frames validated on the main loop; they never reuse stale child state.
+Indivisible frames, route-cache overflow, or a congested scene barrier are rejected
+before the domain commit, with the current roster and connection retained. A no-op returns `noop:true` without a revision or session change.
+
+A real change starts a new transport session with scene
+`reason:"population_adjustment"`. Its `world_identity` is unchanged. The viewer
+retains the prior complete presentation until a matching first complete snapshot,
+then replaces roster/geometry caches together while preserving camera, world and
+surviving selection/follow identity. Scene, acknowledgment and subsequent snapshots
+carry the latest `population_change`:
+
+```json
+{"request_id":"viewer-17","old_count":200,"new_count":350,"roster_revision":1,"committed_tick":240000,"committed_at_unix":0.0,"committed_monotonic_seconds":0.0,"preparation_ms":0.0,"commit_ms":0.0}
+```
+
+Times above are schema examples. Production values use wall-clock time for readable
+attribution and the shared host monotonic clock for hardware phase alignment.
+Preparation spans job launch through prepared-result delivery; commit_ms measures
+main-loop merge and preflight through the commit boundary, excluding later viewer
+handoff. The acknowledgment also includes `count`, `population`, `requested_count`,
+`added_count`, `removed_count`, `noop`, `committed_tick`, `roster_revision`,
+`world_identity`, `prepare_ms`, `commit_ms`, and `worker_monotonic_seconds`.
+
+Snapshots also carry compact `worker_metrics`: last advance, state capture and JSON
+encode milliseconds; cumulative advanced ticks and achieved simulated seconds per
+wall second since current controls/roster; requested speed and paused state; last
+encoded snapshot bytes and encoded count (`snapshots_published`); queued transport
+bytes, route cache entries and shared geometry cache bytes. Encoding measurements
+refer to the previous completed frame, avoiding self-referential byte totals.
+They are worker costs, distinct from viewer FPS and adapter-wide GPU metrics.
+`monotonic_seconds` identifies freshness; cached paused frames do not pretend to
+be new samples. No periodic worker telemetry is printed to stdout.

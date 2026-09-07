@@ -21,6 +21,7 @@ from typing import Callable
 from .hardware_monitor import HardwareMonitor
 from .run_log import RunLog
 from .scenario import POPULATIONS, load_scenario, scenario_hash
+from .telemetry import TelemetryHub
 
 ROOT = Path(__file__).resolve().parents[1]
 VIEWER = ROOT / "viewer"
@@ -194,6 +195,7 @@ def _prepare_with_viewer(
     landuse: Path | None,
     timeout: float,
     hardware_monitor: HardwareMonitor | None = None,
+    run_log: RunLog | None = None,
 ) -> Path:
     """Keep the loading window closable during first-time city generation."""
     from .startup import write_status
@@ -226,23 +228,37 @@ def _prepare_with_viewer(
                     str(result),
                 ],
                 cwd=ROOT,
-                stdout=log,
-                stderr=log,
+                stdout=subprocess.PIPE if run_log is not None else log,
+                stderr=subprocess.STDOUT if run_log is not None else log,
+                text=True,
+                encoding="utf-8",
+                errors="replace",
                 creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
             )
+            preparation_reader = None
+            if run_log is not None and getattr(child, "stdout", None) is not None:
+                preparation_reader = run_log.capture(
+                    child.stdout, source="preparation", archive=log, echo=False
+                )
             if hardware_monitor is not None:
                 hardware_monitor.register_process(
                     getattr(child, "pid", None), "preparation"
                 )
-            deadline = time.monotonic() + timeout
-            while child.poll() is None:
-                if viewer.poll() is not None:
-                    raise _LaunchCancelled()
-                if time.monotonic() >= deadline:
-                    raise RuntimeError(
-                        "City preparation did not finish before its timeout"
-                    )
-                time.sleep(0.1)
+            try:
+                deadline = time.monotonic() + timeout
+                while child.poll() is None:
+                    if viewer.poll() is not None:
+                        raise _LaunchCancelled()
+                    if time.monotonic() >= deadline:
+                        raise RuntimeError(
+                            "City preparation did not finish before its timeout"
+                        )
+                    time.sleep(0.1)
+            finally:
+                if child.poll() is None:
+                    _terminate_tree(child)
+                if preparation_reader is not None:
+                    preparation_reader.join(2.0)
         if viewer.poll() is not None:
             raise _LaunchCancelled()
         if not result.is_file():
@@ -414,6 +430,30 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument("--headless", action="store_true")
     parser.add_argument(
+        "--window-size", help="Initial viewer size, for example 1920x1080"
+    )
+    parser.add_argument(
+        "--window-mode", choices=("windowed", "maximized", "fullscreen")
+    )
+    parser.add_argument("--ui-scale", type=float, choices=(1.0, 1.25, 1.5))
+    parser.add_argument(
+        "--performance", action="store_true", help="Open live diagnostics"
+    )
+    parser.add_argument(
+        "--no-display-settings",
+        action="store_true",
+        help="Ignore saved display preferences for reproducible runs",
+    )
+    parser.add_argument("--workspace-probe", type=Path, help=argparse.SUPPRESS)
+    parser.add_argument(
+        "--probe-counts", default="200,500,1000,2000,5000", help=argparse.SUPPRESS
+    )
+    parser.add_argument(
+        "--probe-seconds", type=float, default=3.0, help=argparse.SUPPRESS
+    )
+    parser.add_argument("--probe-layouts", action="store_true", help=argparse.SUPPRESS)
+
+    parser.add_argument(
         "--render-cache",
         type=Path,
         help="Prepared static scenery directory; defaults to .local/civic/render-cache",
@@ -456,6 +496,34 @@ def main(argv: list[str] | None = None) -> int:
         help="Hardware sampling interval in seconds (0.25 to 60; default 1)",
     )
     args = parser.parse_args(argv)
+    if args.window_size:
+        parts = args.window_size.lower().split("x")
+        if (
+            len(parts) != 2
+            or not all(part.isdecimal() for part in parts)
+            or not 320 <= int(parts[0]) <= 16384
+            or not 240 <= int(parts[1]) <= 16384
+        ):
+            parser.error(
+                "Window size must be WIDTHxHEIGHT within 320x240 and 16384x16384"
+            )
+        args.window_size = "x".join(str(int(part)) for part in parts)
+    if not math.isfinite(args.probe_seconds) or args.probe_seconds <= 0:
+        parser.error("Probe duration must be finite and positive")
+    if args.workspace_probe:
+        try:
+            counts = [int(part) for part in args.probe_counts.split(",")]
+        except ValueError:
+            parser.error("Probe counts must be comma-separated integers")
+        if (
+            not counts
+            or len(counts) > 64
+            or any(not 1 <= count <= 5000 for count in counts)
+        ):
+            parser.error(
+                "Probe counts must contain 1 to 64 populations between 1 and 5000"
+            )
+
     if (
         not math.isfinite(args.hardware_interval)
         or not 0.25 <= args.hardware_interval <= 60
@@ -481,6 +549,8 @@ def main(argv: list[str] | None = None) -> int:
     worker_log = None
     port = None
     token = secrets.token_urlsafe(24)
+    telemetry_token = secrets.token_urlsafe(24)
+    telemetry = None
     log_path = None
     startup_path = None
     run_status = "failed"
@@ -489,7 +559,7 @@ def main(argv: list[str] | None = None) -> int:
     run_log = RunLog(
         args.log_dir or ROOT / ".local/civic/logs",
         vars(args),
-        secrets=(token,),
+        secrets=(token, telemetry_token),
     )
     if not run_log.disabled:
         print(f"Run log: {run_log.path}", flush=True)
@@ -497,7 +567,14 @@ def main(argv: list[str] | None = None) -> int:
         enabled=not args.no_hardware_monitor, interval_seconds=args.hardware_interval
     )
     try:
-        if not args.no_hardware_monitor and not run_log.disabled:
+        try:
+            telemetry = TelemetryHub(run_log.run_id, telemetry_token)
+            telemetry.start()
+            run_log.attach_telemetry(telemetry)
+        except (OSError, RuntimeError) as error:
+            telemetry = None
+            run_log.event("telemetry_unavailable", message=str(error))
+        if not args.no_hardware_monitor:
             hardware_monitor = HardwareMonitor(
                 run_log, os.getpid(), ROOT, interval_seconds=args.hardware_interval
             )
@@ -521,6 +598,30 @@ def main(argv: list[str] | None = None) -> int:
         if args.headless:
             runtime.append("--headless")
         viewer_options = ["--mode", args.mode, "--location", args.location]
+        if telemetry is not None:
+            viewer_options += [
+                "--telemetry-port",
+                str(telemetry.port),
+                "--telemetry-token",
+                telemetry_token,
+            ]
+        for name in ("window_size", "window_mode", "ui_scale"):
+            value = getattr(args, name)
+            if value is not None:
+                viewer_options += ["--" + name.replace("_", "-"), str(value)]
+        for name in ("performance", "no_display_settings", "probe_layouts"):
+            if getattr(args, name):
+                viewer_options.append("--" + name.replace("_", "-"))
+        if args.workspace_probe:
+            args.workspace_probe.parent.mkdir(parents=True, exist_ok=True)
+            viewer_options += [
+                "--workspace-probe",
+                str(args.workspace_probe.resolve()),
+                "--probe-counts",
+                args.probe_counts,
+                "--probe-seconds",
+                str(args.probe_seconds),
+            ]
         viewer_options += ["--lighting", args.lighting]
         viewer_options += ["--facades", args.facades]
         viewer_options += ["--trees", args.trees]
@@ -600,6 +701,7 @@ def main(argv: list[str] | None = None) -> int:
                     landuse if not args.no_landuse and landuse.is_file() else None,
                     args.startup_timeout or 600,
                     hardware_monitor=hardware_monitor,
+                    run_log=run_log,
                 )
                 run_log.event(
                     "scenario_preparation_completed",
@@ -697,14 +799,19 @@ def main(argv: list[str] | None = None) -> int:
                 command,
                 cwd=ROOT,
                 stdout=subprocess.PIPE,
-                stderr=worker_log,
+                stderr=subprocess.PIPE,
                 text=True,
                 encoding="utf-8",
+                errors="replace",
                 creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
             )
             if hardware_monitor is not None:
                 hardware_monitor.register_process(
                     getattr(worker, "pid", None), "worker"
+                )
+            if getattr(worker, "stderr", None) is not None:
+                run_log.capture(
+                    worker.stderr, source="worker", archive=worker_log, echo=False
                 )
             run_log.event("worker_started", pid=getattr(worker, "pid", None))
             startup_timeout = (
@@ -757,7 +864,7 @@ def main(argv: list[str] | None = None) -> int:
                     f"Simulation worker stopped unexpectedly; see {log_path}"
                 )
             if (
-                args.smoke_test or args.screenshot
+                args.smoke_test or args.screenshot or args.workspace_probe
             ) and time.monotonic() - started > args.smoke_timeout:
                 raise RuntimeError(
                     "Godot verification did not finish before its timeout"
@@ -800,7 +907,12 @@ def main(argv: list[str] | None = None) -> int:
                 write_status(startup_path, "error", str(error))
                 if worker is not None:
                     _shutdown_worker(worker, port, token)
-                if not (args.headless or args.smoke_test or args.screenshot):
+                if not (
+                    args.headless
+                    or args.smoke_test
+                    or args.screenshot
+                    or args.workspace_probe
+                ):
                     while viewer.poll() is None:
                         time.sleep(0.1)
             except (OSError, RuntimeError):
@@ -823,8 +935,6 @@ def main(argv: list[str] | None = None) -> int:
             cleanup.append(lambda: _shutdown_worker(worker, port, token))
             if worker.stdout:
                 cleanup.append(worker.stdout.close)
-        if worker_log:
-            cleanup.append(worker_log.close)
         if startup_path is not None:
             cleanup.append(lambda: startup_path.unlink(missing_ok=True))
         for action in cleanup:
@@ -835,6 +945,13 @@ def main(argv: list[str] | None = None) -> int:
                 if run_status != "interrupted":
                     run_status, exit_code = "failed", 1
         run_log.close_capture()
+        if worker_log:
+            try:
+                worker_log.close()
+            except OSError as error:
+                run_log.error(str(error), source="cleanup")
+                if run_status != "interrupted":
+                    run_status, exit_code = "failed", 1
         if hardware_monitor is not None:
             hardware_monitor.stop()
         if run_status == "cancelled" and run_log.has_errors:
@@ -845,6 +962,8 @@ def main(argv: list[str] | None = None) -> int:
             viewer_exit_code=getattr(viewer, "returncode", None),
             worker_exit_code=getattr(worker, "returncode", None),
         )
+        if telemetry is not None:
+            telemetry.stop()
     return exit_code
 
 

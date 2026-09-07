@@ -44,6 +44,10 @@ assumptions. The original pilot retains its explicitly illustrative architecture
 | N | Advance to the next activity and pause |
 | R | Reset the seeded day |
 | F5 / F9 | Save / load the local quick slot |
+| F3 / Performance | Open or close live charts, hardware readings, logs and experiment controls |
+| F11 | Toggle fullscreen |
+| Performance: Target / Apply live | Add or remove synthetic residents while keeping the current day |
+| Performance: UI / window mode | Choose 100%, 125% or 150% UI scale; windowed, maximized or fullscreen |
 | Resident list/search | Select a persistent resident, including indoors |
 | Restart with | Initialize a new day with the current scenario's supported population presets |
 
@@ -52,6 +56,21 @@ the camera continues following the selected resident. Press **3** or **Follow**
 again to recenter. Ground mode retains walking collisions; left/right arrow keys
 also turn there. Camera keyboard controls pause while typing in a search field
 or while the application window is unfocused.
+
+Resize or maximize the window to use a wider screen. Controls and inspection
+panels scroll when space is limited; **Inspector / controls** switches between
+them in compact layouts. The Performance panel becomes a right dock on wider
+layouts and a bottom drawer on narrower ones. Drag its **Resize** grip to adjust
+the space reserved for observations.
+
+Window size, position, mode and UI scale are remembered in Godot's local user
+data as `display-settings.json`. Saved geometry is clamped to the current screen.
+Launch options override those preferences; `--no-display-settings` skips both
+reading and writing them:
+
+```powershell
+python -m civic_center --performance --window-size 1920x1080 --window-mode windowed --ui-scale 1.25
+```
 
 The **2D Map** view (`--mode map`, or **4**) displays flat streets and building
 footprints with activity-colored resident markers. Indoor residents appear at
@@ -76,6 +95,37 @@ summaries. The viewer emits `GODOT_APPLICATION_RUN_METRICS` every ten seconds an
 at shutdown; the launcher records those summaries without printing them to the
 terminal. Starting Godot directly emits diagnostics but does not create the
 launcher's JSON file.
+
+Press **F3** or **Performance** to observe a run. **Charts** keeps frame intervals
+and system CPU/GPU trends beside the population controls; the headline shows
+CPU, RAM, GPU and VRAM readings. **Details** adds per-process CPU/RSS, supported
+GPU temperature/power, system disk activity, worker timing and decoder costs.
+**Logs** supports severity/source filters, text search, paused auto-scroll and
+clearing the visible history. **Open run log** opens the current JSON report;
+**Record point** stores an aggregate comparison point in that report.
+
+Enter a whole-number **Target** from 1 to 5,000 and click **Apply live**. The step
+buttons adjust the proposed target; typing or stepping does not change the
+simulation until Apply. Preparation runs while the existing day continues, or
+remains paused. The committed change retains surviving residents, the current
+clock, speed, selection and camera. Removing a selected/followed resident clears
+that target and leaves the camera in place. **Restart with** remains a separate
+new-day action. Added residents are synthetic load experiments; the target range
+does not establish an interactive capacity or measured San Francisco population.
+Recorded replay and older workers without this capability disable live changes.
+
+The console also provides pause/resume, next activity, speed, 2D/3D and save/load
+buttons. Frame statistics describe CPU callback intervals, not GPU execution
+time. GPU readings describe the adapter as a whole, and process CPU can exceed
+100% because 100% represents one busy logical core. Missing readings are
+unavailable; older samples show their age and become stale rather than appearing
+as new chart values. The UI retains at most 120 chart samples and 300 log rows;
+closing it stops chart updates while the launcher continues recording.
+
+Launcher diagnostics arrive over a separate authenticated local connection.
+A disconnected feed leaves local viewer metrics available. Direct Godot launches
+also retain local metrics, but need the launcher for collected hardware and the
+JSON run report.
 
 The launcher owns worker startup and shutdown. Closing the viewer disconnects its
 client; the launcher then closes its worker. **Reconnect** obtains a complete
@@ -244,6 +294,9 @@ explicit generated walking proxies, separate from map completeness.
   Indoor follow views retain the resident's arrival point and frame the building
   exterior from farther away; mouse-wheel zoom still adjusts that distance.
 - `hud.gd` displays authoritative controls, resident details and occupancy.
+- `diagnostics.gd` and `diagnostic_chart.gd` provide the bounded observation panel;
+  `telemetry_client.gd` receives local launcher readings without polling log files.
+- `display_settings.gd` manages local window and UI-scale preferences.
 - `main.gd` connects these modules and implements live/replay startup.
 
 Local coordinates `(east, north, up)` convert once to Godot `(east, up, -north)`
@@ -320,6 +373,9 @@ With a Godot executable available as `godot`:
 
 ```powershell
 godot --headless --path viewer --script res://presentation_tests.gd
+godot --headless --path viewer --script res://workspace_ui_tests.gd
+godot --headless --path viewer --script res://workspace_input_tests.gd -- --replay ../contracts/one-resident-replay.json --geography ""
+godot --headless --path viewer --script res://telemetry_client_tests.gd
 godot --headless --path viewer --script res://map_2d_tests.gd
 godot --headless --path viewer --script res://geography_tests.gd
 godot --headless --path viewer --script res://terrain_tests.gd
@@ -329,6 +385,15 @@ godot --headless --path viewer --script res://geography_visuals_tests.gd
 godot --headless --path viewer --script res://geography_use_tests.gd
 godot --headless --path viewer --script res://places_tests.gd
 ```
+
+Workspace UI checks cover narrow through ultrawide layouts, focus guards,
+invalid population inputs, stale hardware and bounded histories. The telemetry
+fixture checks authenticated hello, partial frames, reconnects, duplicate
+suppression, heartbeat freshness and oversized-buffer rejection.
+The input fixture injects real mouse and keyboard events: ordinary controls
+respond, while an active workspace probe ignores interactive view changes and
+held camera keys. Programmatic actions, display controls and OS close remain
+available to the probe. This isolation applies only to automated workspace trials.
 
 The standalone presentation checks cover a route corner, atomic arrival,
 session reset, stale sequence rejection and stable slots after reordered records.

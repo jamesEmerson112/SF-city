@@ -7,27 +7,28 @@ into simulation ticks and publishes complete snapshots to disposable viewers.
 from __future__ import annotations
 
 import argparse
-from collections import deque
-from dataclasses import dataclass, field
+import copy
 import hmac
 import ipaddress
 import json
 import math
 import multiprocessing
 import os
-from pathlib import Path
-import queue
 import pickle
+import queue
 import re
 import selectors
 import socket
 import tempfile
 import threading
 import time
-from typing import Any, Callable
 import uuid
 import weakref
 import zlib
+from collections import deque
+from dataclasses import dataclass, field
+from pathlib import Path
+from typing import Any, Callable
 
 from civic_center.checkpoint import (
     PreparedCheckpointCapture,
@@ -38,9 +39,19 @@ from civic_center.checkpoint import (
 )
 from civic_center.model import CivicSimulation
 from civic_center.point_transport import PointRequest, PointTransportService, PoolFrame
-from civic_center.shared_geometry import SharedGeometryEncoder
+from civic_center.population import (
+    MAX_POPULATION,
+    MIN_POPULATION,
+    PopulationDelta,
+    commit_population,
+    frozen_population_view,
+    prepare_population_delta,
+    preview_population,
+    validate_population,
+    world_identity,
+)
 from civic_center.scenario import load_scenario, make_scenario
-
+from civic_center.shared_geometry import SharedGeometryEncoder
 
 PROTOCOL_VERSION = 1
 MAX_FRAME_BYTES = 16 * 1024 * 1024
@@ -165,6 +176,7 @@ def scene_message(
     compact: bool = False,
     trip_references: bool = False,
     rows: bool = False,
+    world_fingerprint: str | None = None,
 ) -> dict[str, Any]:
     if rows and not (compact and trip_references):
         raise ValueError("resident rows require static metadata and reliable trips")
@@ -174,6 +186,15 @@ def scene_message(
         "session_id": session_id,
         "scenario": presentation_scenario(scenario),
         "visual_asset": VISUAL_ASSET,
+        "capabilities": {
+            "set_population": True,
+            "set_population_session_guard": True,
+            "population_min": MIN_POPULATION,
+            "population_max": MAX_POPULATION,
+        },
+        "population": len(scenario["residents"]),
+        "roster_revision": scenario.get("roster_revision", 0),
+        "world_identity": world_fingerprint or world_identity(scenario),
     }
     if compact:
         message["snapshot_encoding"] = (
@@ -206,6 +227,11 @@ def snapshot_message(
         "protocol_version": PROTOCOL_VERSION,
         "session_id": session_id,
         "sequence": sequence,
+        "population": len(simulation._sources),
+        "roster_revision": simulation.roster_revision,
+        "world_identity": simulation.world_identity,
+        "population_change": simulation.population_change,
+        "worker_metrics": getattr(simulation, "worker_metrics", {}),
     }
     if compact:
         message["encoding"] = (
@@ -266,7 +292,9 @@ class PreparedSession:
     points_validated: bool = False
 
 
-def prepare_session(simulation: CivicSimulation, *, points: bool = False) -> PreparedSession:
+def prepare_session(
+    simulation: CivicSimulation, *, points: bool = False
+) -> PreparedSession:
     preparation = prepare_checkpoint_capture(simulation)
     session_id = str(uuid.uuid4())
     result = PreparedSession(
@@ -289,6 +317,7 @@ def prepare_session(simulation: CivicSimulation, *, points: bool = False) -> Pre
                     compact=compact,
                     trip_references=references,
                     rows=rows,
+                    world_fingerprint=simulation.world_identity,
                 )
             )
             message = snapshot_message(
@@ -326,6 +355,112 @@ def prepare_session(simulation: CivicSimulation, *, points: bool = False) -> Pre
     return result
 
 
+@dataclass
+class PreparedPopulation:
+    delta: PopulationDelta
+    session: PreparedSession
+    route_cache: dict
+    scenario_values: int
+
+
+def _prepare_live_population(
+    frozen: CivicSimulation, target: int, *, points: bool
+) -> PreparedPopulation:
+    """Prepare static roster/scene bytes and all-phase route budgets off the owner loop."""
+    delta = prepare_population_delta(frozen, target)
+    candidate = preview_population(frozen, delta)
+    if points and candidate.scenario.get("geography_manifest"):
+        # Validate a complete outbound cohort and then its complete return cohort.
+        # The retained coordinate pool includes both directions. Reserve independent
+        # per-resident maxima as well, so a mixture cannot exceed reference budgets.
+        from civic_center.shared_geometry import (
+            MAX_NODE_REFERENCES,
+            MAX_POINT_REFERENCES,
+        )
+
+        encoder = SharedGeometryEncoder("population-preflight".ljust(128, "-"))
+        outbound, inbound = [], []
+        references = nodes = 0
+        for identity, source in candidate._sources.items():
+            definitions = []
+            for direction, origin, destination in (
+                ("outbound", source["home_id"], source["work_id"]),
+                ("return", source["work_id"], source["home_id"]),
+            ):
+                route = candidate.graph.route(
+                    candidate._buildings[origin]["entrance_node_id"],
+                    candidate._buildings[destination]["entrance_node_id"],
+                )
+                if route is not None:
+                    definitions.append(
+                        {
+                            "id": f"{identity}:{direction}:9007199254740991",
+                            "points": route.points,
+                            "node_ids": route.node_ids,
+                            "length_m": route.length,
+                        }
+                    )
+                else:
+                    definitions.append(None)
+            references += max(
+                (len(item["points"]) for item in definitions if item), default=0
+            )
+            nodes += max(
+                (len(item["node_ids"]) for item in definitions if item), default=0
+            )
+            if definitions[0]:
+                outbound.append(definitions[0])
+            if definitions[1]:
+                inbound.append(definitions[1])
+        if references > MAX_POINT_REFERENCES or nodes > MAX_NODE_REFERENCES:
+            raise ValueError(
+                "Requested population exceeds shared route reference budgets"
+            )
+        encoder.encode(outbound)
+        path_sizes = {
+            record.identity.rsplit(":", 2)[0]: len(encode_frame(record.record()))
+            + encoder._path_frame_overhead
+            for record in encoder._paths.values()
+        }
+        encoder.encode(inbound, retire_ids=[item["id"] for item in outbound])
+        for record in encoder._paths.values():
+            identity = record.identity.rsplit(":", 2)[0]
+            path_sizes[identity] = max(
+                path_sizes.get(identity, 0),
+                len(encode_frame(record.record())) + encoder._path_frame_overhead,
+            )
+        from civic_center.shared_geometry import MAX_CACHE_BYTES, WIRE_ENVELOPE_RESERVE
+
+        if (
+            encoder.stats()["pool_wire_bytes"]
+            + sum(path_sizes.values())
+            + WIRE_ENVELOPE_RESERVE
+            > MAX_CACHE_BYTES
+        ):
+            raise ValueError(
+                "Requested population exceeds mixed-direction route cache budget"
+            )
+    prepared = prepare_session(candidate, points=points)
+    from civic_center.checkpoint import _validate_tree
+
+    scenario_values = _validate_tree({"scenario": candidate.scenario})
+    return PreparedPopulation(
+        delta, prepared, dict(candidate.graph._cache), scenario_values
+    )
+
+
+def _append_frame_fields(frame: bytes, fields: dict) -> bytes:
+    result = (
+        frame[:-2]
+        + b","
+        + json.dumps(fields, separators=(",", ":"), allow_nan=False).encode()[1:]
+        + b"\n"
+    )
+    if len(result) > MAX_FRAME_BYTES + 1:
+        raise ValueError("Population scene exceeds the frame limit")
+    return result
+
+
 def _process_job_main(connection: Any, action: str, payload: Any) -> None:
     """Child endpoint of a parent-owned anonymous pipe, with bounded pickle IPC."""
     started = time.monotonic()
@@ -335,7 +470,13 @@ def _process_job_main(connection: Any, action: str, payload: Any) -> None:
             result = write_captured_checkpoint(capture, path)
         elif action == "load":
             path = payload["path"] if isinstance(payload, dict) else payload
-            result = prepare_session(load_checkpoint(path), points=isinstance(payload, dict) and payload.get("points", False))
+            result = prepare_session(
+                load_checkpoint(path),
+                points=isinstance(payload, dict) and payload.get("points", False),
+            )
+        elif action == "set_population":
+            frozen, target, points = payload
+            result = _prepare_live_population(frozen, target, points=points)
         elif action == "population":
             geography, terrain, landuse, population, seed, *point_option = payload
             if geography:
@@ -351,7 +492,9 @@ def _process_job_main(connection: Any, action: str, payload: Any) -> None:
                 scenario = build_city_scenario(geography, **options)
             else:
                 scenario = make_scenario(population=population, seed=seed)
-            result = prepare_session(CivicSimulation(scenario), points=bool(point_option and point_option[0]))
+            result = prepare_session(
+                CivicSimulation(scenario), points=bool(point_option and point_option[0])
+            )
         else:
             raise ValueError("unknown isolated operation")
         prepared_at = time.monotonic()
@@ -390,9 +533,12 @@ class Client:
     accepted_at: float
     incoming: bytearray = field(default_factory=bytearray)
     outgoing: deque[PendingFrame] = field(default_factory=deque)
+    legacy_bootstrap: deque[PendingFrame] = field(default_factory=deque)
     queued_bytes: int = 0
     authenticated: bool = False
     close_after_flush: bool = False
+    command_client_id: str = field(default_factory=lambda: str(uuid.uuid4()))
+    population_session_guard: bool = False
     requested_snapshot_encoding: str = ""
     known_trip_ids: set[str] = field(default_factory=set)
     trip_geometry_sizes: dict[str, int] = field(default_factory=dict)
@@ -406,8 +552,14 @@ class Client:
     point_status: str = ""
     next_point_status: float = 0.0
 
-    def enqueue(self, frame: bytes, *, snapshot: bool = False,
-                scene_barrier: bool = False, priority: bool = False) -> bool:
+    def enqueue(
+        self,
+        frame: bytes,
+        *,
+        snapshot: bool = False,
+        scene_barrier: bool = False,
+        priority: bool = False,
+    ) -> bool:
         """Coalesce unsent snapshots, preserving partial frames and control replies."""
         if snapshot:
             retained = deque()
@@ -419,8 +571,9 @@ class Client:
             self.outgoing = retained
         if self.queued_bytes + len(frame) > MAX_QUEUE_BYTES:
             return False
-        pending = PendingFrame(frame, snapshot=snapshot, scene_barrier=scene_barrier,
-                               priority=priority)
+        pending = PendingFrame(
+            frame, snapshot=snapshot, scene_barrier=scene_barrier, priority=priority
+        )
         if priority:
             insertion = 0
             for index, queued in enumerate(self.outgoing):
@@ -474,6 +627,14 @@ class CivicWorker:
             raise ValueError("job_backend must be thread or process")
         self.job_backend = job_backend
         self.last_job_metrics: dict[str, Any] = {}
+        self._population_responses: dict[tuple[str, str], tuple[tuple, dict]] = {}
+        self._advance_ms = 0.0
+        self._advanced_ticks = 0
+        self._advance_wall = 0.0
+        self._snapshot_ms = 0.0
+        self._encode_ms = 0.0
+        self._snapshot_bytes = 0
+        self._snapshots_encoded = 0
         self.simulation = (
             simulation if simulation is not None else CivicSimulation(scenario)
         )
@@ -615,15 +776,20 @@ class CivicWorker:
         self.selector.close()
 
     def _advance_elapsed(self, now: float) -> None:
+        started = time.perf_counter()
         elapsed = max(0.0, now - self._last_time)
         self._last_time = now
         if self.simulation.paused:
+            self._advance_ms = 0.0
             return
+        self._advance_wall += elapsed
         due = self._tick_fraction + elapsed * self.tick_hz * self.simulation.speed
         count = int(due)
         self._tick_fraction = due - count
         if count:
             self.simulation.advance_ticks(count)
+            self._advanced_ticks += count
+        self._advance_ms = (time.perf_counter() - started) * 1000
 
     def _accept(self) -> None:
         for _ in range(MAX_CLIENTS):
@@ -659,12 +825,23 @@ class CivicWorker:
             events |= selectors.EVENT_WRITE
         self.selector.modify(client.sock, events, client)
 
-    def _queue(self, client: Client, frame: bytes, *, snapshot: bool = False,
-               scene_barrier: bool = False, priority: bool = False) -> None:
+    def _queue(
+        self,
+        client: Client,
+        frame: bytes,
+        *,
+        snapshot: bool = False,
+        scene_barrier: bool = False,
+        priority: bool = False,
+    ) -> None:
         if client.sock not in self.clients or client.close_after_flush:
             return
-        if not client.enqueue(frame, snapshot=snapshot, scene_barrier=scene_barrier,
-                              priority=priority and self._uses_points(client)):
+        if not client.enqueue(
+            frame,
+            snapshot=snapshot,
+            scene_barrier=scene_barrier,
+            priority=priority and self._uses_points(client),
+        ):
             self._close_client(client)
             return
         self._interest(client)
@@ -772,8 +949,38 @@ class CivicWorker:
                 client.outgoing.popleft()
         self._interest(client)
 
-        if self._shutdown_deadline is None and self._uses_points(client):
-            self._pump_points(client)
+        if self._shutdown_deadline is None:
+            self._pump_legacy_bootstrap(client)
+            if self._uses_points(client):
+                self._pump_points(client)
+
+    def _stage_legacy_bootstrap(
+        self, client: Client, geometry: list[bytes], snapshot: bytes
+    ) -> None:
+        """Retain bounded immutable frames separately, draining them in wire order.
+
+        Legacy route geometry has its own 32 MiB cache budget. Its scene plus
+        geometry need not fit simultaneously in the separate outgoing queue.
+        No new snapshot is generated for this client until its definitions and
+        captured snapshot have entered that queue in order.
+        """
+        client.legacy_bootstrap.extend(PendingFrame(frame) for frame in geometry)
+        client.legacy_bootstrap.append(PendingFrame(snapshot, snapshot=True))
+        self._pump_legacy_bootstrap(client)
+
+    def _pump_legacy_bootstrap(self, client: Client) -> None:
+        if client.sock not in self.clients or client.close_after_flush:
+            return
+        while client.legacy_bootstrap:
+            frame = client.legacy_bootstrap[0]
+            if client.queued_bytes and client.queued_bytes + len(frame.data) > min(
+                POINT_STAGE_BYTES, MAX_QUEUE_BYTES
+            ):
+                return
+            client.legacy_bootstrap.popleft()
+            self._queue(client, frame.data, snapshot=frame.snapshot)
+            if client.sock not in self.clients:
+                return
 
     def _compact(self, client: Client) -> bool:
         return transport_mode(self.scenario, client.requested_snapshot_encoding)[0]
@@ -784,11 +991,14 @@ class CivicWorker:
     def _rows(self, client: Client) -> bool:
         return transport_mode(self.scenario, client.requested_snapshot_encoding)[2]
 
-    def _uses_points(self, client: Client, scenario: dict[str, Any] | None = None) -> bool:
+    def _uses_points(
+        self, client: Client, scenario: dict[str, Any] | None = None
+    ) -> bool:
         source = self.scenario if scenario is None else scenario
-        return client.requested_route_encoding == CITY_POINTS_ENCODING and transport_mode(
-            source, client.requested_snapshot_encoding
-        )[1]
+        return (
+            client.requested_route_encoding == CITY_POINTS_ENCODING
+            and transport_mode(source, client.requested_snapshot_encoding)[1]
+        )
 
     def _reset_points(self) -> None:
         if self._point_service is not None:
@@ -823,20 +1033,35 @@ class CivicWorker:
 
     def _point_status_message(self, client: Client, status: str) -> None:
         now = time.monotonic()
-        if status == client.point_status and (status == "ready" or now < client.next_point_status):
+        if status == client.point_status and (
+            status == "ready" or now < client.next_point_status
+        ):
             return
         client.point_status = status
         client.next_point_status = now + 1.0
-        self._queue(client, encode_frame({"type":"geometry_status", "protocol_version":1,
-                    "session_id":self.session_id, "status":status,
-                    "tick":self.simulation.tick, "point_count":client.point_cursor,
-                    "trip_count":len(client.known_trip_ids)}), priority=status == "preparing")
+        self._queue(
+            client,
+            encode_frame(
+                {
+                    "type": "geometry_status",
+                    "protocol_version": 1,
+                    "session_id": self.session_id,
+                    "status": status,
+                    "tick": self.simulation.tick,
+                    "point_count": client.point_cursor,
+                    "trip_count": len(client.known_trip_ids),
+                }
+            ),
+            priority=status == "preparing",
+        )
 
     def _point_ready(self, client: Client) -> bool:
-        return (self._point_state is not None
-                and client.point_scene_session == self.session_id
-                and client.point_frame_index == len(self._point_pool)
-                and client.known_trip_ids == self._point_active)
+        return (
+            self._point_state is not None
+            and client.point_scene_session == self.session_id
+            and client.point_frame_index == len(self._point_pool)
+            and client.known_trip_ids == self._point_active
+        )
 
     def _request_points(self) -> None:
         if self._point_service is None:
@@ -846,11 +1071,23 @@ class CivicWorker:
         ids = self.simulation.active_trip_ids()
         if self._point_state is not None and frozenset(ids) == self._point_active:
             return
-        state = self.simulation.snapshot(include_static=False, include_trip_geometry=False)
+        state = self._capture_point_state()
         definitions = self.simulation.capture_trip_geometries(ids)
-        cursor = self._point_pool[-1].start + self._point_pool[-1].count if self._point_pool else 0
-        self._point_service.submit(PointRequest(self.session_id, state, definitions, ids,
-                                   frozenset(self._point_paths), cursor))
+        cursor = (
+            self._point_pool[-1].start + self._point_pool[-1].count
+            if self._point_pool
+            else 0
+        )
+        self._point_service.submit(
+            PointRequest(
+                self.session_id,
+                state,
+                definitions,
+                ids,
+                frozenset(self._point_paths),
+                cursor,
+            )
+        )
 
     def _poll_points(self) -> None:
         if self._point_service is None:
@@ -858,22 +1095,37 @@ class CivicWorker:
         result = self._point_service.poll()
         if result is None or result.session_id != self.session_id or result.cancelled:
             return
-        clients = [client for client in self.clients.values()
-                   if client.authenticated and self._uses_points(client)]
+        clients = [
+            client
+            for client in self.clients.values()
+            if client.authenticated and self._uses_points(client)
+        ]
         try:
             if result.error:
                 raise ValueError(result.error)
-            cursor = self._point_pool[-1].start + self._point_pool[-1].count if self._point_pool else 0
+            cursor = (
+                self._point_pool[-1].start + self._point_pool[-1].count
+                if self._point_pool
+                else 0
+            )
             for frame in result.pool_frames:
                 if frame.start != cursor or len(frame.data) > MAX_FRAME_BYTES + 1:
                     raise ValueError("prepared point pool has a gap or oversized frame")
                 cursor += frame.count
             active = frozenset(result.active_ids)
-            paths = {identity: frame for identity, frame in self._point_paths.items() if identity in active}
+            paths = {
+                identity: frame
+                for identity, frame in self._point_paths.items()
+                if identity in active
+            }
             paths.update(result.path_frames)
             if frozenset(paths) != active:
-                raise ValueError("prepared shared paths do not match the captured active trips")
-            pool_bytes = self._point_pool_bytes + sum(len(frame.data) for frame in result.pool_frames)
+                raise ValueError(
+                    "prepared shared paths do not match the captured active trips"
+                )
+            pool_bytes = self._point_pool_bytes + sum(
+                len(frame.data) for frame in result.pool_frames
+            )
             if pool_bytes + sum(map(len, paths.values())) > MAX_TRIP_GEOMETRY_BYTES:
                 raise ValueError("shared route wire cache exceeds the 32 MiB limit")
         except ValueError as exc:
@@ -886,29 +1138,51 @@ class CivicWorker:
         self._point_active = active
         self._point_ids = result.active_ids
         self._point_state = result.state
-        self._point_stats = {**result.stats, "preparation_seconds":result.elapsed_seconds,
-                             "cached_frame_bytes":pool_bytes + sum(map(len, paths.values()))}
+        self._point_stats = {
+            **result.stats,
+            "preparation_seconds": result.elapsed_seconds,
+            "cached_frame_bytes": pool_bytes + sum(map(len, paths.values())),
+        }
         # Capture the latest controls/pose when the completed geometry still
         # covers the live set. A newly departed trip requires another update.
         if frozenset(self.simulation.active_trip_ids()) == active:
-            self._point_state = self.simulation.snapshot(include_static=False, include_trip_geometry=False)
+            self._point_state = self._capture_point_state()
         self._point_version += 1
         self._point_snapshots.clear()
         for client in clients:
             self._pump_points(client)
 
+    def _capture_point_state(self) -> dict:
+        started = time.perf_counter()
+        state = self.simulation.snapshot(
+            include_static=False, include_trip_geometry=False
+        )
+        self._snapshot_ms = (time.perf_counter() - started) * 1000
+        return state
+
     def _point_snapshot(self, rows: bool) -> bytes:
         if rows not in self._point_snapshots:
             self.sequence += 1
-            message = {**self._point_state, "type":"snapshot", "protocol_version":1,
-                       "session_id":self.session_id, "sequence":self.sequence,
-                       "encoding":CITY_ROWS_ENCODING if rows else CITY_ROUTES_ENCODING}
+            message = {
+                **self._point_state,
+                "type": "snapshot",
+                "protocol_version": 1,
+                "session_id": self.session_id,
+                "sequence": self.sequence,
+                "encoding": CITY_ROWS_ENCODING if rows else CITY_ROUTES_ENCODING,
+                "population": len(self.simulation._sources),
+                "roster_revision": self.simulation.roster_revision,
+                "world_identity": self.simulation.world_identity,
+                "population_change": self.simulation.population_change,
+            }
             if rows:
                 _snapshot_rows(message)
-            self._point_snapshots[rows] = encode_frame(message)
+            self._point_snapshots[rows] = self._encode_snapshot_frame(message)
         return self._point_snapshots[rows]
 
-    def _stage_point_frame(self, client: Client, frame: bytes, *, snapshot: bool = False) -> bool:
+    def _stage_point_frame(
+        self, client: Client, frame: bytes, *, snapshot: bool = False
+    ) -> bool:
         # At most one large indivisible frame can exceed the soft watermark.
         # Source frames remain in the shared bounded cache, not in a second
         # per-client byte queue. Reserve room for control replies at all times.
@@ -918,22 +1192,37 @@ class CivicWorker:
         return client.sock in self.clients
 
     def _pump_points(self, client: Client) -> None:
-        if self._shutdown_deadline is not None or client.sock not in self.clients or client.close_after_flush:
+        if (
+            self._shutdown_deadline is not None
+            or client.sock not in self.clients
+            or client.close_after_flush
+        ):
             return
         if self._point_state is None or client.point_scene_session != self.session_id:
             self._point_status_message(client, "preparing")
             return
         expired = sorted(client.known_trip_ids - self._point_active)
         if expired:
-            frame = encode_frame({"type":"forget_trip_geometries", "protocol_version":1,
-                                  "session_id":self.session_id, "ids":expired})
+            frame = encode_frame(
+                {
+                    "type": "forget_trip_geometries",
+                    "protocol_version": 1,
+                    "session_id": self.session_id,
+                    "ids": expired,
+                }
+            )
             if not self._stage_point_frame(client, frame):
                 return
             client.known_trip_ids.difference_update(expired)
         while client.point_frame_index < len(self._point_pool):
             frame = self._point_pool[client.point_frame_index]
             if frame.start != client.point_cursor:
-                self._error(client, "geometry_cursor", "shared coordinate cursor is inconsistent", close=True)
+                self._error(
+                    client,
+                    "geometry_cursor",
+                    "shared coordinate cursor is inconsistent",
+                    close=True,
+                )
                 return
             if not self._stage_point_frame(client, frame.data):
                 self._point_status_message(client, "streaming")
@@ -957,13 +1246,22 @@ class CivicWorker:
             client.point_snapshot_version = self._point_version
             self._point_status_message(client, "ready")
 
-    def _publish_point_clients(self, clients: list[Client], *, force: bool = False) -> None:
+    def _publish_point_clients(
+        self, clients: list[Client], *, force: bool = False
+    ) -> None:
         self._request_points()
         active = frozenset(self.simulation.active_trip_ids())
-        if self._point_state is not None and active == self._point_active and any(self._point_ready(client) for client in clients):
-            changed = any(self._point_state[name] != getattr(self.simulation, name) for name in ("tick", "paused", "speed"))
+        if (
+            self._point_state is not None
+            and active == self._point_active
+            and any(self._point_ready(client) for client in clients)
+        ):
+            changed = any(
+                self._point_state[name] != getattr(self.simulation, name)
+                for name in ("tick", "paused", "speed")
+            )
             if changed or force:
-                self._point_state = self.simulation.snapshot(include_static=False, include_trip_geometry=False)
+                self._point_state = self._capture_point_state()
                 self._point_version += 1
                 self._point_snapshots.clear()
         for client in clients:
@@ -984,6 +1282,7 @@ class CivicWorker:
                 scene_message(
                     self.scenario,
                     self.session_id,
+                    world_fingerprint=self.simulation.world_identity,
                     compact=compact,
                     trip_references=trip_references,
                     rows=rows,
@@ -991,9 +1290,43 @@ class CivicWorker:
             )
         return self._scene_frames[key]
 
+    def _worker_metrics(self) -> dict:
+        return {
+            "monotonic_seconds": time.monotonic(),
+            "advance_ms": round(self._advance_ms, 3),
+            "advanced_ticks": self._advanced_ticks,
+            "simulated_seconds_per_wall_second": (
+                self._advanced_ticks / self.tick_hz / self._advance_wall
+                if self._advance_wall > 0
+                else None
+            ),
+            "requested_speed": self.simulation.speed,
+            "paused": self.simulation.paused,
+            "snapshot_ms": round(self._snapshot_ms, 3),
+            "encode_ms": round(self._encode_ms, 3),
+            "snapshot_bytes": self._snapshot_bytes,
+            "snapshots_published": self._snapshots_encoded,
+            "transport_queue_bytes": sum(
+                client.queued_bytes for client in self.clients.values()
+            ),
+            "route_cache_entries": len(self.simulation.graph._cache),
+            "geometry_cache_bytes": self._point_pool_bytes
+            + sum(map(len, self._point_paths.values())),
+            "measurement": "advance last call; achieved speed since current controls/roster; last encoded snapshot; encoded count excludes sequence-only updates",
+        }
+
+    def _encode_snapshot_frame(self, message: dict) -> bytes:
+        message["worker_metrics"] = self._worker_metrics()
+        started = time.perf_counter()
+        frame = encode_frame(message)
+        self._encode_ms = (time.perf_counter() - started) * 1000
+        self._snapshot_bytes = len(frame)
+        self._snapshots_encoded += 1
+        return frame
+
     def _snapshot(self, *, compact: bool = False) -> bytes:
         self.sequence += 1
-        return encode_frame(
+        return self._encode_snapshot_frame(
             snapshot_message(
                 self.simulation, self.session_id, self.sequence, compact=compact
             )
@@ -1019,10 +1352,14 @@ class CivicWorker:
         trip_ids: list[str] = []
         definitions: dict[str, dict[str, Any]] = {}
         for client in clients:
+            if client.legacy_bootstrap:
+                self._pump_legacy_bootstrap(client)
+                continue
             key = transport_mode(self.scenario, client.requested_snapshot_encoding)
             compact, trip_references, rows = key
             if key not in frames and key not in invalid_frames:
                 self.sequence += 1
+                snapshot_started = time.perf_counter()
                 message = snapshot_message(
                     self.simulation,
                     self.session_id,
@@ -1032,7 +1369,8 @@ class CivicWorker:
                     rows=rows,
                 )
                 try:
-                    frames[key] = encode_frame(message)
+                    self._snapshot_ms = (time.perf_counter() - snapshot_started) * 1000
+                    frames[key] = self._encode_snapshot_frame(message)
                 except ValueError as exc:
                     invalid_frames[key] = str(exc)
                 if trip_references:
@@ -1090,15 +1428,12 @@ class CivicWorker:
                 except ValueError as exc:
                     self._error(client, "geometry_cache_limit", str(exc), close=True)
                     continue
-                for frame in reliable:
-                    self._queue(
-                        client, frame
-                    )  # Definitions are reliable control frames.
-                if client.sock not in self.clients:
-                    continue
                 client.known_trip_ids.update(missing)
                 client.trip_geometry_sizes.update(sizes)
                 client.trip_geometry_bytes += geometry_bytes
+                if reliable:
+                    self._stage_legacy_bootstrap(client, reliable, frames[key])
+                    continue
             self._queue(client, frames[key], snapshot=True)
 
     def _slot_path(self, value: Any) -> tuple[str, Path]:
@@ -1137,9 +1472,12 @@ class CivicWorker:
             for client in self.clients.values()
             if client.authenticated
         } or {(False, False, False)}
-        legacy_modes = {transport_mode(candidate.scenario, client.requested_snapshot_encoding)
-                        for client in self.clients.values()
-                        if client.authenticated and not self._uses_points(client, candidate.scenario)}
+        legacy_modes = {
+            transport_mode(candidate.scenario, client.requested_snapshot_encoding)
+            for client in self.clients.values()
+            if client.authenticated
+            and not self._uses_points(client, candidate.scenario)
+        }
         scene_frames = {}
         for compact, trip_references, rows in encodings:
             scene_frames[(compact, trip_references, rows)] = encode_frame(
@@ -1172,6 +1510,9 @@ class CivicWorker:
                     raise ValueError(
                         "saved active trip geometries exceed the connection cache limit"
                     )
+        self._population_responses.clear()
+        self._advanced_ticks = 0
+        self._advance_wall = 0.0
         self.simulation = candidate
         self._checkpoint_preparation = preparation
         self.scenario = candidate.scenario
@@ -1188,6 +1529,7 @@ class CivicWorker:
                 if self._uses_points(client):
                     self._queue_point_scene(client)
                     continue
+                client.legacy_bootstrap.clear()
                 client.known_trip_ids.clear()
                 client.trip_geometry_sizes.clear()
                 client.trip_geometry_bytes = 0
@@ -1250,6 +1592,7 @@ class CivicWorker:
                 )
             except Exception as exc:
                 result = (None, exc)
+            job.metrics["preparation_finished_monotonic"] = time.monotonic()
             job.result.put(result)
 
         job.thread = threading.Thread(target=execute, name="civic-command", daemon=True)
@@ -1351,15 +1694,22 @@ class CivicWorker:
         modes = {
             transport_mode(candidate.scenario, client.requested_snapshot_encoding)
             for client in self.clients.values()
-            if client.authenticated and not self._uses_points(client, candidate.scenario)
+            if client.authenticated
+            and not self._uses_points(client, candidate.scenario)
         }
-        point_modes = {transport_mode(candidate.scenario, client.requested_snapshot_encoding)
-                       for client in self.clients.values()
-                       if client.authenticated and self._uses_points(client, candidate.scenario)}
+        point_modes = {
+            transport_mode(candidate.scenario, client.requested_snapshot_encoding)
+            for client in self.clients.values()
+            if client.authenticated and self._uses_points(client, candidate.scenario)
+        }
         if point_modes and not result.points_validated:
-            raise ValueError("shared route capability changed during preparation; retry the operation")
+            raise ValueError(
+                "shared route capability changed during preparation; retry the operation"
+            )
         if any(mode not in result.reference_scenes for mode in point_modes):
-            raise ValueError("prepared shared city scene or snapshot exceeds the frame limit")
+            raise ValueError(
+                "prepared shared city scene or snapshot exceeds the frame limit"
+            )
         for mode in modes:
             if mode in result.invalid_modes:
                 raise ValueError(result.invalid_modes[mode])
@@ -1367,9 +1717,12 @@ class CivicWorker:
                 raise ValueError(
                     "prepared candidate is missing a negotiated transport mode"
                 )
+        self._population_responses.clear()
+        self._advanced_ticks = 0
+        self._advance_wall = 0.0
         self.simulation = candidate
         self._checkpoint_preparation = PreparedCheckpointCapture(
-            result.scenario_json, weakref.ref(candidate)
+            result.scenario_json, weakref.ref(candidate), candidate.roster_revision
         )
         self.scenario = candidate.scenario
         self.seed = self.scenario.get("seed", 7)
@@ -1386,6 +1739,7 @@ class CivicWorker:
                 if self._uses_points(client):
                     self._queue_point_scene(client)
                     continue
+                client.legacy_bootstrap.clear()
                 client.known_trip_ids.clear()
                 client.trip_geometry_sizes.clear()
                 client.trip_geometry_bytes = 0
@@ -1408,19 +1762,15 @@ class CivicWorker:
                 continue
             references = self._trip_references(client)
             if references:
-                for frame in result.geometry_frames:
-                    self._queue(client, frame)
-                if client.sock not in self.clients:
-                    continue
                 client.known_trip_ids.update(result.geometry_sizes)
                 client.trip_geometry_sizes.update(result.geometry_sizes)
                 client.trip_geometry_bytes = sum(result.geometry_sizes.values())
-            self._queue(
+            self._stage_legacy_bootstrap(
                 client,
+                result.geometry_frames if references else [],
                 result.snapshots[
                     transport_mode(self.scenario, client.requested_snapshot_encoding)
                 ],
-                snapshot=True,
             )
 
     def _poll_job(self) -> None:
@@ -1437,6 +1787,17 @@ class CivicWorker:
         self._pending_job = None
         action = job.request["action"]
         commit_started = time.monotonic()
+        if error is None and action == "set_population":
+            try:
+                self._commit_live_population(job, result)
+            except (OSError, ValueError, TypeError) as exc:
+                self._error(
+                    job.client,
+                    "invalid_command",
+                    f"set_population failed: {exc}",
+                    request=job.request,
+                )
+            return
         if error is None and action in ("load", "population"):
             try:
                 self._install_prepared_session(result)
@@ -1477,6 +1838,226 @@ class CivicWorker:
         else:
             self._broadcast_snapshot(force=True)
 
+    def _remember_population(
+        self, client: Client, request: dict, response: dict
+    ) -> None:
+        self._population_responses[
+            (client.command_client_id, request["request_id"])
+        ] = (
+            (
+                request.get("value"),
+                request.get("expected_roster_revision"),
+                request.get("expected_session_id"),
+            ),
+            response,
+        )
+        while len(self._population_responses) > 128:
+            self._population_responses.pop(next(iter(self._population_responses)))
+
+    def _commit_live_population(
+        self, job: PendingJob, result: PreparedPopulation
+    ) -> None:
+        from civic_center.checkpoint import (
+            MAX_SCENARIO_BYTES,
+            _canonical,
+            _validate_tree,
+        )
+        from civic_center.population import capture_runtime
+
+        started = time.perf_counter()
+        old_count = len(self.simulation._sources)
+        # Route caches contain immutable values; warming them changes no domain state.
+        self.simulation.graph._cache.update(result.route_cache)
+        candidate = preview_population(self.simulation, result.delta)
+        modes = {
+            transport_mode(candidate.scenario, client.requested_snapshot_encoding)
+            for client in self.clients.values()
+            if client.authenticated and not self._uses_points(client)
+        }
+        point_modes = {
+            transport_mode(candidate.scenario, client.requested_snapshot_encoding)
+            for client in self.clients.values()
+            if client.authenticated and self._uses_points(client)
+        }
+        prepared = copy.copy(result.session)
+        prepared.simulation = candidate
+        prepared.snapshots = {}
+        snapshot_messages = {}
+        for mode in modes:
+            if mode not in prepared.scenes:
+                detail = prepared.invalid_modes.get(
+                    mode, "Missing negotiated population format"
+                )
+                if "geometr" in detail:
+                    raise ValueError(
+                        "Requested population exceeds the current route-data limit; try a smaller target. "
+                        + detail
+                    )
+                raise ValueError(detail)
+            compact, references, rows = mode
+            message = snapshot_message(
+                candidate,
+                prepared.session_id,
+                1,
+                compact=compact,
+                trip_references=references,
+                rows=rows,
+            )
+            snapshot_messages[mode] = message
+        if point_modes and (
+            not prepared.points_validated
+            or any(mode not in prepared.reference_scenes for mode in point_modes)
+        ):
+            raise ValueError(
+                "Population shared-route capability changed during preparation; retry"
+            )
+        if point_modes:
+            active_definitions = candidate.trip_geometries(candidate.active_trip_ids())
+            SharedGeometryEncoder(prepared.session_id).encode(active_definitions)
+        if modes:
+            active = candidate.active_trip_ids()
+            definitions = (
+                candidate.trip_geometries(active)
+                if any(mode[1] for mode in modes)
+                else []
+            )
+            prepared.geometry_frames, _ = trip_geometry_frames(
+                definitions, prepared.session_id
+            )
+            prepared.geometry_sizes = {
+                definition["id"]: len(encode_frame(definition)) - 1
+                for definition in definitions
+            }
+            if (
+                len(active) > MAX_TRIP_DEFINITIONS
+                or sum(prepared.geometry_sizes.values()) > MAX_TRIP_GEOMETRY_BYTES
+            ):
+                raise ValueError(
+                    "Requested population exceeds the current route-data limit; try a smaller target."
+                )
+        compact_state = candidate.snapshot(
+            include_static=False, include_trip_geometry=False
+        )
+        runtime = capture_runtime(candidate)
+        proof = {
+            "metadata_state_sha256": "0" * 64,
+            "trip_geometry_sha256": {
+                identity: "0" * 64 for identity in candidate.active_trip_ids()
+            },
+        }
+        _validate_tree(
+            {"state": compact_state, "runtime": runtime, "verification": proof},
+            initial_values=result.scenario_values - 1,
+        )
+        if (
+            len(prepared.scenario_json)
+            + len(_canonical(compact_state))
+            + len(_canonical(runtime))
+            + len(_canonical(proof))
+            > MAX_SCENARIO_BYTES
+        ):
+            raise ValueError("Population state exceeds checkpoint budget")
+        change = {
+            "request_id": job.request["request_id"],
+            "old_count": old_count,
+            "new_count": result.delta.target,
+            "roster_revision": candidate.roster_revision,
+            "committed_tick": candidate.tick,
+            "committed_at_unix": time.time(),
+            "committed_monotonic_seconds": time.monotonic(),
+            "preparation_ms": (
+                job.metrics["preparation_finished_monotonic"] - job.started_at
+            )
+            * 1000,
+            "commit_ms": (time.perf_counter() - started) * 1000,
+        }
+        fields = {"reason": "population_adjustment", "population_change": change}
+        scene_frames = {
+            mode: _append_frame_fields(frame, fields)
+            for mode, frame in {**prepared.scenes, **prepared.reference_scenes}.items()
+        }
+        for mode in point_modes:
+            _append_frame_fields(
+                scene_frames[mode], {"route_geometry_encoding": CITY_POINTS_ENCODING}
+            )
+        for mode, message in snapshot_messages.items():
+            message["population_change"] = change
+            message["worker_metrics"] = self._worker_metrics()
+            prepared.snapshots[mode] = encode_frame(message)
+        # Reject an indivisible frame or congested new-scene barrier before the
+        # domain changes. Geometry frames themselves are staged after that barrier.
+        if any(len(frame) > MAX_QUEUE_BYTES for frame in prepared.geometry_frames):
+            raise ValueError("Population geometry frame exceeds outgoing queue budget")
+        for connection in self.clients.values():
+            if connection.authenticated:
+                mode = transport_mode(
+                    candidate.scenario, connection.requested_snapshot_encoding
+                )
+                if (
+                    connection.queued_bytes + len(scene_frames[mode]) + 4096
+                    > MAX_QUEUE_BYTES
+                ):
+                    raise ValueError(
+                        "Population scene cannot be queued while this connection is congested; retry"
+                    )
+        candidate.population_change = change
+        # All fallible validation and encoding above precedes this atomic update.
+        commit_population(self.simulation, candidate)
+        self._advanced_ticks = 0
+        self._advance_wall = 0.0
+        self.scenario = self.simulation.scenario
+        self._checkpoint_preparation = PreparedCheckpointCapture(
+            prepared.scenario_json,
+            weakref.ref(self.simulation),
+            self.simulation.roster_revision,
+        )
+        self.session_id = prepared.session_id
+        self.sequence = 1
+        self._scene_frames = scene_frames
+        self._reset_points()
+        for connection in list(self.clients.values()):
+            if not connection.authenticated:
+                continue
+            if self._uses_points(connection):
+                self._queue_point_scene(connection)
+            else:
+                mode = transport_mode(
+                    self.scenario, connection.requested_snapshot_encoding
+                )
+                connection.legacy_bootstrap.clear()
+                connection.known_trip_ids.clear()
+                connection.trip_geometry_sizes.clear()
+                connection.trip_geometry_bytes = 0
+                self._queue(connection, scene_frames[mode], scene_barrier=True)
+        response = {
+            "type": "ack",
+            "protocol_version": PROTOCOL_VERSION,
+            "request_id": job.request["request_id"],
+            "action": "set_population",
+            "session_id": self.session_id,
+            "count": result.delta.target,
+            "population": result.delta.target,
+            "requested_count": result.delta.target,
+            "roster_revision": candidate.roster_revision,
+            "tick": candidate.tick,
+            "committed_tick": candidate.tick,
+            "noop": False,
+            "added_count": len(result.delta.additions),
+            "removed_count": len(result.delta.removals),
+            "world_identity": candidate.world_identity,
+            "population_change": change,
+            "prepare_ms": change["preparation_ms"],
+            "commit_ms": change["commit_ms"],
+            "worker_monotonic_seconds": time.monotonic(),
+        }
+        self.last_job_metrics = {**job.metrics, "action": "set_population", **change}
+        self._remember_population(job.client, job.request, response)
+        self._queue(job.client, encode_frame(response), priority=True)
+        # Publish the CURRENT candidate frames validated above, not the child's
+        # preparation-tick snapshot and not another expensive geometry encoding.
+        prepared.scenes = scene_frames
+        self._publish_prepared_session(prepared)
+
     def _handle(self, client: Client, message: dict[str, Any]) -> None:
         if not client.authenticated:
             candidate = message.get("token")
@@ -1501,6 +2082,22 @@ class CivicWorker:
                     close=True,
                 )
                 return
+            namespace = message.get("command_client_id")
+            if namespace is not None:
+                if (
+                    not isinstance(namespace, str)
+                    or not namespace
+                    or len(namespace) > 128
+                ):
+                    self._error(
+                        client,
+                        "invalid_message",
+                        "command_client_id must be a nonempty string of at most 128 characters",
+                        close=True,
+                    )
+                    return
+                client.command_client_id = namespace
+                client.population_session_guard = True
             client.authenticated = True
             client.wants_command_status = message.get("command_status") is True
             if message.get("snapshot_encoding") in (
@@ -1559,10 +2156,42 @@ class CivicWorker:
             )
             return
         self._advance_elapsed(time.monotonic())
+        if action == "set_population":
+            if (
+                type(value) is not int
+                or type(message.get("expected_roster_revision")) is not int
+            ):
+                self._error(
+                    client,
+                    "invalid_command",
+                    "Population count and expected roster revision must be integers",
+                    request=message,
+                )
+                return
+            signature = (
+                message.get("value"),
+                message.get("expected_roster_revision"),
+                message.get("expected_session_id"),
+            )
+            previous = self._population_responses.get(
+                (client.command_client_id, request_id)
+            )
+            if previous is not None:
+                if signature != previous[0]:
+                    self._error(
+                        client,
+                        "request_id_conflict",
+                        "Request ID was already used with different population arguments",
+                        request=message,
+                    )
+                else:
+                    self._queue(client, encode_frame(previous[1]), priority=True)
+                return
         if self._pending_job is not None and action in (
             "save",
             "load",
             "population",
+            "set_population",
             "reset",
         ):
             self._error(
@@ -1578,10 +2207,14 @@ class CivicWorker:
                 if type(value) is not bool:
                     raise ValueError("pause value must be a boolean")
                 self.simulation.set_paused(value)
+                self._advanced_ticks = 0
+                self._advance_wall = 0.0
             elif action == "speed":
                 if type(value) is not int or value not in SPEEDS:
                     raise ValueError("speed value must be 1, 4, 60, or 600")
                 self.simulation.set_speed(value)
+                self._advanced_ticks = 0
+                self._advance_wall = 0.0
             elif action == "reset":
                 self.simulation.reset()
                 self._new_session()
@@ -1600,6 +2233,64 @@ class CivicWorker:
                 self.simulation.set_paused(True)
                 self._tick_fraction = 0.0
                 self._last_time = time.monotonic()
+            elif action == "set_population":
+                if (
+                    client.population_session_guard or "expected_session_id" in message
+                ) and message.get("expected_session_id") != self.session_id:
+                    self._error(
+                        client,
+                        "stale_session",
+                        "Simulation session changed; use the latest complete scene",
+                        request=message,
+                    )
+                    return
+                value = validate_population(value)
+                revision = message.get("expected_roster_revision")
+                if (
+                    type(revision) is not int
+                    or revision != self.simulation.roster_revision
+                ):
+                    self._error(
+                        client,
+                        "stale_roster_revision",
+                        "Population roster changed; use the latest roster revision",
+                        request=message,
+                    )
+                    return
+                if value == len(self.simulation._sources):
+                    response = {
+                        "type": "ack",
+                        "protocol_version": PROTOCOL_VERSION,
+                        "request_id": request_id,
+                        "action": action,
+                        "session_id": self.session_id,
+                        "count": value,
+                        "population": value,
+                        "requested_count": value,
+                        "roster_revision": revision,
+                        "committed_tick": self.simulation.tick,
+                        "tick": self.simulation.tick,
+                        "noop": True,
+                        "added_count": 0,
+                        "removed_count": 0,
+                        "world_identity": self.simulation.world_identity,
+                    }
+                    self._remember_population(client, message, response)
+                    self._queue(client, encode_frame(response), priority=True)
+                    return
+                frozen = frozen_population_view(self.simulation)
+                points = any(
+                    self._uses_points(connection)
+                    for connection in self.clients.values()
+                    if connection.authenticated
+                )
+                self._start_job(
+                    client,
+                    message,
+                    lambda: _prepare_live_population(frozen, value, points=points),
+                    process_payload=(frozen, value, points),
+                )
+                return
             elif action == "population":
                 presets = self.scenario.get("population_presets", POPULATIONS)
                 if type(value) is not int or value not in presets:
@@ -1608,7 +2299,11 @@ class CivicWorker:
                 terrain = self.scenario.get("terrain_manifest")
                 landuse = self.scenario.get("landuse_manifest")
                 seed = self.seed
-                points = any(self._uses_points(connection) for connection in self.clients.values() if connection.authenticated)
+                points = any(
+                    self._uses_points(connection)
+                    for connection in self.clients.values()
+                    if connection.authenticated
+                )
 
                 def prepare_population() -> PreparedSession:
                     if geography:
@@ -1643,13 +2338,17 @@ class CivicWorker:
                     work = lambda: write_captured_checkpoint(capture, path)
                     process_payload = (capture, path)
                 else:
-                    points = any(self._uses_points(connection) for connection in self.clients.values() if connection.authenticated)
+                    points = any(
+                        self._uses_points(connection)
+                        for connection in self.clients.values()
+                        if connection.authenticated
+                    )
 
                     def work() -> PreparedSession:
                         candidate = load_checkpoint(path)
                         return prepare_session(candidate, points=points)
 
-                    process_payload = {"path":path, "points":points}
+                    process_payload = {"path": path, "points": points}
 
                 self._start_job(
                     client, message, work, slot=slot, process_payload=process_payload

@@ -13,6 +13,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, TextIO
 
+from .experiments import ExperimentArchive
 from .geography import atomic_write
 
 MAX_EVENTS = 128
@@ -99,6 +100,7 @@ _RESERVED = {
     "diagnostics",
     "metrics",
     "hardware",
+    "experiments",
 }
 
 
@@ -119,6 +121,12 @@ class RunLog:
         self._lock = threading.RLock()
         self._secrets = tuple(sorted(filter(None, secrets), key=len, reverse=True))
         self._started = time.monotonic()
+        self._started_unix = time.time()
+        self._telemetry = None
+        self._log_sequence = 0
+        self._experiments = ExperimentArchive(
+            self._started_unix, started_monotonic=self._started
+        )
         self._last_persisted = 0.0
         self._threads: list[threading.Thread] = []
         self._has_errors = False
@@ -145,11 +153,92 @@ class RunLog:
                 "error_count": 0,
                 "console_line_count": 0,
                 "malformed_marker_count": 0,
+                "command_rejection_count": 0,
                 "truncated_line_count": 0,
             },
             "metrics": {},
+            "experiments": self._experiments.data,
         }
         with self._lock:
+            self._persist()
+
+    @property
+    def run_id(self) -> str:
+        return self._data["run_id"]
+
+    def attach_telemetry(self, hub) -> None:
+        """Attach a queue-only publisher; it must never do networking in publish."""
+        with self._lock:
+            if self._finished:
+                return
+            self._telemetry = hub
+            hardware = self._data.get("hardware", {})
+            self._publish("inventory", hardware.get("inventory", {}))
+            if hardware.get("samples"):
+                self._publish("hardware", hardware["samples"][-1], "hardware")
+            self._publish_status()
+
+    def _publish(self, kind: str, payload: dict, source: str = "launcher") -> None:
+        if self._telemetry is not None and not self._finished:
+            try:
+                self._telemetry.publish(kind, self._clean(payload), source)
+            except (OSError, RuntimeError, ValueError):
+                self._telemetry = None
+
+    def _publish_status(self) -> None:
+        hardware = self._data.get("hardware", {})
+        self._publish(
+            "status",
+            {
+                "run_status": self._data["status"],
+                "hardware_status": hardware.get("status", "disabled"),
+                "hardware_reason": hardware.get("reason"),
+                "hardware_interval_seconds": hardware.get("interval_seconds"),
+                "run_log": str(self.path.resolve()),
+                "report_path": str(self.path.resolve()),
+            },
+        )
+
+    def _live_log(self, message: str, source: str, severity: str = "info") -> None:
+        self._log_sequence += 1
+        self._publish(
+            "log",
+            {
+                "id": self._log_sequence,
+                "at": _utc_now(),
+                "elapsed_seconds": round(time.monotonic() - self._started, 3),
+                "source": source,
+                "severity": severity,
+                "message": message,
+            },
+            source,
+        )
+
+    def phase(self, payload: dict) -> None:
+        with self._lock:
+            if self._finished:
+                return
+            clean = self._clean(payload)
+            phase = self._experiments.phase(clean, time.time())
+            self._event("experiment_operation", clean)
+            if phase is not None:
+                self._publish("phase", phase)
+            self._persist()
+
+    def comparison_point(self, payload: dict) -> None:
+        with self._lock:
+            if self._finished:
+                return
+            point = self._experiments.comparison(self._clean(payload), time.time())
+            samples = self._data.get("hardware", {}).get("samples", [])
+            if samples:
+                point["latest_hardware"] = self._clean(samples[-1])
+                collected = samples[-1].get("collected_monotonic_seconds")
+                if type(collected) in (int, float):
+                    point["hardware_age_seconds"] = max(
+                        0.0, time.monotonic() - collected
+                    )
+            self._event("comparison_point", {"phase_id": point["phase_id"]})
             self._persist()
 
     @property
@@ -218,13 +307,56 @@ class RunLog:
             except (OSError, ValueError, AttributeError):
                 pass
 
-    def _event(self, name: str, fields: dict) -> None:
+    def _event(
+        self,
+        name: str,
+        fields: dict,
+        *,
+        log_source: str = "launcher",
+        log_severity: str = "info",
+        log_message: str | None = None,
+    ) -> None:
         events = self._data["events"]
         events.append(
             {"at": _utc_now(), "name": self._clean(name), **self._clean(fields)}
         )
         del events[:-MAX_EVENTS]
         self._data["diagnostics"]["event_count"] += 1
+        self._live_log(log_message or name, log_source, log_severity)
+
+    def _command_rejected(self, payload: dict) -> None:
+        """Archive an explicitly classified pending-command rejection, not a fault.
+
+        The viewer classifies this using its pending request metadata. Ordinary
+        error markers and nonempty runtime.error remain fatal regardless of text.
+        """
+        required = ("request_id", "action", "code", "message")
+        if (
+            type(payload.get("schema_version")) is not int
+            or payload["schema_version"] != 1
+            or any(
+                not isinstance(payload.get(key), str) or not payload[key]
+                for key in required
+            )
+        ):
+            self._data["diagnostics"]["malformed_marker_count"] += 1
+            return
+        fields = {key: payload[key][:128] for key in ("request_id", "action", "code")}
+        fields["message"] = payload["message"][:MAX_TEXT]
+        if isinstance(payload.get("session_id"), str):
+            fields["session_id"] = payload["session_id"][:128]
+        at_unix = payload.get("at_unix")
+        if type(at_unix) in (int, float) and math.isfinite(at_unix):
+            fields["at_unix"] = at_unix
+        fields.update(source="worker", severity="warning")
+        self._data["diagnostics"]["command_rejection_count"] += 1
+        self._event(
+            "command_rejected",
+            fields,
+            log_source="worker",
+            log_severity="warning",
+            log_message=f"{fields['action']} rejected: {fields['message']}",
+        )
 
     def event(self, name: str, **fields: Any) -> None:
         with self._lock:
@@ -246,6 +378,7 @@ class RunLog:
                     }
                 )
             )
+            self._publish_status()
             self._persist()
 
     def configure_hardware(
@@ -297,6 +430,8 @@ class RunLog:
                 return
             hardware["inventory"] = self._clean(inventory)
             hardware["status"] = "running"
+            self._publish("inventory", hardware["inventory"], "hardware")
+            self._publish_status()
             self._persist()
 
     def hardware_status(self, status: str, reason: str | None = None) -> None:
@@ -312,6 +447,7 @@ class RunLog:
             hardware["status"] = self._clean(status)
             if reason is not None:
                 hardware["reason"] = self._clean(reason)
+            self._publish_status()
             self._persist()
 
     def hardware_warning(self, message: str) -> None:
@@ -330,6 +466,7 @@ class RunLog:
             )
             del hardware["errors"][:-8]
             hardware["error_count"] += 1
+            self._live_log(message, "hardware", "warning")
             self._persist()
 
     @staticmethod
@@ -415,6 +552,26 @@ class RunLog:
                 "elapsed_seconds": round(time.monotonic() - self._started, 3),
                 "context": self._clean(context),
             }
+            collected = cleaned.get("collected_monotonic_seconds")
+            if (
+                type(collected) not in (int, float)
+                or not math.isfinite(collected)
+                or not self._started <= collected <= time.monotonic()
+            ):
+                collected = time.monotonic()
+            entry["collection_delivery_ms"] = max(
+                0.0, (time.monotonic() - collected) * 1000.0
+            )
+            entry["context"].update(
+                self._experiments.sample(
+                    collected,
+                    dict(self._hardware_numbers(cleaned)),
+                    hardware["interval_seconds"],
+                    context=entry["context"],
+                    interval_start=cleaned.get("interval_start_monotonic_seconds"),
+                )
+            )
+            self._publish("hardware", entry, "hardware")
             hardware["samples"].append(entry)
             hardware["samples_recorded"] += 1
             overflow = len(hardware["samples"]) - hardware["history_limit"]
@@ -460,6 +617,7 @@ class RunLog:
         )
         del errors[:-MAX_ERRORS]
         self._data["diagnostics"]["error_count"] += 1
+        self._live_log(message, source, "error" if fatal else "warning")
 
     def error(self, message: str, source: str = "launcher") -> None:
         with self._lock:
@@ -473,7 +631,9 @@ class RunLog:
             {key: value for key, value in payload.items() if key in _PROFILE_KEYS}
         )
 
-    def _consume(self, line: str, truncated: bool = False) -> None:
+    def _consume(
+        self, line: str, truncated: bool = False, source: str = "viewer"
+    ) -> None:
         line = _ANSI.sub("", line).strip()
         if not line:
             return
@@ -484,7 +644,7 @@ class RunLog:
             if truncated:
                 diagnostics["truncated_line_count"] += 1
             marker, _, text = line.partition(" ")
-            if marker.startswith("GODOT_APPLICATION_"):
+            if source == "viewer" and marker.startswith("GODOT_APPLICATION_"):
                 name = marker.removeprefix("GODOT_APPLICATION_")
                 if name == "FAIL":
                     self._error(text, "viewer")
@@ -498,6 +658,9 @@ class RunLog:
                     "RUN_METRICS",
                     "READY",
                     "SMOKE_OK",
+                    "PHASE",
+                    "COMPARISON_POINT",
+                    "COMMAND_REJECTED",
                 }:
                     try:
                         payload = json.loads(text) if not truncated else None
@@ -507,7 +670,13 @@ class RunLog:
                         diagnostics["malformed_marker_count"] += 1
                     else:
                         metrics = self._data["metrics"]
-                        if name in {"READY", "SMOKE_OK"}:
+                        if name == "COMMAND_REJECTED":
+                            self._command_rejected(payload)
+                        elif name == "PHASE":
+                            self.phase(payload)
+                        elif name == "COMPARISON_POINT":
+                            self.comparison_point(payload)
+                        elif name in {"READY", "SMOKE_OK"}:
                             summary = {
                                 key: value
                                 for key, value in payload.items()
@@ -527,6 +696,7 @@ class RunLog:
                         elif name == "RUN_METRICS":
                             metrics["runtime"] = self._clean(payload)
                             metrics["runtime_at"] = _utc_now()
+                            self._experiments.viewer_metrics(self._clean(payload))
                             if (
                                 isinstance(payload.get("error"), str)
                                 and payload["error"]
@@ -562,13 +732,25 @@ class RunLog:
             fatal = line.startswith("SCRIPT ERROR:") or "Parse Error:" in line
             is_error = fatal or line.startswith("ERROR:")
             if is_error:
-                self._error(line, "godot", fatal=fatal)
-            if is_error or time.monotonic() - self._last_persisted >= 1.0:
+                self._error(
+                    line, "godot" if source == "viewer" else source, fatal=fatal
+                )
+            else:
+                severity = "warning" if "warning" in line.lower() else "info"
+                self._live_log(line, source, severity)
+            if time.monotonic() - self._last_persisted >= 1.0:
                 self._persist()
 
-    def capture(self, stream: TextIO) -> threading.Thread:
+    def capture(
+        self,
+        stream: TextIO,
+        *,
+        source: str = "viewer",
+        archive: TextIO | None = None,
+        echo: bool = True,
+    ) -> threading.Thread:
         """Drain and tee viewer output without blocking the launcher monitor."""
-        console = sys.stdout
+        console = sys.stdout if echo else None
 
         def read() -> None:
             continuation = False
@@ -581,7 +763,20 @@ class RunLog:
                     if isinstance(chunk, bytes):
                         chunk = chunk.decode("utf-8", errors="replace")
                     if not continuation:
-                        silent = chunk.startswith("GODOT_APPLICATION_RUN_METRICS ")
+                        silent = source == "viewer" and chunk.startswith(
+                            (
+                                "GODOT_APPLICATION_RUN_METRICS ",
+                                "GODOT_APPLICATION_PHASE ",
+                                "GODOT_APPLICATION_COMPARISON_POINT ",
+                                "GODOT_APPLICATION_COMMAND_REJECTED ",
+                            )
+                        )
+                    if archive is not None:
+                        try:
+                            archive.write(self._redact(chunk))
+                            archive.flush()
+                        except (OSError, ValueError, AttributeError):
+                            pass
                     if not silent and console is not None:
                         try:
                             console.write(self._redact(chunk))
@@ -590,10 +785,12 @@ class RunLog:
                             pass
                     truncated = len(chunk) >= MAX_LINE and not chunk.endswith("\n")
                     if not continuation:
-                        self._consume(chunk, truncated=truncated)
+                        self._consume(chunk, truncated=truncated, source=source)
                     continuation = truncated
             except (OSError, ValueError) as error:
-                self.event("viewer_output_unavailable", message=str(error))
+                self.event(
+                    "process_output_unavailable", source=source, message=str(error)
+                )
             finally:
                 with self._lock:
                     self._persist()
@@ -632,4 +829,5 @@ class RunLog:
             )
             self._event("run_finished", {"status": status, "exit_code": exit_code})
             self._persist()
+            self._publish_status()
             self._finished = True

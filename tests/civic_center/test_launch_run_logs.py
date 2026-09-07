@@ -89,6 +89,7 @@ def _install_processes(
     output: str = "",
     exit_code: int = 0,
     close_during_loading: bool = False,
+    worker_output: str = "",
 ):
     """Model the real loading handoff without launching a window or worker."""
     commands = []
@@ -99,6 +100,7 @@ def _install_processes(
         pid = 10002
 
         def __init__(self):
+            self.stderr = io.StringIO(worker_output)
             self.stdout = io.StringIO(
                 json.dumps({"type": "ready", "port": 12345}) + "\n"
             )
@@ -418,3 +420,127 @@ def test_worker_token_starting_with_dash_remains_one_argument_and_is_redacted(
     assert record["status"] == "completed"
     assert record["exit_code"] == 0
     assert token not in json.dumps(record)
+
+
+def test_display_probe_and_telemetry_options_reach_initial_loading_window(
+    launcher, monkeypatch
+):
+    commands, _ = _install_processes(monkeypatch, close_during_loading=True)
+    probe = launcher / "probe.json"
+    assert (
+        launch.main(
+            [
+                "--world",
+                "pilot",
+                "--no-geography",
+                "--window-size",
+                "3440x1440",
+                "--window-mode",
+                "maximized",
+                "--ui-scale",
+                "1.25",
+                "--performance",
+                "--no-display-settings",
+                "--workspace-probe",
+                str(probe),
+                "--probe-counts",
+                "200,500",
+                "--probe-seconds",
+                "0.5",
+                "--probe-layouts",
+            ]
+        )
+        == 0
+    )
+    initial = commands[0]
+    for flag, value in [
+        ("--window-size", "3440x1440"),
+        ("--window-mode", "maximized"),
+        ("--ui-scale", "1.25"),
+        ("--workspace-probe", str(probe.resolve())),
+        ("--probe-counts", "200,500"),
+        ("--probe-seconds", "0.5"),
+    ]:
+        assert initial[initial.index(flag) + 1] == value
+    assert 1 <= int(initial[initial.index("--telemetry-port") + 1]) <= 65535
+    assert initial[initial.index("--telemetry-token") + 1] == TOKEN
+    for flag in ("--performance", "--no-display-settings", "--probe-layouts"):
+        assert flag in initial
+    assert TOKEN not in json.dumps(_read_logs(launcher))
+
+
+def test_worker_stderr_is_continuously_archived_and_in_structured_diagnostics(
+    launcher, monkeypatch
+):
+    _install_processes(
+        monkeypatch,
+        worker_output="WARNING: worker fixture " + TOKEN + "\n",
+        output='GODOT_APPLICATION_STARTUP_COMPLETE {"complete":true}\n',
+    )
+    assert launch.main(["--world", "pilot", "--no-geography"]) == 0
+    record = _read_logs(launcher)[0]
+    assert "worker fixture [redacted]" in Path(record["worker_log"]).read_text(
+        encoding="utf-8"
+    )
+    assert any(
+        "worker fixture [redacted]" in line
+        for line in record["diagnostics"]["console_tail"]
+    )
+
+
+@pytest.mark.parametrize(
+    "arguments",
+    [
+        ["--window-size", "bad"],
+        ["--window-size", "1x1"],
+        ["--probe-seconds", "nan"],
+        ["--probe-seconds", "0"],
+        ["--workspace-probe", "probe.json", "--probe-counts", "0,100"],
+    ],
+)
+def test_invalid_display_and_probe_options_fail_before_launch(launcher, arguments):
+    with pytest.raises(SystemExit) as error:
+        launch.main(arguments)
+    assert error.value.code == 2
+    assert not list((launcher / ".local/civic/logs").glob("*.json"))
+
+
+@pytest.mark.parametrize(
+    "fatal",
+    [
+        None,
+        "SCRIPT ERROR: renderer fixture failure",
+        "GODOT_APPLICATION_FAIL transport fixture failure",
+    ],
+)
+def test_expected_rejection_keeps_run_completed_unless_a_real_failure_follows(
+    launcher, monkeypatch, fatal
+):
+    rejection = {
+        "schema_version": 1,
+        "request_id": "viewer-4",
+        "action": "set_population",
+        "code": "invalid_command",
+        "message": "Population exceeds transport budget",
+    }
+    lines = [
+        'GODOT_APPLICATION_STARTUP_COMPLETE {"complete":true}',
+        "GODOT_APPLICATION_COMMAND_REJECTED " + json.dumps(rejection),
+    ]
+    lines += [
+        'GODOT_APPLICATION_RUN_METRICS {"error":"","startup":{"complete":true}}'
+    ] * 3
+    if fatal:
+        lines.append(fatal)
+    _install_processes(monkeypatch, output="\n".join(lines) + "\n")
+    assert launch.main(["--world", "pilot", "--no-geography"]) == (1 if fatal else 0)
+    record = _read_logs(launcher)[0]
+    assert record["status"] == ("failed" if fatal else "completed")
+    assert record["diagnostics"]["command_rejection_count"] == 1
+    assert (record["diagnostics"]["error_count"] > 0) is bool(fatal)
+    assert (
+        len(
+            [event for event in record["events"] if event["name"] == "command_rejected"]
+        )
+        == 1
+    )

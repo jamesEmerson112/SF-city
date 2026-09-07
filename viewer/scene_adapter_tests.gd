@@ -1,6 +1,12 @@
 extends SceneTree
 ## Godot --headless --path viewer --script res://scene_adapter_tests.gd
 const Adapter = preload("res://scene_adapter.gd")
+class RejectionDiagnostics extends PanelContainer:
+	var pending: bool = false
+
+	func set_population_status(_message: String, waiting: bool) -> void:
+		pending = waiting
+
 var failures: Array[String] = []
 
 func _initialize() -> void:
@@ -12,6 +18,7 @@ func _initialize() -> void:
 	_test_rows()
 	_test_invalid_rows()
 	_test_client_buffer_and_pending_status()
+	_test_command_rejection_severity()
 	_test_thread_ordering_and_generation()
 	_test_thread_route_ordering()
 	_test_thread_backpressure_and_shutdown()
@@ -494,3 +501,43 @@ func _test_thread_reset_while_output_blocked() -> void:
 	if replacement.is_empty() or replacement.generation != generation or replacement.kind != "scene" or replacement.message.session_id != "after-backpressure" or not decoder.take().is_empty():
 		failures.append("Reset did not release output backpressure and reject old in-flight work.")
 	decoder.stop()
+
+func _test_command_rejection_severity() -> void:
+	var client = preload("res://snapshot_client.gd").new()
+	root.add_child(client)
+	client.connected = true
+	client.session_id = "fixture"
+	var app = preload("res://main.gd").new()
+	app.startup_complete = true
+	app.client = client
+	app.hud = preload("res://hud.gd").new()
+	root.add_child(app.hud)
+	app.diagnostics = RejectionDiagnostics.new()
+	root.add_child(app.diagnostics)
+	var warnings: Array[Dictionary] = []
+	var statuses: Array[bool] = []
+	client.command_rejected.connect(func(message: Dictionary) -> void: warnings.append(message))
+	client.command_rejected.connect(app._command_rejected)
+	client.status_changed.connect(app._connection_status)
+	client.status_changed.connect(func(_message: String,fatal: bool) -> void: statuses.append(fatal))
+	client.acknowledged.connect(app._acknowledged)
+	var request: String = client.command("set_population",5000,0)
+	var rejection: Dictionary = {"type":"error","protocol_version":1,"request_id":request,"code":"invalid_command","message":"Requested population exceeds the current route-data limit.","session_id":"fixture"}
+	if not client._receive(JSON.stringify(rejection)): failures.append("Recognized pending command rejection failed decoding.")
+	if warnings.size() != 1 or warnings[0].action != "set_population" or statuses.back() or not client.connected: failures.append("Pending rejection lost action metadata or became a fatal/disconnecting error.")
+	if not app.last_error.is_empty() or not str(app.run_metrics().error).is_empty() or not app.ack_results.has(request): failures.append("Rejected command poisoned recurring application metrics or lost its acknowledgement.")
+	client._receive(JSON.stringify(rejection))
+	if warnings.size() != 1: failures.append("Exact duplicate rejection emitted another warning.")
+	var next: String = client.command("pause",true)
+	client._receive(JSON.stringify({"type":"ack","protocol_version":1,"request_id":next,"action":"pause","session_id":"fixture","tick":1}))
+	if next.is_empty() or client.pending.has(next) or app.ack_results.get(next,{}).get("type") != "ack": failures.append("A rejected command prevented a later acknowledged command.")
+	var auth_request: String = client.command("pause",true)
+	client._receive(JSON.stringify({"type":"error","protocol_version":1,"request_id":auth_request,"code":"authentication_failed","message":"Invalid authentication."}))
+	if not statuses.back() or app.last_error.is_empty() or warnings.size() != 1: failures.append("Authentication error was downgraded because it carried a pending request ID.")
+	client._receive(JSON.stringify({"type":"error","protocol_version":1,"request_id":"unknown","code":"invalid_command","message":"Unknown response."}))
+	if not statuses.back() or warnings.size() != 1: failures.append("Unknown request error was downgraded to a command warning.")
+	if client._receive("{invalid") or client.last_error.is_empty() or client.connected: failures.append("Malformed transport data no longer fails the connection.")
+	app.hud.queue_free()
+	app.diagnostics.queue_free()
+	app.free()
+	client.queue_free()

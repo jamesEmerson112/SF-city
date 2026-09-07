@@ -33,6 +33,13 @@ readings remain explicitly unavailable in the run log; they do not prevent the
 application from starting. Older output folders keep their original contents
 and need a fresh build to include these monitoring dependencies.
 
+New builds also include the live Performance console. Press **F3** to view
+charts, supported hardware readings and filterable logs. **Open run log** opens
+the JSON report under the folder's `.local/civic/logs/`; **Record point** adds an
+aggregate comparison point. The launcher supplies the local diagnostics feed
+using the bundled monitoring libraries. Missing drivers/sensors show unavailable
+readings, and a disconnected feed leaves local viewer metrics usable.
+
 `package-manifest.json` records the monitoring wheel identities and notice paths
 under `monitoring`, the cached archive hashes under `build_inputs`, and hashes
 every extracted file. These checks cover the bundled monitoring libraries as
@@ -58,6 +65,20 @@ build can take roughly a minute with terrain.
 Subsequent launches reuse matching source data and generator code. A cached city's
 internal source paths are rebased if the folder moves. Explicit scenario inputs
 and saved checkpoints retain their source identity and are not rewritten.
+
+In **Performance**, enter a population **Target** and choose **Apply live** to add
+or remove synthetic residents without starting a new day. The current clock,
+pause/speed settings and surviving residents remain intact. The advertised
+1-5,000 target range supports load experiments; it is not a tested interactive
+capacity guarantee. The older **Restart with** control still creates a new day.
+
+The window supports resizing, maximizing and **F11** fullscreen. The Performance
+panel offers window modes and UI scales of 100%, 125% and 150%; it moves between a
+right dock and a bottom drawer as space changes. Display preferences are stored
+in Godot's local user data on the receiving machine, separately from saved
+simulation days. Use `--no-display-settings` for a launch that neither reads nor
+writes those preferences. Existing distribution folders gain these features only
+when rebuilt from the updated sources.
 
 Prepared building, road and terrain arrays can also travel with a city build.
 Prepare them from the current sources, then explicitly include that directory:
@@ -86,6 +107,7 @@ The launch script accepts the same arguments as the repository application:
 ```powershell
 & '.\Start San Francisco.cmd' --population 20 --mode follow
 & '.\Start San Francisco.cmd' --world city --location city
+& '.\Start San Francisco.cmd' --performance --window-size 1920x1080 --ui-scale 1.25
 runtime/python/python.exe -m civic_center --population 200 --headless --smoke-test
 runtime/python/python.exe -m civic_center.package_verify
 ```
@@ -149,6 +171,21 @@ and `d5c1e41ad2f868ae0135557ed0ed58bd8cff35b4780e4dbbe0a8e7eb12f2f2de`.
 The machine-readable report is `.cache/portable-crowd-validation.json`.
 These checks validate optional native packaging and its genuine fallback; the
 final city distribution still needs its own city data/rendered smoke evidence.
+
+A fresh live-workspace pilot build at `dist/live-workspace-final-20260906`
+was also validated with its own Python 3.13.15 and Godot 4.7.2 in a rendered window.
+The trial grew the paused population from 20 to 35 with survivor/occupancy parity,
+grew it to 36 while running, removed the followed newcomer when shrinking to 20,
+then saved, restored and resized to 21. The run completed with zero application
+or hardware errors, using the individual GDScript crowd fallback.
+
+Post-run integrity verification passed for all 262 shipped files, totaling
+210,367,131 bytes. The manifest SHA256 is
+`b69b448e2885ccd320bdd475a08bf3c5080be0cca7a1e3974d0a7345a0bc819b`.
+The local report and rendered capture are under
+`.cache/live-workspace/portable-final/`, with the checks and manifest result in
+`summary.json`. This validates the bundled pilot runtime, live controls and
+reporting; it does not establish a full-city portable build or a timing speedup.
 
 Validation evidence is recorded in [OVERNIGHT_PROGRESS.md](OVERNIGHT_PROGRESS.md).
 Before calling a new build ready, run its own interpreter and live smoke check,

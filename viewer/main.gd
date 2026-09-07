@@ -93,6 +93,21 @@ var scenery_ready_frames: int = 0
 var scenery_was_pending: bool = false
 var run_metrics_last_usec: int = 0
 var run_metrics_final_reported: bool = false
+var diagnostics: PanelContainer
+var display_settings: Node
+var telemetry: Node
+var diagnostics_elapsed: float = 0.0
+var pending_population_scene: Dictionary = {}
+var population_handoff_started_usec: int = 0
+var population_request: String = ""
+var workspace_probe_active: bool = false
+var viewer_clock_id: String = Crypto.new().generate_random_bytes(16).hex_encode()
+var phase_counter: int = 0
+var phase_clock_synced: bool = false
+var phase_id: String = "viewer-0"
+var phase_started_usec: int = 0
+var phase_signature: String = ""
+var layout_last_size := Vector2.ZERO
 
 func _ready() -> void:
 	get_tree().auto_accept_quit = false
@@ -103,6 +118,24 @@ func _ready() -> void:
 	add_child(loading_screen)
 	loading_screen.close_requested.connect(_close_application)
 	var arguments: PackedStringArray = OS.get_cmdline_user_args()
+	if "--workspace-probe" in arguments: _set_probe_input_guard(true)
+	display_settings = preload("res://display_settings.gd").new()
+	add_child(display_settings)
+	display_settings.initialize(arguments)
+	display_settings.changed.connect(_display_changed)
+	phase_started_usec = startup_started_usec
+	var diagnostics_layer := CanvasLayer.new()
+	diagnostics_layer.layer = 110
+	add_child(diagnostics_layer)
+	diagnostics = preload("res://diagnostics.gd").new()
+	diagnostics_layer.add_child(diagnostics)
+	diagnostics.action_requested.connect(_action)
+	diagnostics.layout_changed.connect(_workspace_layout)
+	diagnostics.set_open("--performance" in arguments)
+	telemetry = preload("res://telemetry_client.gd").new()
+	add_child(telemetry)
+	telemetry.received.connect(diagnostics.receive_telemetry)
+	telemetry.configure(int(_argument(arguments,"--telemetry-port","0")),_argument(arguments,"--telemetry-token",""))
 	smoke = "--smoke-test" in arguments
 	await _loading_stage("Opening San Francisco")
 	startup_first_paint_ms = float(Time.get_ticks_usec()-startup_started_usec)/1000.0
@@ -116,6 +149,9 @@ func _ready() -> void:
 	hud.action_requested.connect(_action)
 	hud.mode_requested.connect(_set_mode)
 	hud.resident_selected.connect(func(identifier: String) -> void: _select(identifier))
+	hud.layout_changed.connect(_workspace_layout)
+	_workspace_layout()
+	if telemetry.port == 0: telemetry.configure(int(_argument(arguments,"--telemetry-port","0")),_argument(arguments,"--telemetry-token",""))
 	smoke = "--smoke-test" in arguments
 	host = _argument(arguments,"--host","127.0.0.1")
 	port = int(_argument(arguments,"--port","0"))
@@ -206,6 +242,7 @@ func _ready() -> void:
 	client.snapshot_received.connect(_receive_snapshot)
 	client.status_changed.connect(_connection_status)
 	client.acknowledged.connect(_acknowledged)
+	client.command_rejected.connect(_command_rejected)
 	startup_initialized = true
 	await _loading_stage("Waiting for the simulation", "Preparing residents, homes, jobs, and daily commutes. Please wait.")
 	var replay_path: String = _argument(arguments,"--replay","")
@@ -311,6 +348,7 @@ func run_metrics(final: bool = false) -> Dictionary:
 	# Logs contain aggregate diagnostics only. In particular, do not serialize
 	# displayed, scene_message, OS arguments, or the authentication token.
 	# This also runs when loading is canceled before any world nodes exist.
+	var window_end_usec: int = Time.get_ticks_usec()
 	var performance: Dictionary = _interval_summary(frame_samples)
 	var sampled_ms: float = 0.0
 	for interval: float in frame_samples: sampled_ms += interval
@@ -320,6 +358,9 @@ func run_metrics(final: bool = false) -> Dictionary:
 		values.sort()
 		if not values.is_empty(): phases[label] = {"p50":values[int((values.size()-1)*0.5)],"p95":values[int((values.size()-1)*0.95)]}
 	performance["sampled_seconds"] = sampled_ms/1000.0
+	performance["phase_id"] = phase_id
+	performance["window_start_monotonic_seconds"] = _python_monotonic(phase_started_usec)
+	performance["window_end_monotonic_seconds"] = _python_monotonic(window_end_usec)
 	performance["measurement"] = "monotonic wall time between process callbacks; recent samples are bounded"
 	performance["cpu_phases_ms"] = phases
 	performance["decoder"] = client.decoder.stats() if is_instance_valid(client) and client.decoder != null else {}
@@ -330,7 +371,12 @@ func run_metrics(final: bool = false) -> Dictionary:
 	var viewport: Viewport = get_viewport() if is_inside_tree() else null
 	var simulation: Dictionary = {"ready":not displayed.is_empty(),"sequence":sequence,"tick":displayed.get("tick"),"simulation_time":displayed.get("simulation_time"),"clock_seconds":displayed.get("clock_seconds"),"resident_count":resident_count,"outdoor_count":resident_view.outdoor_count if is_instance_valid(resident_view) else null,"paused":displayed.get("paused"),"speed":displayed.get("speed")}
 	var presentation: Dictionary = {"mode":"map" if map_active else (str(cameras.mode) if is_instance_valid(cameras) else initial_mode),"display_server":DisplayServer.get_name(),"rendering_method":RenderingServer.get_current_rendering_method(),"graphics_adapter":RenderingServer.get_video_adapter_name(),"rendering_3d":not viewport.disable_3d if viewport != null else null,"render_draw_calls":int(Performance.get_monitor(Performance.RENDER_TOTAL_DRAW_CALLS_IN_FRAME)),"render_primitives":int(Performance.get_monitor(Performance.RENDER_TOTAL_PRIMITIVES_IN_FRAME)),"crowd_backend":str(resident_view.draw_backend) if is_instance_valid(resident_view) else "","lighting_mode":"cycle" if daylight.enabled else "fixed"}
-	return {"schema_version":1,"final":final,"elapsed_ms":float(Time.get_ticks_usec()-startup_started_usec)/1000.0 if startup_started_usec > 0 else 0.0,"startup":startup_profile(),"performance":performance,"simulation":simulation,"presentation":presentation,"error":last_error}
+	if display_settings != null: presentation.merge(display_settings.state())
+	simulation["population"] = displayed.get("population",resident_count)
+	simulation["roster_revision"] = displayed.get("roster_revision",scene_message.get("roster_revision",0))
+	simulation["worker_metrics"] = displayed.get("worker_metrics",{})
+	simulation["population_change"] = displayed.get("population_change",{})
+	return {"viewer_clock_id":viewer_clock_id,"phase_id":phase_id,"window_start_local_usec":phase_started_usec,"window_end_local_usec":window_end_usec,"clock_uncertainty_seconds":telemetry.clock_uncertainty if telemetry != null and telemetry.clock_synced else null,"window_start_monotonic_seconds":_python_monotonic(phase_started_usec),"window_end_monotonic_seconds":_python_monotonic(window_end_usec),"schema_version":1,"final":final,"elapsed_ms":float(Time.get_ticks_usec()-startup_started_usec)/1000.0 if startup_started_usec > 0 else 0.0,"startup":startup_profile(),"performance":performance,"simulation":simulation,"presentation":presentation,"error":last_error}
 
 func _maybe_emit_run_metrics(now_usec: int) -> void:
 	if now_usec-run_metrics_last_usec >= RUN_METRICS_INTERVAL_USEC:
@@ -352,6 +398,15 @@ func _argument(arguments: PackedStringArray, name_value: String, fallback: Strin
 	return arguments[index + 1] if index >= 0 and index + 1 < arguments.size() else fallback
 
 func _receive_scene(message: Dictionary) -> void:
+	var same_world: bool = not str(message.get("world_identity","")).is_empty() and message.get("world_identity") == scene_message.get("world_identity")
+	if str(message.get("reason","")) == "population_adjustment" and same_world and not displayed.is_empty():
+		pending_population_scene = message
+		population_handoff_started_usec = Time.get_ticks_usec()
+		session_id = str(message.get("session_id",""))
+		sequence = -1
+		if diagnostics != null: diagnostics.set_population_status("Committed in simulation; receiving the updated population...",true)
+		_emit_phase("population_commit","transition",message.get("population_change",{}))
+		return
 	var previous_scenario_id: String = str(scene_message.get("scenario",{}).get("id",""))
 	scene_message = message
 	var scenario: Dictionary = message.get("scenario",{})
@@ -400,6 +455,27 @@ func _receive_snapshot(message: Dictionary) -> void:
 			_fail("Simulation sent duplicate identities or invalid coordinates.")
 			return
 		identities[identity] = true
+	var population_handoff: bool = not pending_population_scene.is_empty()
+	var removed_selection: bool = population_handoff and _resident_view().records.has(selected_id) and not identities.has(selected_id)
+	var removed_follow: bool = population_handoff and not follow_id.is_empty() and not identities.has(follow_id)
+	var population_change: Dictionary = {}
+	if population_handoff:
+		scene_message = pending_population_scene
+		pending_population_scene = {}
+		population_change = scene_message.get("population_change",{})
+		hud.configure_scenario(scene_message.get("scenario",{}))
+		area_activity.clear()
+		area_activity_state = {}
+		hud.place_search.update_activity({})
+		_configure_area_activity()
+		if map_2d != null: map_2d._scenario = scene_message.get("scenario",{})
+		if removed_selection:
+			selected_id = ""
+			selected_label = "Selected citizen was removed by the population experiment."
+		if removed_follow:
+			follow_id = ""
+			follow_camera_id = ""
+			if cameras.mode == "follow": cameras.detach_follow()
 	last_validation_ms = float(Time.get_ticks_usec()-validation_started)/1000.0
 	sequence = int(message.sequence)
 	var prepare_started: int = Time.get_ticks_usec()
@@ -408,10 +484,10 @@ func _receive_snapshot(message: Dictionary) -> void:
 	# Establish membership immediately after a new session. Subsequent snapshots
 	# render once in the regular frame pass, avoiding a second full crowd upload.
 	var resident_view: Node = _resident_view()
-	if resident_view.ids.is_empty():
+	if resident_view.ids.is_empty() or population_handoff:
 		_render_snapshot()
 		if not map_active: daylight.update_clock(float(displayed.get("clock_seconds",28790.0)),true)
-	if not resident_view.records.has(follow_id) and not resident_view.ids.is_empty():
+	if not population_handoff and (cameras == null or not cameras.follow_detached) and not resident_view.records.has(follow_id) and not resident_view.ids.is_empty():
 		follow_id = resident_view.ids[0]
 		# A new follow view starts with an outdoor resident when one exists.
 		# Once selected, their identity persists through every indoor arrival.
@@ -421,12 +497,23 @@ func _receive_snapshot(message: Dictionary) -> void:
 					follow_id = identity
 					break
 		if selected_id.is_empty() or selected_id.begins_with("resident-") or selected_id.begins_with("sf-resident-"): _select(follow_id)
+	if population_handoff:
+		if diagnostics != null:
+			diagnostics.set_population_status("Applied %d citizens at tick %d; current day preserved." % [identities.size(),int(message.get("tick",0))],false)
+			diagnostics.target_population.value = identities.size()
+		_emit_phase("population_handoff","settled",population_change)
+		print("GODOT_APPLICATION_POPULATION_HANDOFF "+JSON.stringify({"population_change":population_change,"roster_revision":message.get("roster_revision",0),"count":identities.size(),"tick":message.get("tick",0),"handoff_ms":float(Time.get_ticks_usec()-population_handoff_started_usec)/1000.0,"received_at_unix":Time.get_unix_time_from_system()}))
 	if not ready_reported:
 		startup_first_snapshot_ms = float(Time.get_ticks_usec()-startup_started_usec)/1000.0
 		ready_reported = true
 		print("GODOT_APPLICATION_READY " + JSON.stringify(_report_state()))
 
 func _acknowledged(message: Dictionary) -> void:
+	if str(message.get("action","")) == "set_population" or str(message.get("request_id","")) == population_request:
+		if str(message.get("type","")) == "error":
+			diagnostics.set_population_status(str(message.get("message","Population change rejected.")),false)
+		elif bool(message.get("noop",false)):
+			diagnostics.set_population_status("Population already matches the target.",false)
 	ack_results[str(message.get("request_id",""))] = message
 	while ack_results.size() > 512: ack_results.erase(ack_results.keys()[0])
 	if str(message.get("type","")) == "ack":
@@ -434,8 +521,15 @@ func _acknowledged(message: Dictionary) -> void:
 			"save": hud.set_status("Day saved to the local quick slot.")
 			"load": hud.set_status("Saved day restored. The camera and selected resident stay yours.")
 
+func _command_rejected(message: Dictionary) -> void:
+	# An acknowledged limit/validation rejection leaves the existing day usable.
+	# Record the event once; recurring runtime metrics retain only actual failures.
+	var marker: Dictionary = {"schema_version":1,"request_id":str(message.get("request_id","")).left(128),"action":str(message.get("action","")).left(128),"code":str(message.get("code","")).left(128),"message":str(message.get("message","Request rejected.")).left(2048),"session_id":str(message.get("session_id",session_id)).left(128),"at_unix":Time.get_unix_time_from_system()}
+	print("GODOT_APPLICATION_COMMAND_REJECTED "+JSON.stringify(marker))
+
 func _connection_status(message: String, is_error: bool) -> void:
 	hud.set_status(message,is_error)
+	if is_error and diagnostics != null and diagnostics.pending: diagnostics.set_population_status(message,false)
 	if is_error:
 		if not startup_complete:
 			_fail(message)
@@ -466,6 +560,10 @@ func _seek_replay(index: int) -> void:
 	_receive_snapshot(replay.snapshots[replay_index])
 
 func _process(delta: float) -> void:
+	# Keep the interval's original start: a phase can change during diagnostics
+	# or later while presenting a population handoff in this same callback.
+	var interval_start_usec: int = previous_frame_usec
+	_update_diagnostics(delta)
 	var now_usec: int = Time.get_ticks_usec()
 	var wall_frame_ms: float = float(now_usec-previous_frame_usec)/1000.0 if previous_frame_usec > 0 else delta*1000.0
 	previous_frame_usec = now_usec
@@ -496,7 +594,7 @@ func _process(delta: float) -> void:
 	var view_started: int = Time.get_ticks_usec()
 	if not map_active and not displayed.is_empty(): daylight.update_clock(float(displayed.get("clock_seconds",28790.0)))
 	view_elapsed += delta
-	cameras.allow_walk_input = startup_complete and camera_input_allowed(get_viewport().gui_get_focus_owner(),get_window().has_focus())
+	cameras.allow_walk_input = startup_complete and not workspace_probe_active and camera_input_allowed(get_viewport().gui_get_focus_owner(),get_window().has_focus())
 	if not map_active:
 		_update_follow()
 	_update_keyboard_navigation(delta)
@@ -546,7 +644,7 @@ func _process(delta: float) -> void:
 	if scenery_pending:
 		frame_samples.clear()
 		for samples: Array in phase_samples.values(): samples.clear()
-	else:
+	elif interval_start_usec > 0 and interval_start_usec >= phase_started_usec:
 		frame_samples.append(wall_frame_ms)
 		if frame_samples.size() > PROFILE_SAMPLE_LIMIT: frame_samples.pop_front()
 		_record_phase("presentation",last_presentation_ms)
@@ -589,6 +687,7 @@ func frame_profile() -> Dictionary:
 	return {"startup":startup_profile(),"streaming":streaming_profile(),"scenery_cache":scenery_cache_profile(),"samples":sorted.size(),"sampled_seconds":sampled_ms/1000.0,"loading":_scenery_pending(),"measurement":"monotonic wall time between process callbacks","decode_measurement":"JSON and expansion measure completed background work; other phases measure main-thread work","decoder":decoder_state,"p50_ms":sorted[int((sorted.size()-1)*0.50)],"p95_ms":sorted[int((sorted.size()-1)*0.95)],"p99_ms":sorted[int((sorted.size()-1)*0.99)],"cpu_phases_ms":phases,"mode":_view_mode(),"rendering_3d":not get_viewport().disable_3d,"render_draw_calls":int(Performance.get_monitor(Performance.RENDER_TOTAL_DRAW_CALLS_IN_FRAME)),"render_primitives":int(Performance.get_monitor(Performance.RENDER_TOTAL_PRIMITIVES_IN_FRAME)),"map":map_2d.get_state() if map_active else {},"lighting_mode":daylight.get_state().mode,"facades_enabled":geography.facades_enabled,"trees":street_trees.get_state() if street_trees != null else {},"crowd_backend":_resident_view().draw_backend,"resident_count":_resident_view().ids.size(),"outdoor_count":_resident_view().outdoor_count,"paused":bool(displayed.get("paused",false)),"speed":float(displayed.get("speed",1.0))}
 
 func _render_snapshot() -> void:
+	if not pending_population_scene.is_empty(): return
 	var started: int = Time.get_ticks_usec()
 	displayed = presenter.sample()
 	if not displayed.is_empty() and not replay.is_empty():
@@ -616,6 +715,52 @@ func _advance_replay() -> void:
 	_receive_snapshot(next)
 
 func _action(action: String, value: Variant = null) -> void:
+	match action:
+		"performance":
+			if diagnostics != null: diagnostics.set_open(not diagnostics.visible)
+			return
+		"fullscreen":
+			if display_settings != null: display_settings.toggle_fullscreen()
+			return
+		"window_mode":
+			if display_settings != null: display_settings.set_mode(str(value))
+			return
+		"ui_scale":
+			if display_settings != null: display_settings.set_scale(float(value))
+			return
+		"open_run_log":
+			var path: String = str(diagnostics.feed_status.get("report_path","")) if diagnostics != null else ""
+			if path.is_absolute_path() and path.get_extension().to_lower() == "json" and FileAccess.file_exists(path): OS.shell_open(path)
+			return
+		"comparison":
+			var point: Dictionary = run_metrics()
+			point["context"] = _phase_context()
+			point["phase_id"] = phase_id
+			point["boundary_at_unix"] = Time.get_unix_time_from_system()
+			print("GODOT_APPLICATION_COMPARISON_POINT "+JSON.stringify(point))
+			return
+		"toggle_pause":
+			_action("pause",not bool(displayed.get("paused",false)))
+			return
+		"toggle_map":
+			if not startup_initialized or startup_failed: return
+			_set_mode("overhead" if map_active else "map")
+			return
+		"set_population":
+			if not startup_complete or client == null or not replay.is_empty() or not bool(scene_message.get("capabilities",{}).get("set_population",false)):
+				if diagnostics != null: diagnostics.set_population_status("Live population changes are unavailable in this connection.",false)
+				return
+			if diagnostics.pending: return
+			var target: int = int(value)
+			var limit: int = int(scene_message.get("capabilities",{}).get("population_max",5000))
+			if target < 1 or target > limit or float(value) != float(target):
+				diagnostics.set_population_status("Enter a whole population between 1 and %d." % limit,false)
+				return
+			var revision: int = int(displayed.get("roster_revision",scene_message.get("roster_revision",0)))
+			population_request = client.command("set_population",target,revision)
+			diagnostics.set_population_status("Requested %d citizens; preparing while this day continues..." % target,not population_request.is_empty())
+			print("GODOT_APPLICATION_POPULATION_REQUEST "+JSON.stringify({"request_id":population_request,"requested_count":target,"roster_revision":revision,"at_unix":Time.get_unix_time_from_system()}))
+			return
 	if not startup_initialized or startup_failed: return
 	if map_active and action in ["trees","facades","lighting","use_overlay"]: return
 	if action == "map_center_selected":
@@ -738,11 +883,18 @@ func _set_mode(next_mode: String) -> void:
 func _view_mode() -> String:
 	return "map" if map_active else cameras.mode
 
+func _set_probe_input_guard(enabled: bool) -> void:
+	# Visible automated trials must not consume typing or clicks meant for the
+	# desktop. Programmatic actions and OS window-close notifications still work.
+	workspace_probe_active = enabled
+	get_viewport().gui_disable_input = enabled
+	if enabled and cameras != null: cameras.allow_walk_input = false
+
 static func camera_input_allowed(focus: Control, window_focused: bool) -> bool:
-	return window_focused and not (focus is LineEdit or focus is TextEdit)
+	return window_focused and not (focus is LineEdit or focus is TextEdit or focus is SpinBox or focus is OptionButton)
 
 func _update_keyboard_navigation(delta: float) -> void:
-	if not cameras.allow_walk_input: return
+	if workspace_probe_active or not cameras.allow_walk_input: return
 	var direction := Vector2(
 		float(Input.is_physical_key_pressed(KEY_D))-float(Input.is_physical_key_pressed(KEY_A)),
 		float(Input.is_physical_key_pressed(KEY_W))-float(Input.is_physical_key_pressed(KEY_S)))
@@ -864,8 +1016,19 @@ func _select_at(screen_position: Vector2) -> void:
 	if not identifier.is_empty(): hud.set_inspector_collapsed(false)
 
 func _unhandled_input(event: InputEvent) -> void:
+	if workspace_probe_active: return
+	if event is InputEventKey and event.pressed and not event.echo:
+		if event.physical_keycode == KEY_F11:
+			_action("fullscreen")
+			get_viewport().set_input_as_handled()
+			return
+		if event.physical_keycode == KEY_F3:
+			_action("performance")
+			get_viewport().set_input_as_handled()
+			return
 	if not startup_complete or startup_failed or cameras == null: return
 	if event is InputEventKey and event.pressed and not event.echo:
+		if not camera_input_allowed(get_viewport().gui_get_focus_owner(),get_window().has_focus()): return
 		match event.physical_keycode:
 			KEY_1: _set_mode("overhead")
 			KEY_2: _set_mode("walk")
@@ -885,6 +1048,7 @@ func _unhandled_input(event: InputEvent) -> void:
 				_action("speed",speeds[(speeds.find(int(displayed.get("speed",1))) + 1) % speeds.size()])
 			KEY_ESCAPE: dragging = false
 	if event is InputEventMouseButton:
+		if event.pressed and hud != null and hud.content_rect().has_area() and not hud.content_rect().has_point(event.position): return
 		if event.button_index in [MOUSE_BUTTON_LEFT,MOUSE_BUTTON_RIGHT,MOUSE_BUTTON_MIDDLE]:
 			if event.pressed:
 				var focused_control: Control = get_viewport().gui_get_focus_owner()
@@ -962,7 +1126,8 @@ func _close_application() -> void:
 	get_tree().quit()
 
 func _automation() -> void:
-	if not smoke and screenshot_path.is_empty(): return
+	var probe: bool = "--workspace-probe" in OS.get_cmdline_user_args()
+	if not smoke and screenshot_path.is_empty() and not probe: return
 	automation_running = true
 	var deadline: int = Time.get_ticks_msec() + 45000
 	while (displayed.is_empty() or not startup_complete) and Time.get_ticks_msec() < deadline and last_error.is_empty():
@@ -970,6 +1135,13 @@ func _automation() -> void:
 	if displayed.is_empty() or not startup_complete:
 		_fail("The initial simulation and scenery did not finish loading for automation.")
 		get_tree().quit(1)
+		return
+	if probe:
+		var failure: String = await preload("res://live_workspace_probe.gd").new().run(self,OS.get_cmdline_user_args())
+		if not failure.is_empty(): _fail(failure)
+		else: print("GODOT_APPLICATION_WORKSPACE_OK")
+		_emit_run_metrics(true)
+		get_tree().quit(0 if failure.is_empty() else 1)
 		return
 	if smoke:
 		var warmup_deadline: int = Time.get_ticks_msec()+45000
@@ -1014,3 +1186,64 @@ func _automation() -> void:
 			return
 		print("GODOT_APPLICATION_SCREENSHOT " + screenshot_path)
 	get_tree().quit(0)
+
+func _workspace_layout() -> void:
+	var viewport_size: Vector2 = get_viewport().get_visible_rect().size
+	layout_last_size = viewport_size
+	var dock := Rect2()
+	if diagnostics != null: dock = diagnostics.layout(viewport_size)
+	if hud != null:
+		hud.layout(viewport_size,dock)
+		if map_2d != null: map_2d.set_content_rect(hud.content_rect())
+
+func _display_changed() -> void:
+	_workspace_layout()
+	if startup_complete: _emit_phase("display","settled")
+
+func _phase_context() -> Dictionary:
+	var result: Dictionary = {"population":displayed.get("population",displayed.get("residents",[]).size()),"roster_revision":displayed.get("roster_revision",0),"mode":_view_mode() if cameras != null else initial_mode,"paused":displayed.get("paused",false),"speed":displayed.get("speed",1),"world_identity":scene_message.get("world_identity",""),"diagnostics_visible":diagnostics.visible if diagnostics != null else false}
+	if display_settings != null: result.merge(display_settings.state())
+	if cameras != null and cameras.camera != null:
+		var pose: Vector3 = cameras.camera.position
+		result["camera_position"] = [pose.x,pose.y,pose.z]
+		result["camera_rotation"] = [cameras.camera.rotation.x,cameras.camera.rotation.y,cameras.camera.rotation.z]
+		result["orbit_distance"] = cameras.orbit_distance
+	return result
+
+func _python_monotonic(local_usec: int) -> Variant:
+	return float(local_usec)/1000000.0+telemetry.monotonic_offset if telemetry != null and telemetry.clock_synced else null
+
+func _emit_phase(reason: String, stage: String, change: Dictionary = {}) -> void:
+	phase_counter += 1
+	phase_id = "viewer-%d" % phase_counter
+	phase_started_usec = Time.get_ticks_usec()
+	frame_samples.clear()
+	for samples: Array in phase_samples.values(): samples.clear()
+	var marker: Dictionary = {"viewer_clock_id":viewer_clock_id,"boundary_local_usec":phase_started_usec,"phase_id":phase_id,"reason":reason,"stage":stage,"boundary_at_unix":Time.get_unix_time_from_system(),"received_at_unix":Time.get_unix_time_from_system(),"boundary_monotonic_seconds":_python_monotonic(phase_started_usec),"clock_uncertainty_seconds":telemetry.clock_uncertainty if telemetry != null and telemetry.clock_synced else null,"clock_method":"hello_round_trip" if telemetry != null and telemetry.clock_synced else "unsynchronized","context":_phase_context()}
+	if not change.is_empty(): marker["population_change"] = change
+	print("GODOT_APPLICATION_PHASE "+JSON.stringify(marker))
+	phase_signature = _configuration_signature()
+
+func _configuration_signature() -> String:
+	var context: Dictionary = _phase_context()
+	for key: String in ["camera_position","camera_rotation","orbit_distance"]: context.erase(key)
+	return JSON.stringify(context)
+
+func _update_diagnostics(delta: float) -> void:
+	if diagnostics == null: return
+	if get_viewport().get_visible_rect().size != layout_last_size: _workspace_layout()
+	if startup_complete and not displayed.is_empty():
+		var signature: String = _configuration_signature()
+		if telemetry != null and telemetry.clock_synced and not phase_clock_synced:
+			phase_clock_synced = true
+			_emit_phase("telemetry_clock_ready","settled")
+		elif signature != phase_signature: _emit_phase("configuration","settled")
+		if telemetry != null and not telemetry.clock_synced: phase_clock_synced = false
+	diagnostics_elapsed += delta
+	if diagnostics_elapsed < 1.0: return
+	diagnostics_elapsed = 0.0
+	var local_report: Dictionary = run_metrics() if diagnostics.visible else {}
+	diagnostics.update_local(local_report,displayed,scene_message)
+	if telemetry != null:
+		var age: float = float(Time.get_ticks_msec()-telemetry.last_message_msec)/1000.0 if telemetry.last_message_msec > 0 else -1.0
+		diagnostics.refresh_feed_label(telemetry.status,age)

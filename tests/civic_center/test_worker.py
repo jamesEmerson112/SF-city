@@ -1,24 +1,26 @@
 """Exercise the real TCP worker and simulation without starting a renderer."""
 
-from contextlib import contextmanager
-from copy import deepcopy
 import json
-from pathlib import Path
 import select
 import socket
 import subprocess
 import sys
 import threading
 import time
+from contextlib import contextmanager
+from copy import deepcopy
+from pathlib import Path
 
 import pytest
 
 from civic_center import worker as worker_module
 from civic_center.checkpoint import save_checkpoint
 from civic_center.model import CivicSimulation
-from civic_center.shared_geometry import GeometryEncodingCancelled, SharedGeometryDecoder
+from civic_center.shared_geometry import (
+    GeometryEncodingCancelled,
+    SharedGeometryDecoder,
+)
 from civic_center.worker import CivicWorker, Client, encode_frame
-
 
 TOKEN = "worker-test-secret"
 
@@ -86,14 +88,20 @@ class Peer:
         message = json.loads(line)
         if message["type"] == "scene":
             self.geometries.clear()
-            self.shared_geometry = (SharedGeometryDecoder(message["session_id"])
-                                    if message.get("route_geometry_encoding") == worker_module.CITY_POINTS_ENCODING else None)
+            self.shared_geometry = (
+                SharedGeometryDecoder(message["session_id"])
+                if message.get("route_geometry_encoding")
+                == worker_module.CITY_POINTS_ENCODING
+                else None
+            )
         elif message["type"] in ("route_coordinate_pool", "trip_geometry_indices"):
             assert self.shared_geometry is not None
             self.shared_geometry.apply(message)
             if message["type"] == "trip_geometry_indices":
                 for record in message["geometries"]:
-                    self.geometries[record["id"]] = self.shared_geometry.expand([record["id"]])[0]
+                    self.geometries[record["id"]] = self.shared_geometry.expand(
+                        [record["id"]]
+                    )[0]
         elif message["type"] == "trip_geometries":
             self.geometry_frames_received += 1
             for definition in message["geometries"]:
@@ -943,7 +951,7 @@ def _assert_authoritative_snapshot(instance, scene, message, geometries=None):
 
 def test_rows_mixed_clients_and_spawned_load_keep_exact_public_state(running, scenario):
     scenario["geography_manifest"] = "fixture-map.json"
-    scenario["residents"][0]["label"] = "Alice — resident"
+    scenario["residents"][0]["label"] = "Alice â€” resident"
     scenario["buildings"][0]["footprint"] = [
         [0.1234567890123456, 0, 0],
         [1, 0, 0],
@@ -1035,10 +1043,14 @@ def test_prepared_rows_cannot_bypass_reused_geometry_cache_limit(scenario, monke
         assert mode not in result.snapshots
 
 
-@pytest.mark.parametrize("encoding", [worker_module.CITY_ROUTES_ENCODING, worker_module.CITY_ROWS_ENCODING])
-def test_shared_points_network_parity_load_reconnect_and_repeating_days(running, scenario, encoding):
+@pytest.mark.parametrize(
+    "encoding", [worker_module.CITY_ROUTES_ENCODING, worker_module.CITY_ROWS_ENCODING]
+)
+def test_shared_points_network_parity_load_reconnect_and_repeating_days(
+    running, scenario, encoding
+):
     scenario["geography_manifest"] = "fixture-map.json"
-    scenario["schedule"] = {"mode":"daily-v1"}
+    scenario["schedule"] = {"mode": "daily-v1"}
     with running() as (instance, peer, _thread):
         scene, first = peer.hello(encoding, points=True)
         assert scene["route_geometry_encoding"] == worker_module.CITY_POINTS_ENCODING
@@ -1051,26 +1063,37 @@ def test_shared_points_network_parity_load_reconnect_and_repeating_days(running,
         try:
             replacement_scene, current = reconnect.hello(encoding, points=True)
             assert replacement_scene == scene
-            _assert_authoritative_snapshot(instance, scene, current, reconnect.geometries)
+            _assert_authoritative_snapshot(
+                instance, scene, current, reconnect.geometries
+            )
         finally:
             reconnect.close()
         peer.command("save", "shared")
         peer.until("snapshot", tick=2500)
         peer.command("step", 500)
-        _assert_authoritative_snapshot(instance, scene, peer.until("snapshot", tick=3000), peer.geometries)
+        _assert_authoritative_snapshot(
+            instance, scene, peer.until("snapshot", tick=3000), peer.geometries
+        )
         assert peer.geometries == {}
         peer.command("step", 86400 * 200 - 500)
         state = peer.until("snapshot", tick=86400 * 200 + 2500)
         _assert_authoritative_snapshot(instance, scene, state, peer.geometries)
         assert peer.shared_geometry.point_count == point_count
         assert len(peer.shared_geometry.active_trip_ids) == 1
-        peer.send({"type":"command", "request_id":"shared-load", "action":"load", "value":"shared"})
+        peer.send(
+            {
+                "type": "command",
+                "request_id": "shared-load",
+                "action": "load",
+                "value": "shared",
+            }
+        )
         loaded_scene = peer.until("scene")
         peer.until("ack", request_id="shared-load")
         loaded = peer.until("snapshot", session_id=loaded_scene["session_id"])
         assert loaded_scene["session_id"] != scene["session_id"]
         _assert_authoritative_snapshot(instance, loaded_scene, loaded, peer.geometries)
-        peer.send({"type":"command", "request_id":"shared-reset", "action":"reset"})
+        peer.send({"type": "command", "request_id": "shared-reset", "action": "reset"})
         reset_scene = peer.until("scene")
         peer.until("ack", request_id="shared-reset")
         reset = peer.until("snapshot", session_id=reset_scene["session_id"])
@@ -1078,7 +1101,9 @@ def test_shared_points_network_parity_load_reconnect_and_repeating_days(running,
         assert peer.shared_geometry.point_count == 0
 
 
-def test_shared_points_controls_and_shutdown_during_cold_preparation(running, scenario, monkeypatch):
+def test_shared_points_controls_and_shutdown_during_cold_preparation(
+    running, scenario, monkeypatch
+):
     from civic_center import point_transport
 
     scenario["geography_manifest"] = "fixture-map.json"
@@ -1092,9 +1117,15 @@ def test_shared_points_controls_and_shutdown_during_cold_preparation(running, sc
 
     monkeypatch.setattr(point_transport.SharedGeometryEncoder, "encode", prepare)
     with running() as (instance, peer, thread):
-        peer.send({"type":"hello", "protocol_version":1, "token":TOKEN,
-                   "snapshot_encoding":worker_module.CITY_ROWS_ENCODING,
-                   "route_geometry_encoding":worker_module.CITY_POINTS_ENCODING})
+        peer.send(
+            {
+                "type": "hello",
+                "protocol_version": 1,
+                "token": TOKEN,
+                "snapshot_encoding": worker_module.CITY_ROWS_ENCODING,
+                "route_geometry_encoding": worker_module.CITY_POINTS_ENCODING,
+            }
+        )
         scene = peer.until("scene")
         assert entered.wait(1)
         service = instance._point_service
@@ -1119,7 +1150,13 @@ def test_priority_controls_preserve_partial_frame_and_scene_barriers():
         client.enqueue(b"pool\n")
         client.enqueue(b"ack-one\n", priority=True)
         client.enqueue(b"ack-two\n", priority=True)
-        assert [item.data for item in client.outgoing] == [b"old-partial\n", b"scene\n", b"ack-one\n", b"ack-two\n", b"pool\n"]
+        assert [item.data for item in client.outgoing] == [
+            b"old-partial\n",
+            b"scene\n",
+            b"ack-one\n",
+            b"ack-two\n",
+            b"pool\n",
+        ]
         assert client.outgoing[0].offset == 2
     finally:
         connection.close()
@@ -1735,3 +1772,441 @@ def test_oversized_local_process_transfer_leaves_current_day_intact(
         assert instance.simulation is original
         assert instance.session_id == scene["session_id"]
         assert thread.is_alive()
+
+
+def _live_resize(peer, target, revision, request_id="live"):
+    peer.send(
+        {
+            "type": "command",
+            "request_id": request_id,
+            "action": "set_population",
+            "value": target,
+            "expected_roster_revision": revision,
+        }
+    )
+    scene = None
+    ack = None
+    for _ in range(200):
+        message = peer.receive()
+        if message["type"] == "error" and message.get("request_id") == request_id:
+            raise AssertionError(message)
+        if message["type"] == "scene":
+            scene = message
+        if message["type"] == "ack" and message.get("request_id") == request_id:
+            ack = message
+            if ack.get("noop"):
+                return scene, ack, None
+        if (
+            message["type"] == "snapshot"
+            and ack is not None
+            and message.get("roster_revision") == ack["roster_revision"]
+        ):
+            return scene, ack, message
+    raise AssertionError("No complete live population handoff")
+
+
+def test_live_population_tcp_preserves_running_model_day_and_survivor(running):
+    with running() as (instance, peer, _thread):
+        first_scene, _ = peer.hello()
+        peer.command("step", 2500)
+        before = peer.until("snapshot", tick=2500)
+        original_model = instance.simulation
+        next_scene, ack, after = _live_resize(peer, 37, 0)
+        assert instance.simulation is original_model
+        assert next_scene["reason"] == "population_adjustment"
+        assert next_scene["world_identity"] == first_scene["world_identity"]
+        assert next_scene["session_id"] != first_scene["session_id"]
+        assert after["tick"] == 2500 and after["paused"]
+        assert after["residents"][0] == before["residents"][0]
+        assert len(after["residents"]) == ack["count"] == 37
+        assert after["population_change"]["committed_tick"] == 2500
+        assert after["roster_revision"] == 1
+        assert after["worker_metrics"]["snapshot_bytes"] >= 0
+        assert (
+            sum(row["occupancy"] for row in after["buildings"])
+            + sum(row["moving"] for row in after["residents"])
+            == 37
+        )
+
+
+def test_live_population_noop_stale_revision_and_duplicate_request_are_safe(running):
+    with running() as (instance, peer, _thread):
+        scene, _ = peer.hello()
+        no_scene, ack, _ = _live_resize(peer, 1, 0, "noop")
+        assert no_scene is None and ack["noop"]
+        assert instance.session_id == scene["session_id"]
+        _, original_ack, _ = _live_resize(peer, 20, 0, "once")
+        peer.send(
+            {
+                "type": "command",
+                "action": "set_population",
+                "value": 20,
+                "expected_roster_revision": 0,
+                "request_id": "once",
+            }
+        )
+        assert peer.until("ack", request_id="once") == original_ack
+        assert (
+            len(instance.simulation._sources) == 20
+            and instance.simulation.roster_revision == 1
+        )
+        peer.send(
+            {
+                "type": "command",
+                "action": "set_population",
+                "value": 21,
+                "expected_roster_revision": 0,
+                "request_id": "stale",
+            }
+        )
+        assert (
+            peer.until("error", request_id="stale")["code"] == "stale_roster_revision"
+        )
+        peer.send(
+            {
+                "type": "command",
+                "action": "set_population",
+                "value": 21,
+                "expected_roster_revision": 0,
+                "request_id": "once",
+            }
+        )
+        assert peer.until("error", request_id="once")["code"] == "request_id_conflict"
+
+
+@pytest.mark.parametrize("points", [False, True])
+def test_live_city_compact_handoff_and_checkpoint_restore(running, scenario, points):
+    scenario["geography_manifest"] = "fixture-city.json"
+    with running() as (instance, peer, _thread):
+        peer.hello(worker_module.CITY_ROWS_ENCODING, points=points)
+        peer.command("step", 2500)
+        peer.until("snapshot", tick=2500)
+        _, _, grown = _live_resize(peer, 100, 0, "grow")
+        assert len(grown["residents"]) == 100
+        assert grown["tick"] == 2500
+        peer.command("save", "live")
+        _, _, shrunk = _live_resize(peer, 2, 1, "shrink")
+        assert len(shrunk["residents"]) == 2
+        peer.command("load", "live")
+        restored = None
+        for _ in range(300):
+            candidate = peer.receive()
+            if (
+                candidate["type"] == "snapshot"
+                and candidate.get("roster_revision") == 1
+            ):
+                restored = candidate
+                break
+        assert restored is not None
+        assert len(restored["residents"]) == 100 and restored["tick"] == 2500
+        assert instance.simulation.next_resident_identity == 99
+        _, _, regrown = _live_resize(peer, 103, 1, "after-load")
+        assert len(regrown["residents"]) == 103
+        assert instance.simulation.next_resident_identity == 102
+
+
+def test_live_prepare_does_not_block_controls_and_commits_current_tick(
+    running, monkeypatch
+):
+    entered, release = threading.Event(), threading.Event()
+    original = worker_module._prepare_live_population
+
+    def delayed(*args, **kwargs):
+        entered.set()
+        assert release.wait(4)
+        return original(*args, **kwargs)
+
+    monkeypatch.setattr(worker_module, "_prepare_live_population", delayed)
+    with running() as (instance, peer, _thread):
+        peer.hello(command_status=True)
+        peer.send(
+            {
+                "type": "command",
+                "action": "set_population",
+                "value": 25,
+                "expected_roster_revision": 0,
+                "request_id": "pending-live",
+            }
+        )
+        try:
+            peer.until("command_status", request_id="pending-live")
+            assert entered.wait(1)
+            assert peer.command("step", 2500)["tick"] == 2500
+            peer.until("snapshot", tick=2500)
+            assert (
+                peer.command("save", "during", response="error")["code"]
+                == "operation_pending"
+            )
+            peer.command("speed", 4)
+        finally:
+            release.set()
+        peer.until("scene", reason="population_adjustment")
+        ack = peer.until("ack", request_id="pending-live")
+        after = peer.until("snapshot", roster_revision=1)
+        assert ack["committed_tick"] == after["tick"] == 2500
+        assert after["speed"] == 4
+        assert set(instance.simulation.joined_at.values()) == {2500}
+
+
+def test_live_preflight_failure_preserves_old_session_and_roster(running, monkeypatch):
+    def failure(*args, **kwargs):
+        raise ValueError("fixture transport budget")
+
+    monkeypatch.setattr(worker_module, "_prepare_live_population", failure)
+    with running() as (instance, peer, _thread):
+        scene, before = peer.hello()
+        peer.send(
+            {
+                "type": "command",
+                "action": "set_population",
+                "value": 20,
+                "expected_roster_revision": 0,
+                "request_id": "fail-live",
+            }
+        )
+        error = peer.until("error", request_id="fail-live")
+        assert "fixture transport budget" in error["message"]
+        assert instance.session_id == scene["session_id"]
+        assert instance.simulation.snapshot()["residents"] == before["residents"]
+        assert instance.simulation.roster_revision == 0
+
+
+@pytest.mark.parametrize("points", [False, True])
+def test_live_population_uses_owned_spawned_preparation(running, scenario, points):
+    if points:
+        scenario["geography_manifest"] = "fixture-city.json"
+    with running(job_backend="process") as (instance, peer, _thread):
+        peer.hello(worker_module.CITY_ROWS_ENCODING if points else None, points=points)
+        peer.command("step", 2500)
+        peer.until("snapshot", tick=2500)
+        original = instance.simulation
+        _, ack, after = _live_resize(peer, 25, 0, "spawn-live")
+        assert instance.simulation is original
+        assert after["tick"] == 2500 and len(after["residents"]) == 25
+        assert instance.last_job_metrics["pid"] != worker_module.os.getpid()
+        assert instance.last_job_metrics["pickle_bytes"] > 0
+        assert (
+            ack["prepare_ms"] >= instance.last_job_metrics["child_work_seconds"] * 1000
+        )
+        assert ack["commit_ms"] >= 0
+
+
+def test_live_population_dedup_is_scoped_to_client_and_cleared_on_load(running):
+    with running() as (instance, first, _thread):
+        first.hello()
+        first.command("save", "initial")
+        _, _, _ = _live_resize(first, 20, 0, "shared-id")
+        second = Peer(instance.port)
+        try:
+            second.hello()
+            _, ack, _ = _live_resize(second, 21, 1, "shared-id")
+            assert ack["count"] == 21
+        finally:
+            second.close()
+        first.command("load", "initial")
+        first.until("snapshot", roster_revision=0)
+        _, ack, after = _live_resize(first, 20, 0, "shared-id")
+        assert ack["count"] == len(after["residents"]) == 20
+        assert instance.simulation.roster_revision == 1
+
+
+def test_live_population_boolean_retry_cannot_match_integer_ack(running):
+    with running() as (_instance, peer, _thread):
+        peer.hello()
+        _live_resize(peer, 1, 0, "noop-bool")
+        peer.send(
+            {
+                "type": "command",
+                "action": "set_population",
+                "value": True,
+                "expected_roster_revision": False,
+                "request_id": "noop-bool",
+            }
+        )
+        assert peer.until("error", request_id="noop-bool")["code"] == "invalid_command"
+
+
+def test_live_current_commit_geometry_preflight_failure_is_atomic(
+    running, scenario, monkeypatch
+):
+    scenario["geography_manifest"] = "fixture-city.json"
+    original = worker_module._prepare_live_population
+
+    def prepared_then_reject(*args, **kwargs):
+        result = original(*args, **kwargs)
+
+        class RejectCurrent:
+            def __init__(self, *_args, **_kwargs):
+                pass
+
+            def encode(self, _definitions):
+                raise ValueError("current commit geometry budget")
+
+        monkeypatch.setattr(worker_module, "SharedGeometryEncoder", RejectCurrent)
+        return result
+
+    with running() as (instance, peer, _thread):
+        scene, _ = peer.hello(worker_module.CITY_ROWS_ENCODING, points=True)
+        peer.command("step", 2500)
+        peer.until("snapshot", tick=2500)
+        before = instance.simulation.snapshot()
+        monkeypatch.setattr(
+            worker_module, "_prepare_live_population", prepared_then_reject
+        )
+        peer.send(
+            {
+                "type": "command",
+                "action": "set_population",
+                "value": 20,
+                "expected_roster_revision": 0,
+                "request_id": "current-failure",
+            }
+        )
+        error = peer.until("error", request_id="current-failure")
+        assert "current commit geometry budget" in error["message"]
+        assert instance.simulation.snapshot() == before
+        assert instance.session_id == scene["session_id"]
+
+
+def test_live_current_commit_checkpoint_preflight_failure_is_atomic(
+    running, monkeypatch
+):
+    import civic_center.checkpoint as checkpoint_module
+
+    original = worker_module._prepare_live_population
+
+    def prepared_then_reject(*args, **kwargs):
+        result = original(*args, **kwargs)
+        monkeypatch.setattr(
+            checkpoint_module, "MAX_JSON_VALUES", result.scenario_values + 5
+        )
+        return result
+
+    with running() as (instance, peer, _thread):
+        scene, before = peer.hello()
+        monkeypatch.setattr(
+            worker_module, "_prepare_live_population", prepared_then_reject
+        )
+        peer.send(
+            {
+                "type": "command",
+                "action": "set_population",
+                "value": 20,
+                "expected_roster_revision": 0,
+                "request_id": "capture-failure",
+            }
+        )
+        error = peer.until("error", request_id="capture-failure")
+        assert "too many JSON values" in error["message"]
+        assert instance.simulation.snapshot()["residents"] == before["residents"]
+        assert instance.session_id == scene["session_id"]
+
+
+def test_live_session_guard_rejects_discarded_day_but_allows_exact_retry(running):
+    with running() as (instance, peer, _thread):
+        peer.send(
+            {
+                "type": "hello",
+                "protocol_version": 1,
+                "token": TOKEN,
+                "command_client_id": "test-stable-client",
+            }
+        )
+        scene = peer.until("scene")
+        peer.until("snapshot")
+        peer.command("save", "initial")
+        command = {
+            "type": "command",
+            "request_id": "guarded",
+            "action": "set_population",
+            "value": 20,
+            "expected_roster_revision": 0,
+            "expected_session_id": scene["session_id"],
+        }
+        peer.send(command)
+        peer.until("scene", reason="population_adjustment")
+        ack = peer.until("ack", request_id="guarded")
+        peer.until("snapshot", roster_revision=1)
+        peer.send(command)
+        assert peer.until("ack", request_id="guarded") == ack
+        peer.command("load", "initial")
+        peer.until("snapshot", roster_revision=0)
+        peer.send(command)
+        assert peer.until("error", request_id="guarded")["code"] == "stale_session"
+        assert len(instance.simulation._sources) == 1
+        missing_session = dict(command, request_id="missing-guard")
+        del missing_session["expected_session_id"]
+        peer.send(missing_session)
+        assert (
+            peer.until("error", request_id="missing-guard")["code"] == "stale_session"
+        )
+
+
+def test_live_legacy_bootstrap_stages_when_combined_frames_exceed_queue(
+    running, scenario, monkeypatch
+):
+    scenario["geography_manifest"] = "fixture-city.json"
+    scenario["edges"][0]["points"] = [[2 * index / 600, 0, 0] for index in range(601)]
+    original = worker_module._prepare_live_population
+    observed = {}
+
+    def constrain_queue(*args, **kwargs):
+        result = original(*args, **kwargs)
+        mode = (True, True, False)
+        scene = result.session.scenes[mode]
+        geometry = result.session.geometry_frames
+        snapshot = result.session.snapshots[mode]
+        limit = (
+            max(len(scene) + 4096, *(len(frame) for frame in geometry), len(snapshot))
+            + 1024
+        )
+        observed["combined"] = len(scene) + sum(map(len, geometry)) + len(snapshot)
+        observed["limit"] = limit
+        assert observed["combined"] > limit
+        monkeypatch.setattr(worker_module, "MAX_QUEUE_BYTES", limit)
+        return result
+
+    with running() as (instance, peer, _thread):
+        peer.hello(worker_module.CITY_ROUTES_ENCODING)
+        peer.command("step", 2500)
+        peer.until("snapshot", tick=2500)
+        monkeypatch.setattr(worker_module, "_prepare_live_population", constrain_queue)
+        _, ack, after = _live_resize(peer, 30, 0, "staged-bootstrap")
+        assert ack["count"] == len(after["residents"]) == 30
+        assert after["tick"] == 2500
+        assert after["population_change"]["new_count"] == 30
+        assert len(peer.geometries) == 30
+        assert instance.simulation.roster_revision == 1
+        assert peer.command("step", 1)["tick"] == 2501
+        peer.until("snapshot", tick=2501)
+
+
+def test_live_route_cache_limit_rejects_before_commit_and_connection_recovers(
+    running, scenario, monkeypatch
+):
+    scenario["geography_manifest"] = "fixture-city.json"
+    with running() as (instance, peer, _thread):
+        scene, _ = peer.hello(worker_module.CITY_ROUTES_ENCODING)
+        peer.command("step", 2500)
+        peer.until("snapshot", tick=2500)
+        before = instance.simulation.snapshot()
+        monkeypatch.setattr(worker_module, "MAX_TRIP_GEOMETRY_BYTES", 1000)
+        peer.send(
+            {
+                "type": "command",
+                "request_id": "too-many-routes",
+                "action": "set_population",
+                "value": 30,
+                "expected_roster_revision": 0,
+            }
+        )
+        error = peer.until("error", request_id="too-many-routes")
+        assert (
+            "route-data limit" in error["message"]
+            and "smaller target" in error["message"]
+        )
+        assert instance.simulation.snapshot() == before
+        assert instance.session_id == scene["session_id"]
+        assert instance.simulation.roster_revision == 0
+        assert peer.command("step", 1)["tick"] == 2501
+        peer.until("snapshot", tick=2501)

@@ -73,6 +73,7 @@ class HardwareMonitor:
                 return
             self.log.hardware_inventory(inventory)
             failures = 0
+            previous_collection_started = None
             while not self._stop.is_set():
                 started = time.monotonic()
                 collection_started = time.perf_counter()
@@ -83,6 +84,15 @@ class HardwareMonitor:
                     for pid, role in registrations.items():
                         collector.register_process(pid, role)
                     sample = collector.sample()
+                    collected = time.monotonic()
+                    sample["collection_started_monotonic_seconds"] = started
+                    sample["collected_monotonic_seconds"] = collected
+                    sample["collected_at_unix"] = time.time()
+                    if previous_collection_started is not None:
+                        sample["interval_start_monotonic_seconds"] = (
+                            previous_collection_started
+                        )
+                    previous_collection_started = started
                     sample["collection_ms"] = round(
                         (time.perf_counter() - collection_started) * 1000, 3
                     )

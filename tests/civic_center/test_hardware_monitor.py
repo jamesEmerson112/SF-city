@@ -88,7 +88,15 @@ def test_sensor_collection_runs_off_launcher_thread_and_tracks_registered_proces
     assert hardware["status"] == "stopped"
     assert hardware["samples_recorded"] >= 1
     assert hardware["samples"][0]["context"]["run_status"] == "loading"
-    assert hardware["samples"][0]["collection_ms"] >= 0
+    first = hardware["samples"][0]
+    assert first["collection_ms"] >= 0
+    assert (
+        first["collected_monotonic_seconds"]
+        >= first["collection_started_monotonic_seconds"]
+    )
+    assert first["collected_at_unix"] > 0
+    assert first["collection_delivery_ms"] >= 0
+    assert first["context"]["phase_mixed"] is True
     assert hardware["inventory"]["gpu"]["status"] == "unavailable"
     assert not log.has_errors
 

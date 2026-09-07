@@ -1,5 +1,138 @@
 # SF-city Patch Notes
 
+## 2026-09-06 - Live population experiments and a wider workspace
+
+### What users gain
+
+Changing the population no longer has to restart the day. Open **Performance**
+with **F3**, enter a target, and choose **Apply live**. Existing citizens keep
+their identities, current activities and trips; additions join the current
+schedule. The old population presets remain explicit new-day restarts.
+
+| Feature | Product impact |
+| --- | --- |
+| Live population target and adjustment buttons | Increase or reduce a synthetic workload while retaining the experiment's current day. |
+| Frame charts, hardware readings, filtered logs and comparison points | Inspect performance beside the city and retain observations in the run's JSON report. |
+| Resizable diagnostics, fullscreen and UI scale | Keep controls usable across wide and short windows; use F11 and 100%, 125% or 150% scale. |
+| Versioned saves for changed rosters | Resume a changed population with its current state and identity allocator intact; older saves remain readable. |
+| Bounded, staged city updates | Send larger valid population updates without overflowing the connection's outgoing queue. |
+
+Population preparation runs in an isolated process. The viewer retains the
+previous complete scene until the new roster arrives. A surviving selection and
+camera remain in place; removing the followed citizen releases the camera at its
+current pose. Large changes still have preparation and presentation costs.
+
+The console provides Charts, Details and Logs tabs, pause/speed/activity controls,
+2D/3D switching, save/load, **Record point**, and **Open run log**. Hardware keeps
+its own timestamps, unsupported readings and stale status. Clearing the console
+clears its visible history. Per-run records retain bounded experiment phases and
+distinguish intervals that cross a workload change.
+
+### How to use it
+
+```powershell
+python -m civic_center --performance --window-mode maximized
+python -m civic_center --mode map --performance
+```
+
+Enter a target between **1 and 5,000**, then apply. This is an experimental input
+range subject to scene, route-data and transport budgets, not a supported smooth
+population ceiling. Additions reuse the loaded cohort's home/work assignments
+and routes; they are synthetic workload changes, not calibrated population growth.
+The number outdoors matters as well as the total.
+
+**Known issue discovered after delivery:** live additions can copy an existing
+citizen's entire walking trajectory and appear stacked together. A focused pilot
+reproduction grew 200 -> 2,000 citizens and produced 458 walkers at only 47 exact
+positions, with up to 18 coincident walkers. Indoor building aggregation was
+excluded. [Individual coordinate recording and a deterministic newcomer fix](CITIZEN_COORDINATE_PLAN.md)
+are planned; the passing checks below did not test outdoor spatial separation.
+
+### Validation and observed limits
+
+The application suite passed **802 tests, with 1 skipped**. Relevant Godot checks
+passed for layout, input exclusion, telemetry, transport, frame measurements,
+map and presentation behavior. Both final rendered trials passed with unchanged
+source fingerprints and **zero application or hardware errors**. They checked
+paused/running changes, survivor state and occupancy, camera behavior, and
+save/load followed by another resize.
+
+A fresh **pilot-only portable build** passed a rendered launch using its own
+Python 3.13.15 and Godot runtimes, including the individual crowd fallback.
+Its manifest verified **262 files / 210,367,131 bytes**. This validates packaging
+and behavior; it is not a full-city distribution or a startup-speed comparison.
+
+Window requests from **1280 x 720 through 5120 x 1440**, 100%/125%/150% UI scale,
+and windowed/maximized/fullscreen transitions passed. Requested and actual sizes
+are retained separately. Dedicated physical 3440/5120-pixel display and mixed-DPI
+multi-monitor testing remain outstanding.
+
+#### Observed cost of opening the console
+
+These are exploratory observations on an **AMD Ryzen 5 2600X, 32 GB-class RAM,
+NVIDIA GTX 1070 Ti with 8 GiB VRAM, driver 582.66, Windows 11**, using Python
+3.12.10 and **Godot 4.7.2 Compatibility**. The pilot used the Rust crowd backend;
+the city used the 2D canvas backend with 3D rendering disabled.
+
+Each count has **three alternating hidden/shown pairs** at a fixed paused state,
+1440 x 900, UI scale 100%, fixed lighting, VSync enabled, and hardware sampling
+enabled at one-second intervals in both conditions. Each window requested three
+seconds in the pilot and five in the city. The camera was held fixed; the city
+map's center, scale and drawing rectangle were also held fixed. Existing local
+caches were retained, with no cold-cache reset; OS and driver cache state were
+uncontrolled. Loading, population transitions and settling were excluded.
+
+The ranges below contain the three measured callback-interval p95 values per
+condition. The last column is the median of the three paired shown-minus-hidden
+changes (and their corresponding percentages). It is not a pooled percentile,
+GPU execution time, or the difference between the range endpoints.
+
+| Scene: total / outdoors | Console hidden p95 range (ms) | Console shown p95 range (ms) | Median paired change |
+| --- | --- | --- | --- |
+| Pilot 3D: 200 / 47 | 13.535-13.581 | 13.525-13.585 | +0.004 ms / +0.03% |
+| Pilot 3D: 1,000 / 219 | 25.022-26.896 | 26.068-26.970 | +0.074 ms / +0.28% |
+| Pilot 3D: 2,000 / 447 | 27.384-29.742 | 32.045-52.683 | +7.608 ms / +25.58% |
+| Pilot 3D: 5,000 / 1,097 | 53.138-63.521 | 55.759-60.993 | -3.314 ms / -5.22% |
+| City 2D: 1,000 / 885 | 52.237-53.516 | 51.171-73.731 | +9.754 ms / +18.67% |
+| City 2D: 2,000 / 1,755 | 74.188-84.919 | 81.195-89.029 | +7.007 ms / +9.44% |
+
+Opening the console had a visible measured cost in some conditions. Short
+windows, background machine activity and VSync make small differences uncertain;
+the negative 5,000-resident result does **not** establish a speedup. Hardware
+monitoring remained enabled, so this does not measure the total cost of monitoring.
+The benefit delivered here is keeping an experiment's state while changing its
+workload and inspecting evidence. No debugging-time saving or runtime optimization
+percentage has been established.
+
+#### Population changes and current limits
+
+Single paused pilot transitions took **0.892 seconds** for 200 -> 1,000,
+**2.080 seconds** for 1,000 -> 2,000, and **6.766 seconds** for 2,000 -> 5,000,
+measured from request to presentation of the new count.
+
+The busy detailed-city save took **44.227 seconds** for 1,000 -> 2,000 at the
+same paused tick. Its recorded preparation was **29.875 seconds**, validated
+commit work **3.623 seconds**, and commit-to-viewer handoff **10.297 seconds**
+(with 21.407 ms clock uncertainty). These component measurements have separate
+boundaries; they should not be summed as an exact request-duration breakdown.
+
+A subsequent 5,000-resident city request exceeded the existing **32 MiB route-data
+cache budget** and was rejected after **44.996 seconds**. The roster, tick,
+session, selection and camera stayed unchanged, and the connection accepted the
+next command. It produced **one command-rejection warning**, not a fatal run error.
+A separate outgoing queue remains bounded while valid larger updates are staged.
+
+Successful pilot counts do not establish detailed-city capacity. Sustained
+unpaused throughput, long-duration memory growth and monitoring-on/off comparisons
+remain unmeasured. The [aggregate evidence](benchmarks/2026-09-06-live-workspace.json)
+retains exact sample counts, individual pairs, source/runtime/checkpoint hashes,
+transition timings, hardware summaries and validation boundaries. Only hardware
+intervals wholly inside a comparison window after clock-uncertainty margins enter
+its summaries; mixed intervals are excluded. Raw logs and screenshots remain local.
+
+The original OpenGlassBox-Python repository and retained upstream version are
+unchanged. The application guide documents [the workspace controls](../civic_center/README.md#desktop-workspace-and-live-experiments).
+
 ## 2026-09-06 - Local hardware reporting for each run
 
 ### What users gain
