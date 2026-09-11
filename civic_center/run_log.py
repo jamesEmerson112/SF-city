@@ -101,6 +101,8 @@ _RESERVED = {
     "metrics",
     "hardware",
     "experiments",
+    "exit",
+    "cleanup",
 }
 
 
@@ -129,6 +131,10 @@ class RunLog:
         )
         self._last_persisted = 0.0
         self._threads: list[threading.Thread] = []
+        self._capture_sources: dict[threading.Thread, str] = {}
+        self._capture_failures: set[threading.Thread] = set()
+        self._final_result: dict[str, Any] | None = None
+        self._persist_failure: str | None = None
         self._has_errors = False
         self._startup_complete = False
         self._finished = False
@@ -275,14 +281,14 @@ class RunLog:
             return value if math.isfinite(value) else None
         return self._redact(str(value))[:MAX_TEXT]
 
-    def _persist(self) -> None:
+    def _persist(self) -> bool:
         if self._finished:
-            return
+            return bool(self.final_persisted)
         self._data["updated_at"] = _utc_now()
         if self._data["ended_at"] is None:
             self._data["duration_seconds"] = round(time.monotonic() - self._started, 3)
         if self.disabled:
-            return
+            return False
         try:
             payload = json.dumps(
                 self._data, ensure_ascii=False, allow_nan=False, indent=2
@@ -297,8 +303,10 @@ class RunLog:
                         raise
                     time.sleep(0.01 * 2**attempt)
             self._last_persisted = time.monotonic()
+            return True
         except (OSError, ValueError, TypeError) as error:
             self.disabled = True
+            self._persist_failure = self._redact(str(error))[:MAX_TEXT]
             try:
                 print(
                     f"San Francisco: run logging unavailable: {self._redact(str(error))}",
@@ -306,6 +314,13 @@ class RunLog:
                 )
             except (OSError, ValueError, AttributeError):
                 pass
+            return False
+
+    @property
+    def final_persisted(self) -> bool | None:
+        """Whether the final document was written; None until finish is attempted."""
+        with self._lock:
+            return self._final_result["persisted"] if self._final_result else None
 
     def _event(
         self,
@@ -357,6 +372,125 @@ class RunLog:
             log_severity="warning",
             log_message=f"{fields['action']} rejected: {fields['message']}",
         )
+
+    def _viewer_exit(self, payload: dict) -> None:
+        """Accept one bounded viewer intent; it cannot certify launcher cleanup."""
+        reason = payload.get("reason")
+        outcome = payload.get("save_outcome")
+        intent = payload.get("save_intent")
+        slot = payload.get("slot")
+        tick = payload.get("captured_tick")
+        if (
+            type(payload.get("schema_version")) is not int
+            or payload["schema_version"] != 1
+            or reason not in ("menu", "window_close", "loading_cancel")
+            or outcome
+            not in (
+                "saved",
+                "skipped",
+                "unknown",
+                "not_available",
+                "replay",
+                "viewer_only",
+            )
+            or intent not in (None, "save", "skip", "unavailable")
+            or slot not in (None, "exit-recovery")
+            or (
+                tick is not None
+                and (type(tick) is not int or not 0 <= tick <= 2**63 - 1)
+            )
+            or (outcome == "saved" and (slot != "exit-recovery" or tick is None))
+        ):
+            self._data["diagnostics"]["malformed_marker_count"] += 1
+            return
+        if "exit" in self._data:
+            diagnostics = self._data["diagnostics"]
+            diagnostics["duplicate_exit_marker_count"] = (
+                diagnostics.get("duplicate_exit_marker_count", 0) + 1
+            )
+            return
+        fields = {
+            "schema_version": 1,
+            "reason": reason,
+            "save_intent": intent,
+            "save_outcome": outcome,
+            "slot": slot,
+            "captured_tick": tick,
+            "received_at": _utc_now(),
+            "received_elapsed_seconds": round(time.monotonic() - self._started, 3),
+        }
+        if isinstance(payload.get("session_id"), str):
+            fields["session_id"] = payload["session_id"][:128]
+        at_unix = payload.get("at_unix")
+        if (
+            type(at_unix) in (int, float)
+            and 0 <= at_unix <= 1e15
+            and math.isfinite(at_unix)
+        ):
+            fields["at_unix"] = at_unix
+        durations = payload.get("durations_ms")
+        if isinstance(durations, dict):
+            fields["durations_ms"] = {
+                key: value
+                for key in ("total", "pause", "save", "settling", "preferences")
+                if type(value := durations.get(key)) in (int, float)
+                and 0 <= value <= 1e15
+                and math.isfinite(value)
+            }
+        self._data["exit"] = self._clean(fields)
+        self._event("viewer_exit", fields, log_source="viewer")
+
+    def cleanup_stage(self, name: str, outcome: dict) -> None:
+        """Record actual launcher-owned outcomes without implying global success."""
+        with self._lock:
+            if self._finished:
+                return
+            if not isinstance(name, str) or not re.fullmatch(r"[a-z_]{1,48}", name):
+                return
+            if not isinstance(outcome, dict):
+                return
+            stages = self._data.setdefault("cleanup", {"stages": {}})["stages"]
+            if name not in stages and len(stages) >= 16:
+                return
+            keys = {
+                "status",
+                "exit_code",
+                "forced",
+                "reason",
+                "elapsed_ms",
+                "acknowledged",
+                "timed_out",
+                "remaining",
+                "readers",
+                "drained",
+                "source",
+                "stopped",
+                "complete",
+                "errors",
+                "persisted",
+            }
+            clean = self._clean(
+                {key: value for key, value in outcome.items() if key in keys}
+            )
+            # Stage outcomes are aggregate scalars; never retain injected state.
+            clean = {
+                key: value
+                for key, value in clean.items()
+                if not isinstance(value, (dict, list))
+            }
+            stages[name] = {"at": _utc_now(), **clean}
+            incomplete = clean.get("status") in {
+                "failed",
+                "forced",
+                "timed_out",
+                "unavailable",
+            }
+            self._event(
+                "cleanup_stage",
+                {"stage": name, **clean},
+                log_severity="warning" if incomplete else "info",
+            )
+            self._persist()
 
     def event(self, name: str, **fields: Any) -> None:
         with self._lock:
@@ -540,6 +674,8 @@ class RunLog:
                 "startup_complete": startup.get("complete"),
                 "mode": presentation.get("mode"),
                 "rendering_3d": presentation.get("rendering_3d"),
+                "menu_open": presentation.get("menu_open"),
+                "closing": presentation.get("closing"),
                 "resident_count": simulation.get("resident_count"),
                 "paused": simulation.get("paused"),
                 "frame_p95_ms": performance.get("p95_ms"),
@@ -661,6 +797,7 @@ class RunLog:
                     "PHASE",
                     "COMPARISON_POINT",
                     "COMMAND_REJECTED",
+                    "EXIT",
                 }:
                     try:
                         payload = json.loads(text) if not truncated else None
@@ -670,7 +807,9 @@ class RunLog:
                         diagnostics["malformed_marker_count"] += 1
                     else:
                         metrics = self._data["metrics"]
-                        if name == "COMMAND_REJECTED":
+                        if name == "EXIT":
+                            self._viewer_exit(payload)
+                        elif name == "COMMAND_REJECTED":
                             self._command_rejected(payload)
                         elif name == "PHASE":
                             self.phase(payload)
@@ -753,6 +892,7 @@ class RunLog:
         console = sys.stdout if echo else None
 
         def read() -> None:
+            archive_output = archive
             continuation = False
             silent = False
             try:
@@ -769,14 +909,22 @@ class RunLog:
                                 "GODOT_APPLICATION_PHASE ",
                                 "GODOT_APPLICATION_COMPARISON_POINT ",
                                 "GODOT_APPLICATION_COMMAND_REJECTED ",
+                                "GODOT_APPLICATION_EXIT ",
                             )
                         )
-                    if archive is not None:
+                    if archive_output is not None:
                         try:
-                            archive.write(self._redact(chunk))
-                            archive.flush()
-                        except (OSError, ValueError, AttributeError):
-                            pass
+                            archive_output.write(self._redact(chunk))
+                            archive_output.flush()
+                        except (OSError, ValueError, AttributeError) as error:
+                            archive_output = None
+                            with self._lock:
+                                self._capture_failures.add(threading.current_thread())
+                            self.event(
+                                "process_archive_unavailable",
+                                source=source,
+                                message=str(error),
+                            )
                     if not silent and console is not None:
                         try:
                             console.write(self._redact(chunk))
@@ -788,6 +936,8 @@ class RunLog:
                         self._consume(chunk, truncated=truncated, source=source)
                     continuation = truncated
             except (OSError, ValueError) as error:
+                with self._lock:
+                    self._capture_failures.add(threading.current_thread())
                 self.event(
                     "process_output_unavailable", source=source, message=str(error)
                 )
@@ -798,20 +948,51 @@ class RunLog:
         thread = threading.Thread(target=read, name="civic-run-log", daemon=True)
         with self._lock:
             self._threads.append(thread)
-        thread.start()
+            self._capture_sources[thread] = source
+            thread.start()
         return thread
 
-    def close_capture(self, timeout: float = 2.0) -> None:
-        deadline = time.monotonic() + max(0.0, timeout)
+    def close_capture(self, timeout: float = 2.0, *, source: str | None = None) -> dict:
+        """Boundedly join selected readers; never close a possibly blocking stream."""
+        started = time.monotonic()
+        deadline = started + max(0.0, timeout)
         with self._lock:
-            threads = tuple(self._threads)
+            threads = tuple(
+                thread
+                for thread in self._threads
+                if source is None or self._capture_sources.get(thread) == source
+            )
         for thread in threads:
-            thread.join(max(0.0, deadline - time.monotonic()))
+            if thread is not threading.current_thread():
+                thread.join(max(0.0, deadline - time.monotonic()))
+        remaining = sum(thread.is_alive() for thread in threads)
+        with self._lock:
+            errors = sum(thread in self._capture_failures for thread in threads)
+        drained = remaining == 0 and errors == 0
+        return {
+            "status": "timed_out" if remaining else ("failed" if errors else "drained"),
+            "drained": drained,
+            "timed_out": bool(remaining),
+            "remaining": remaining,
+            "readers": len(threads),
+            "errors": errors,
+            "elapsed_ms": round((time.monotonic() - started) * 1000.0, 3),
+            "source": source,
+        }
 
-    def finish(self, status: str, exit_code: int | None, **fields: Any) -> None:
+    def finish(self, status: str, exit_code: int | None, **fields: Any) -> dict:
+        """Seal the run and return the actual final atomic-write result."""
         with self._lock:
             if self._finished:
-                return
+                return dict(self._final_result)
+            previous = self._data["status"]
+            if previous in {"failed", "interrupted"} and status not in {
+                "failed",
+                "interrupted",
+            }:
+                status = previous
+            if self._has_errors and status in {"completed", "cancelled"}:
+                status = "failed"
             self._data.update(
                 self._clean(
                     {
@@ -828,6 +1009,16 @@ class RunLog:
                 duration_seconds=round(time.monotonic() - self._started, 3),
             )
             self._event("run_finished", {"status": status, "exit_code": exit_code})
-            self._persist()
+            persisted = self._persist()
+            self._final_result = {
+                "status": "persisted" if persisted else "failed",
+                "persisted": persisted,
+                "reason": (
+                    None
+                    if persisted
+                    else (self._persist_failure or "persistence disabled")
+                ),
+            }
             self._publish_status()
             self._finished = True
+            return dict(self._final_result)

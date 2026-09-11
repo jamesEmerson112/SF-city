@@ -43,6 +43,7 @@ assumptions. The original pilot retains its explicitly illustrative architecture
 | T | Cycle 1×, 4×, 60×, 600× |
 | N | Advance to the next activity and pause |
 | R | Reset the seeded day |
+| Escape | Open the vertical options menu; return from submenus or back to the city |
 | F5 / F9 | Save / load the local quick slot |
 | F3 / Performance | Open or close live charts, hardware readings, logs and experiment controls |
 | F11 | Toggle fullscreen |
@@ -127,9 +128,19 @@ A disconnected feed leaves local viewer metrics available. Direct Godot launches
 also retain local metrics, but need the launcher for collected hardware and the
 JSON run report.
 
-The launcher owns worker startup and shutdown. Closing the viewer disconnects its
-client; the launcher then closes its worker. **Reconnect** obtains a complete
-current snapshot after a recoverable connection interruption.
+Press **Escape** for the vertical game menu: Return to city, Save day, Display,
+Controls, Performance, and Save & Exit. The menu pauses the authoritative day and
+blocks camera input; Return restores the previous playback state. Tab/Up/Down
+navigate, Enter activates, and Escape returns from a submenu before closing the
+menu. Display uses the existing window and UI-scale preferences.
+
+In a launcher-owned live game, **Save & Exit** and normal window close wait for a
+confirmed **exit-recovery** save, separate from the quick slot. Errors retain the
+menu with Retry and explicit Exit without saving; an unacknowledged save is not
+reported as successful. See the [recovery workflow](../civic_center/README.md#escape-menu-and-safe-exit).
+The launcher remains the worker's lifecycle owner and finishes run diagnostics
+after Godot exits. A directly connected viewer closes only its own connection.
+**Reconnect** obtains a complete current snapshot after a recoverable interruption.
 
 **Follow daylight** follows the displayed clock using an approximate September 6
 sun direction for San Francisco/PDT. The same representative day repeats; this
@@ -297,6 +308,8 @@ explicit generated walking proxies, separate from map completeness.
 - `diagnostics.gd` and `diagnostic_chart.gd` provide the bounded observation panel;
   `telemetry_client.gd` receives local launcher readings without polling log files.
 - `display_settings.gd` manages local window and UI-scale preferences.
+- `game_menu.gd` owns the vertical overlay and keyboard focus; `menu_flow.gd`
+  coordinates authoritative pause, pending operations and acknowledged recovery exit.
 - `main.gd` connects these modules and implements live/replay startup.
 
 Local coordinates `(east, north, up)` convert once to Godot `(east, up, -north)`
@@ -428,3 +441,29 @@ launch additionally accepts `--replay-index N` for a specific recorded snapshot;
 give absolute paths for direct `--replay` and `--screenshot` arguments. Replay
 playback steps through recorded snapshots, rather than recreating unsaved
 simulation ticks. Population changes and saved sessions require a live worker.
+
+## Game menu validation
+
+Focused checks use the existing Godot executable:
+
+```powershell
+godot --headless --path viewer --script res://game_menu_tests.gd -- --replay ../contracts/one-resident-replay.json --geography ""
+godot --headless --path viewer --script res://menu_flow_tests.gd
+godot --headless --path viewer --script res://snapshot_close_tests.gd
+```
+
+Exercise the real launcher and rendered viewer with isolated temporary saves:
+
+```powershell
+venv/Scripts/python.exe scripts/benchmark_game_menu.py --mode overhead --case save_exit
+venv/Scripts/python.exe scripts/benchmark_game_menu.py --mode map --case window_close
+```
+
+Other cases are `save_error` and `population_exit`. Use `--load PATH` for an
+existing busy city, `--package-root PATH` for a portable build, or `--headless`
+for behavior-only validation. The probe owns and closes its temporary application;
+its saves and reports stay under an ignored `.cache/game-menu/` directory.
+It verifies checkpoint reload, unchanged quick save, acknowledged worker shutdown,
+final report and stopped owned processes. Single-run timings describe these
+scripted operations, not a before/after optimization benchmark. See the
+[recorded aggregate evidence](../docs/benchmarks/2026-09-06-game-menu.json).

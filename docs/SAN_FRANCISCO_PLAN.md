@@ -1,5 +1,7 @@
 # San Francisco living-city simulation plan
 
+**Delivered:** [Escape menu and safe exit](GAME_MENU_PLAN.md). Escape opens a vertical options bar and pauses the city; Return restores playback. Save & Exit and normal window close wait for a confirmed recovery save, then the launcher finalizes cleanup and diagnostics. See the [validation and observed save costs](PATCH_NOTES.md#2026-09-06---escape-menu-and-confirmed-recovery-exit).
+
 **Planned follow-up:** [Individual citizen coordinate history and overlapping-newcomer fix](CITIZEN_COORDINATE_PLAN.md). The current growth policy can create identical walking trajectories; the recorder and remedy are planned, not delivered.
 
 **Delivered September 6, 2026:** [Widescreen layout, live population changes, and performance console](LIVE_STRESS_TEST_PLAN.md). Population changes preserve the current day; local charts, filtered logs, and per-experiment records support population trials. See [patch notes](PATCH_NOTES.md) for evidence and limits. The remaining text retains the original longer-term project plan.

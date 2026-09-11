@@ -54,6 +54,7 @@ time describe simulation time, independent of the computer's current clock.
 | Space | Pause/resume the authoritative simulation |
 | N / Next activity | Jump to the next scheduled activity and pause |
 | R / Reset day | Repeat the seeded scenario from its beginning |
+| Escape | Open the vertical options menu; return from a submenu or back to the city |
 | F5 / Save day | Save to the local `quick` slot |
 | F9 / Load day | Restore the `quick` slot, including tick, pause and speed |
 | H / G | City Hall / city overview when geography is installed |
@@ -99,6 +100,40 @@ transport limits. Successful preparation is not a guarantee of smooth interactio
 Nearby limb articulation remains limited to 300 people within 80 meters; other
 outdoor people stay represented, and indoor people remain in the simulation and
 inspector.
+
+## Escape menu and safe exit
+
+Press **Escape** to open a vertical menu with **Return to city**, **Save day**,
+**Display**, **Controls**, **Performance**, and **Save & Exit**. The menu pauses
+the live simulation after its current operation settles; returning restores its
+previous running/paused state. Opening Performance returns to the city with the
+console visible. Camera movement and world clicks are blocked while the menu is
+open. Use Tab or Up/Down to choose an option and Enter to activate it.
+
+**Save & Exit**, or closing a ready launcher-owned game window, waits for a
+confirmed recovery save before closing Godot. Recovery uses **exit-recovery.json**
+in the configured save directory; it leaves **quick.json** untouched. A later
+successful exit replaces the previous recovery. **Save day** still replaces the
+quick slot and stays in the menu.
+
+The menu reports slow saves and errors. A missing acknowledgement is an unknown
+outcome, even if a file exists. Retry or return to the menu, or explicitly confirm
+**Exit without saving**. Cancelling exit does not undo a save already written.
+The launcher stops owned processes and finalizes the JSON report after the game
+window closes; wait for the launcher to return before closing its terminal.
+
+Resume the latest recovery, which opens paused at the captured simulation tick:
+
+~~~powershell
+python -m civic_center --load .local/civic/saves/exit-recovery.json
+~~~
+
+Use **--save-dir PATH** to choose a different save directory. Recovery stores the
+simulation, including a changed population and speed; it does not save a camera
+pose or individual trajectory history. A replay or unfinished startup has no
+live day to save. An independently launched Godot viewer closes only itself and
+does not stop its external worker. Unexpected OS termination or disk failure can
+still interrupt saving or diagnostics.
 
 Saved days live in `.local/civic/saves/`. Resume a specific saved day at launch:
 
@@ -241,6 +276,15 @@ or power loss can leave the last `starting`, `loading`, or `running` record with
 `ended_at: null`; that record does not imply the process is still alive.
 Viewer timing starts inside Godot; total run duration also includes engine startup
 and process cleanup.
+
+The bounded `exit` section records menu/window-close intent, save outcome, recovery
+slot, captured tick and stage timings. It does not certify launcher completion.
+`cleanup.stages` records actual viewer/worker exits, capture draining, hardware
+and telemetry shutdown, including forced cleanup or incomplete results. The final
+JSON is sealed after those stages; earlier failures remain failures. The launcher
+reports a final log-write failure rather than claiming that the report was saved.
+Menu and closing phases are included in performance context so their paused
+frames can be separated from ordinary city activity.
 
 Use a different directory when needed:
 

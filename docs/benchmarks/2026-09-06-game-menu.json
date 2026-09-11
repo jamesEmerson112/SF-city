@@ -1,0 +1,1746 @@
+{
+  "schema_version": 1,
+  "feature": "Escape menu and confirmed recovery exit",
+  "date_local": "2026-09-06",
+  "timezone": "America/Los_Angeles",
+  "measurement_kind": "Functional acceptance with single-run timing observations; no before/after optimization claim",
+  "sample_count": 8,
+  "runs": [
+    {
+      "id": "rendered-overhead-save-v2",
+      "samples": 1,
+      "case": "save_exit",
+      "scene": "pilot",
+      "population_before": 200,
+      "population_saved": 200,
+      "outdoor_at_menu": 47,
+      "mode": "overhead",
+      "portable": false,
+      "rendered": true,
+      "renderer": "gl_compatibility",
+      "godot": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org",
+      "crowd_backend": "rust",
+      "display": {
+        "frame_cap": 0,
+        "ui_scale": 1.0,
+        "viewport_size": [
+          1600.0,
+          900.0
+        ],
+        "vsync_mode": 1,
+        "window_mode": 0,
+        "window_pixels": [
+          1280,
+          720
+        ]
+      },
+      "lighting": "fixed",
+      "cache": {
+        "state": "existing local caches, no cold reset",
+        "scenery": {
+          "geography": {
+            "enabled": true,
+            "error": "",
+            "errors": 0,
+            "generated_tiles": 0,
+            "hits": 0,
+            "misses": 0,
+            "restored_tiles": 0,
+            "writes": 0
+          },
+          "terrain": {
+            "enabled": true,
+            "error": "",
+            "errors": 0,
+            "hits": 0,
+            "invalid_payloads": 0,
+            "misses": 0,
+            "writes": 0
+          }
+        }
+      },
+      "hardware": {
+        "os": {
+          "system": "Windows",
+          "release": "11",
+          "version": "10.0.26200",
+          "architecture": "AMD64"
+        },
+        "python": {
+          "version": "3.12.10",
+          "implementation": "CPython"
+        },
+        "cpu": {
+          "model": "AMD Ryzen 5 2600X Six-Core Processor",
+          "vendor": "AuthenticAMD",
+          "logical_cores": 12,
+          "physical_cores": 6
+        },
+        "memory_total_bytes": 34294595584,
+        "gpu": {
+          "model": "NVIDIA GeForce GTX 1070 Ti",
+          "driver_version": "582.66",
+          "vram_total_bytes": 8589934592
+        },
+        "monitoring": "enabled"
+      },
+      "checks": {
+        "launcher_completed": true,
+        "viewer_passed": true,
+        "quick_save_unchanged": true,
+        "recovery_valid": true,
+        "exit_record_matches": true,
+        "worker_shutdown_acknowledged": true,
+        "output_fully_drained": true,
+        "final_viewer_metrics": true,
+        "valid_single_exit_marker": true,
+        "owned_processes_stopped": true,
+        "source_unchanged": true,
+        "one_completed_run": true,
+        "no_application_errors": true
+      },
+      "save_outcome": "saved",
+      "captured_tick": 60571,
+      "timings": {
+        "menu_input_through_two_frames_ms": 38.6,
+        "menu_input_to_confirmed_pause_ms": 101.69,
+        "save_stage_ms": 341.719,
+        "exit_request_to_close_dispatch_ms": 341.87,
+        "exit_marker_received_to_viewer_exit_observed_ms": 348.0,
+        "viewer_exit_observed_to_final_log_metadata_ms": 179.0,
+        "launcher_spawn_to_observed_process_exit_seconds": 4.828000000001339
+      },
+      "cleanup": {
+        "viewer": {
+          "status": "already_exited",
+          "exit_code": 0,
+          "forced": false,
+          "elapsed_ms": 0.0
+        },
+        "worker": {
+          "status": "graceful",
+          "exit_code": 0,
+          "forced": false,
+          "elapsed_ms": 32.0,
+          "acknowledged": true
+        },
+        "worker_stdout": {
+          "status": "completed",
+          "elapsed_ms": 0.0
+        },
+        "startup_handoff": {
+          "status": "completed",
+          "elapsed_ms": 0.0
+        },
+        "output_capture": {
+          "status": "drained",
+          "drained": true,
+          "timed_out": false,
+          "remaining": 0,
+          "errors": 0,
+          "elapsed_ms": 0.0
+        },
+        "worker_archive": {
+          "status": "completed",
+          "elapsed_ms": 0.0
+        },
+        "hardware": {
+          "status": "stopped",
+          "timed_out": false,
+          "elapsed_ms": 16.0
+        },
+        "telemetry": {
+          "status": "stopped",
+          "timed_out": false,
+          "elapsed_ms": 16.0
+        }
+      },
+      "application_errors": 0,
+      "hardware_errors": 0,
+      "command_rejections": 0,
+      "source_version": "c17faa0d048b7f53",
+      "evidence": {
+        "summary_sha256": "63b2f48e1bda4e48e4599dd4914f1c99c5cb31aaaba6ff189d43f75289f0fea7",
+        "viewer_report_sha256": "f38fb14cf04372185b4ed44ab8af330efc4f6a0752602b814139c5e06c7aba52",
+        "run_log_sha256": "34c378e7c36f7d8b9b599ed1286071fd6bb08ac13da289a094586baafe03e71f",
+        "local_directory": ".cache/game-menu/rendered-overhead-save-v2"
+      }
+    },
+    {
+      "id": "rendered-map-save-v2",
+      "samples": 1,
+      "case": "save_exit",
+      "scene": "pilot",
+      "population_before": 200,
+      "population_saved": 200,
+      "outdoor_at_menu": 47,
+      "mode": "map",
+      "portable": false,
+      "rendered": true,
+      "renderer": "gl_compatibility",
+      "godot": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org",
+      "crowd_backend": "canvas-2d",
+      "display": {
+        "frame_cap": 0,
+        "ui_scale": 1.0,
+        "viewport_size": [
+          1600.0,
+          900.0
+        ],
+        "vsync_mode": 1,
+        "window_mode": 0,
+        "window_pixels": [
+          1280,
+          720
+        ]
+      },
+      "lighting": "fixed",
+      "cache": {
+        "state": "existing local caches, no cold reset",
+        "scenery": {
+          "geography": {
+            "enabled": true,
+            "error": "",
+            "errors": 0,
+            "generated_tiles": 0,
+            "hits": 0,
+            "misses": 0,
+            "restored_tiles": 0,
+            "writes": 0
+          },
+          "terrain": {
+            "enabled": true,
+            "error": "",
+            "errors": 0,
+            "hits": 0,
+            "invalid_payloads": 0,
+            "misses": 0,
+            "writes": 0
+          }
+        }
+      },
+      "hardware": {
+        "os": {
+          "system": "Windows",
+          "release": "11",
+          "version": "10.0.26200",
+          "architecture": "AMD64"
+        },
+        "python": {
+          "version": "3.12.10",
+          "implementation": "CPython"
+        },
+        "cpu": {
+          "model": "AMD Ryzen 5 2600X Six-Core Processor",
+          "vendor": "AuthenticAMD",
+          "logical_cores": 12,
+          "physical_cores": 6
+        },
+        "memory_total_bytes": 34294595584,
+        "gpu": {
+          "model": "NVIDIA GeForce GTX 1070 Ti",
+          "driver_version": "582.66",
+          "vram_total_bytes": 8589934592
+        },
+        "monitoring": "enabled"
+      },
+      "checks": {
+        "launcher_completed": true,
+        "viewer_passed": true,
+        "quick_save_unchanged": true,
+        "recovery_valid": true,
+        "exit_record_matches": true,
+        "worker_shutdown_acknowledged": true,
+        "output_fully_drained": true,
+        "final_viewer_metrics": true,
+        "valid_single_exit_marker": true,
+        "owned_processes_stopped": true,
+        "source_unchanged": true,
+        "one_completed_run": true,
+        "no_application_errors": true
+      },
+      "save_outcome": "saved",
+      "captured_tick": 60584,
+      "timings": {
+        "menu_input_through_two_frames_ms": 32.98,
+        "menu_input_to_confirmed_pause_ms": 96.236,
+        "save_stage_ms": 471.819,
+        "exit_request_to_close_dispatch_ms": 471.995,
+        "exit_marker_received_to_viewer_exit_observed_ms": 329.0,
+        "viewer_exit_observed_to_final_log_metadata_ms": 189.0,
+        "launcher_spawn_to_observed_process_exit_seconds": 5.10899999999674
+      },
+      "cleanup": {
+        "viewer": {
+          "status": "already_exited",
+          "exit_code": 0,
+          "forced": false,
+          "elapsed_ms": 0.0
+        },
+        "worker": {
+          "status": "graceful",
+          "exit_code": 0,
+          "forced": false,
+          "elapsed_ms": 47.0,
+          "acknowledged": true
+        },
+        "worker_stdout": {
+          "status": "completed",
+          "elapsed_ms": 0.0
+        },
+        "startup_handoff": {
+          "status": "completed",
+          "elapsed_ms": 0.0
+        },
+        "output_capture": {
+          "status": "drained",
+          "drained": true,
+          "timed_out": false,
+          "remaining": 0,
+          "errors": 0,
+          "elapsed_ms": 0.0
+        },
+        "worker_archive": {
+          "status": "completed",
+          "elapsed_ms": 0.0
+        },
+        "hardware": {
+          "status": "stopped",
+          "timed_out": false,
+          "elapsed_ms": 16.0
+        },
+        "telemetry": {
+          "status": "stopped",
+          "timed_out": false,
+          "elapsed_ms": 0.0
+        }
+      },
+      "application_errors": 0,
+      "hardware_errors": 0,
+      "command_rejections": 0,
+      "source_version": "c17faa0d048b7f53",
+      "evidence": {
+        "summary_sha256": "890db35ec7fd9a16a9e1cdf468b65c6433e5bde076efcd8902288216fb865a88",
+        "viewer_report_sha256": "6e933ad9ed07c536179530143071be4bb6348f47f875cc75d5e43a39ecca67dd",
+        "run_log_sha256": "42e24eedeffe0cc41fbfff90c8bc92a216afd9f15fffb15a6ceffd565b4bdb22",
+        "local_directory": ".cache/game-menu/rendered-map-save-v2"
+      }
+    },
+    {
+      "id": "rendered-overhead-window-v2",
+      "samples": 1,
+      "case": "window_close",
+      "scene": "pilot",
+      "population_before": 200,
+      "population_saved": 200,
+      "outdoor_at_menu": 47,
+      "mode": "overhead",
+      "portable": false,
+      "rendered": true,
+      "renderer": "gl_compatibility",
+      "godot": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org",
+      "crowd_backend": "rust",
+      "display": {
+        "frame_cap": 0,
+        "ui_scale": 1.0,
+        "viewport_size": [
+          1600.0,
+          900.0
+        ],
+        "vsync_mode": 1,
+        "window_mode": 0,
+        "window_pixels": [
+          1280,
+          720
+        ]
+      },
+      "lighting": "fixed",
+      "cache": {
+        "state": "existing local caches, no cold reset",
+        "scenery": {
+          "geography": {
+            "enabled": true,
+            "error": "",
+            "errors": 0,
+            "generated_tiles": 0,
+            "hits": 0,
+            "misses": 0,
+            "restored_tiles": 0,
+            "writes": 0
+          },
+          "terrain": {
+            "enabled": true,
+            "error": "",
+            "errors": 0,
+            "hits": 0,
+            "invalid_payloads": 0,
+            "misses": 0,
+            "writes": 0
+          }
+        }
+      },
+      "hardware": {
+        "os": {
+          "system": "Windows",
+          "release": "11",
+          "version": "10.0.26200",
+          "architecture": "AMD64"
+        },
+        "python": {
+          "version": "3.12.10",
+          "implementation": "CPython"
+        },
+        "cpu": {
+          "model": "AMD Ryzen 5 2600X Six-Core Processor",
+          "vendor": "AuthenticAMD",
+          "logical_cores": 12,
+          "physical_cores": 6
+        },
+        "memory_total_bytes": 34294595584,
+        "gpu": {
+          "model": "NVIDIA GeForce GTX 1070 Ti",
+          "driver_version": "582.66",
+          "vram_total_bytes": 8589934592
+        },
+        "monitoring": "enabled"
+      },
+      "checks": {
+        "launcher_completed": true,
+        "viewer_passed": true,
+        "quick_save_unchanged": true,
+        "recovery_valid": true,
+        "exit_record_matches": true,
+        "worker_shutdown_acknowledged": true,
+        "output_fully_drained": true,
+        "final_viewer_metrics": true,
+        "valid_single_exit_marker": true,
+        "owned_processes_stopped": true,
+        "source_unchanged": true,
+        "one_completed_run": true,
+        "no_application_errors": true
+      },
+      "save_outcome": "saved",
+      "captured_tick": 60565,
+      "timings": {
+        "menu_input_through_two_frames_ms": 32.951,
+        "menu_input_to_confirmed_pause_ms": 103.357,
+        "save_stage_ms": 372.026,
+        "exit_request_to_close_dispatch_ms": 372.187,
+        "exit_marker_received_to_viewer_exit_observed_ms": 283.0,
+        "viewer_exit_observed_to_final_log_metadata_ms": 235.0,
+        "launcher_spawn_to_observed_process_exit_seconds": 4.8439999999973224
+      },
+      "cleanup": {
+        "viewer": {
+          "status": "already_exited",
+          "exit_code": 0,
+          "forced": false,
+          "elapsed_ms": 0.0
+        },
+        "worker": {
+          "status": "graceful",
+          "exit_code": 0,
+          "forced": false,
+          "elapsed_ms": 47.0,
+          "acknowledged": true
+        },
+        "worker_stdout": {
+          "status": "completed",
+          "elapsed_ms": 0.0
+        },
+        "startup_handoff": {
+          "status": "completed",
+          "elapsed_ms": 0.0
+        },
+        "output_capture": {
+          "status": "drained",
+          "drained": true,
+          "timed_out": false,
+          "remaining": 0,
+          "errors": 0,
+          "elapsed_ms": 0.0
+        },
+        "worker_archive": {
+          "status": "completed",
+          "elapsed_ms": 0.0
+        },
+        "hardware": {
+          "status": "stopped",
+          "timed_out": false,
+          "elapsed_ms": 32.0
+        },
+        "telemetry": {
+          "status": "stopped",
+          "timed_out": false,
+          "elapsed_ms": 47.0
+        }
+      },
+      "application_errors": 0,
+      "hardware_errors": 0,
+      "command_rejections": 0,
+      "source_version": "c17faa0d048b7f53",
+      "evidence": {
+        "summary_sha256": "01e2f23846c508c4955dec92f99e0994df55e2463d50b6752cae6b11098a328b",
+        "viewer_report_sha256": "e9c34547ce5e180745aa703581ad33b6141fd27f563954d8c502105a635a4d6f",
+        "run_log_sha256": "46e2678245d60b9e5b0c6dc1b0358b5d386b899839572b84c2bbc056eaf5df8b",
+        "local_directory": ".cache/game-menu/rendered-overhead-window-v2"
+      }
+    },
+    {
+      "id": "rendered-map-window-v2",
+      "samples": 1,
+      "case": "window_close",
+      "scene": "pilot",
+      "population_before": 200,
+      "population_saved": 200,
+      "outdoor_at_menu": 47,
+      "mode": "map",
+      "portable": false,
+      "rendered": true,
+      "renderer": "gl_compatibility",
+      "godot": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org",
+      "crowd_backend": "canvas-2d",
+      "display": {
+        "frame_cap": 0,
+        "ui_scale": 1.0,
+        "viewport_size": [
+          1600.0,
+          900.0
+        ],
+        "vsync_mode": 1,
+        "window_mode": 0,
+        "window_pixels": [
+          1280,
+          720
+        ]
+      },
+      "lighting": "fixed",
+      "cache": {
+        "state": "existing local caches, no cold reset",
+        "scenery": {
+          "geography": {
+            "enabled": true,
+            "error": "",
+            "errors": 0,
+            "generated_tiles": 0,
+            "hits": 0,
+            "misses": 0,
+            "restored_tiles": 0,
+            "writes": 0
+          },
+          "terrain": {
+            "enabled": true,
+            "error": "",
+            "errors": 0,
+            "hits": 0,
+            "invalid_payloads": 0,
+            "misses": 0,
+            "writes": 0
+          }
+        }
+      },
+      "hardware": {
+        "os": {
+          "system": "Windows",
+          "release": "11",
+          "version": "10.0.26200",
+          "architecture": "AMD64"
+        },
+        "python": {
+          "version": "3.12.10",
+          "implementation": "CPython"
+        },
+        "cpu": {
+          "model": "AMD Ryzen 5 2600X Six-Core Processor",
+          "vendor": "AuthenticAMD",
+          "logical_cores": 12,
+          "physical_cores": 6
+        },
+        "memory_total_bytes": 34294595584,
+        "gpu": {
+          "model": "NVIDIA GeForce GTX 1070 Ti",
+          "driver_version": "582.66",
+          "vram_total_bytes": 8589934592
+        },
+        "monitoring": "enabled"
+      },
+      "checks": {
+        "launcher_completed": true,
+        "viewer_passed": true,
+        "quick_save_unchanged": true,
+        "recovery_valid": true,
+        "exit_record_matches": true,
+        "worker_shutdown_acknowledged": true,
+        "output_fully_drained": true,
+        "final_viewer_metrics": true,
+        "valid_single_exit_marker": true,
+        "owned_processes_stopped": true,
+        "source_unchanged": true,
+        "one_completed_run": true,
+        "no_application_errors": true
+      },
+      "save_outcome": "saved",
+      "captured_tick": 60562,
+      "timings": {
+        "menu_input_through_two_frames_ms": 49.108,
+        "menu_input_to_confirmed_pause_ms": 125.742,
+        "save_stage_ms": 369.86,
+        "exit_request_to_close_dispatch_ms": 369.99,
+        "exit_marker_received_to_viewer_exit_observed_ms": 335.0,
+        "viewer_exit_observed_to_final_log_metadata_ms": 204.0,
+        "launcher_spawn_to_observed_process_exit_seconds": 4.827999999994063
+      },
+      "cleanup": {
+        "viewer": {
+          "status": "already_exited",
+          "exit_code": 0,
+          "forced": false,
+          "elapsed_ms": 0.0
+        },
+        "worker": {
+          "status": "graceful",
+          "exit_code": 0,
+          "forced": false,
+          "elapsed_ms": 47.0,
+          "acknowledged": true
+        },
+        "worker_stdout": {
+          "status": "completed",
+          "elapsed_ms": 0.0
+        },
+        "startup_handoff": {
+          "status": "completed",
+          "elapsed_ms": 16.0
+        },
+        "output_capture": {
+          "status": "drained",
+          "drained": true,
+          "timed_out": false,
+          "remaining": 0,
+          "errors": 0,
+          "elapsed_ms": 0.0
+        },
+        "worker_archive": {
+          "status": "completed",
+          "elapsed_ms": 0.0
+        },
+        "hardware": {
+          "status": "stopped",
+          "timed_out": false,
+          "elapsed_ms": 15.0
+        },
+        "telemetry": {
+          "status": "stopped",
+          "timed_out": false,
+          "elapsed_ms": 16.0
+        }
+      },
+      "application_errors": 0,
+      "hardware_errors": 0,
+      "command_rejections": 0,
+      "source_version": "c17faa0d048b7f53",
+      "evidence": {
+        "summary_sha256": "79f1940b36a8419eb6d3ee8dd27bb446a0f358a61bf11edfcc096f1f6ea911dc",
+        "viewer_report_sha256": "127bdf6aa28f1bcdfd51e6b9ded54eaaea715f33a8555bb4b7741b62dd79aa6d",
+        "run_log_sha256": "8fd827eb847c0f1d683a9fe7ea62a1e26b9a9fd0c5765fbf71b41919f9f3ce5e",
+        "local_directory": ".cache/game-menu/rendered-map-window-v2"
+      }
+    },
+    {
+      "id": "rendered-overhead-population-v2",
+      "samples": 1,
+      "case": "population_exit",
+      "scene": "pilot",
+      "population_before": 200,
+      "population_saved": 201,
+      "outdoor_at_menu": 47,
+      "mode": "overhead",
+      "portable": false,
+      "rendered": true,
+      "renderer": "gl_compatibility",
+      "godot": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org",
+      "crowd_backend": "rust",
+      "display": {
+        "frame_cap": 0,
+        "ui_scale": 1.0,
+        "viewport_size": [
+          1600.0,
+          900.0
+        ],
+        "vsync_mode": 1,
+        "window_mode": 0,
+        "window_pixels": [
+          1280,
+          720
+        ]
+      },
+      "lighting": "fixed",
+      "cache": {
+        "state": "existing local caches, no cold reset",
+        "scenery": {
+          "geography": {
+            "enabled": true,
+            "error": "",
+            "errors": 0,
+            "generated_tiles": 0,
+            "hits": 0,
+            "misses": 0,
+            "restored_tiles": 0,
+            "writes": 0
+          },
+          "terrain": {
+            "enabled": true,
+            "error": "",
+            "errors": 0,
+            "hits": 0,
+            "invalid_payloads": 0,
+            "misses": 0,
+            "writes": 0
+          }
+        }
+      },
+      "hardware": {
+        "os": {
+          "system": "Windows",
+          "release": "11",
+          "version": "10.0.26200",
+          "architecture": "AMD64"
+        },
+        "python": {
+          "version": "3.12.10",
+          "implementation": "CPython"
+        },
+        "cpu": {
+          "model": "AMD Ryzen 5 2600X Six-Core Processor",
+          "vendor": "AuthenticAMD",
+          "logical_cores": 12,
+          "physical_cores": 6
+        },
+        "memory_total_bytes": 34294595584,
+        "gpu": {
+          "model": "NVIDIA GeForce GTX 1070 Ti",
+          "driver_version": "582.66",
+          "vram_total_bytes": 8589934592
+        },
+        "monitoring": "enabled"
+      },
+      "checks": {
+        "launcher_completed": true,
+        "viewer_passed": true,
+        "quick_save_unchanged": true,
+        "recovery_valid": true,
+        "exit_record_matches": true,
+        "worker_shutdown_acknowledged": true,
+        "output_fully_drained": true,
+        "final_viewer_metrics": true,
+        "valid_single_exit_marker": true,
+        "owned_processes_stopped": true,
+        "source_unchanged": true,
+        "one_completed_run": true,
+        "no_application_errors": true
+      },
+      "save_outcome": "saved",
+      "captured_tick": 60680,
+      "timings": {
+        "menu_input_through_two_frames_ms": 56.342,
+        "menu_input_to_confirmed_pause_ms": 484.81,
+        "save_stage_ms": 405.837,
+        "exit_request_to_close_dispatch_ms": 405.993,
+        "exit_marker_received_to_viewer_exit_observed_ms": 333.0,
+        "viewer_exit_observed_to_final_log_metadata_ms": 207.0,
+        "launcher_spawn_to_observed_process_exit_seconds": 5.671999999998661
+      },
+      "cleanup": {
+        "viewer": {
+          "status": "already_exited",
+          "exit_code": 0,
+          "forced": false,
+          "elapsed_ms": 0.0
+        },
+        "worker": {
+          "status": "graceful",
+          "exit_code": 0,
+          "forced": false,
+          "elapsed_ms": 47.0,
+          "acknowledged": true
+        },
+        "worker_stdout": {
+          "status": "completed",
+          "elapsed_ms": 0.0
+        },
+        "startup_handoff": {
+          "status": "completed",
+          "elapsed_ms": 0.0
+        },
+        "output_capture": {
+          "status": "drained",
+          "drained": true,
+          "timed_out": false,
+          "remaining": 0,
+          "errors": 0,
+          "elapsed_ms": 0.0
+        },
+        "worker_archive": {
+          "status": "completed",
+          "elapsed_ms": 0.0
+        },
+        "hardware": {
+          "status": "stopped",
+          "timed_out": false,
+          "elapsed_ms": 16.0
+        },
+        "telemetry": {
+          "status": "stopped",
+          "timed_out": false,
+          "elapsed_ms": 15.0
+        }
+      },
+      "application_errors": 0,
+      "hardware_errors": 0,
+      "command_rejections": 0,
+      "source_version": "c17faa0d048b7f53",
+      "evidence": {
+        "summary_sha256": "295cb0d86e59b85e267dfdf8b505b4bbd069e66fa52ae76e3403df8160c99ad0",
+        "viewer_report_sha256": "fb34ec21ea99ba8700580d625c1de17f13a62b6c63b109d8b56ad41e2e8455be",
+        "run_log_sha256": "5ea29bae7e94936b9674bcd9ab84bd53a8fcc76fe8e6a386e4461407d514bd10",
+        "local_directory": ".cache/game-menu/rendered-overhead-population-v2"
+      }
+    },
+    {
+      "id": "rendered-map-error-v3",
+      "samples": 1,
+      "case": "save_error",
+      "scene": "pilot",
+      "population_before": 200,
+      "population_saved": null,
+      "outdoor_at_menu": 47,
+      "mode": "map",
+      "portable": false,
+      "rendered": true,
+      "renderer": "gl_compatibility",
+      "godot": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org",
+      "crowd_backend": "canvas-2d",
+      "display": {
+        "frame_cap": 0,
+        "ui_scale": 1.0,
+        "viewport_size": [
+          1600.0,
+          900.0
+        ],
+        "vsync_mode": 1,
+        "window_mode": 0,
+        "window_pixels": [
+          1280,
+          720
+        ]
+      },
+      "lighting": "fixed",
+      "cache": {
+        "state": "existing local caches, no cold reset",
+        "scenery": {
+          "geography": {
+            "enabled": true,
+            "error": "",
+            "errors": 0,
+            "generated_tiles": 0,
+            "hits": 0,
+            "misses": 0,
+            "restored_tiles": 0,
+            "writes": 0
+          },
+          "terrain": {
+            "enabled": true,
+            "error": "",
+            "errors": 0,
+            "hits": 0,
+            "invalid_payloads": 0,
+            "misses": 0,
+            "writes": 0
+          }
+        }
+      },
+      "hardware": {
+        "os": {
+          "system": "Windows",
+          "release": "11",
+          "version": "10.0.26200",
+          "architecture": "AMD64"
+        },
+        "python": {
+          "version": "3.12.10",
+          "implementation": "CPython"
+        },
+        "cpu": {
+          "model": "AMD Ryzen 5 2600X Six-Core Processor",
+          "vendor": "AuthenticAMD",
+          "logical_cores": 12,
+          "physical_cores": 6
+        },
+        "memory_total_bytes": 34294595584,
+        "gpu": {
+          "model": "NVIDIA GeForce GTX 1070 Ti",
+          "driver_version": "582.66",
+          "vram_total_bytes": 8589934592
+        },
+        "monitoring": "enabled"
+      },
+      "checks": {
+        "launcher_completed": true,
+        "viewer_passed": true,
+        "quick_save_unchanged": true,
+        "recovery_valid": true,
+        "exit_record_matches": true,
+        "worker_shutdown_acknowledged": true,
+        "output_fully_drained": true,
+        "final_viewer_metrics": true,
+        "valid_single_exit_marker": true,
+        "owned_processes_stopped": true,
+        "source_unchanged": true,
+        "one_completed_run": true,
+        "no_application_errors": true
+      },
+      "save_outcome": "skipped",
+      "captured_tick": null,
+      "timings": {
+        "menu_input_through_two_frames_ms": 34.669,
+        "menu_input_to_confirmed_pause_ms": 94.661,
+        "save_stage_ms": 344.516,
+        "exit_request_to_close_dispatch_ms": 420.569,
+        "exit_marker_received_to_viewer_exit_observed_ms": 303.0,
+        "viewer_exit_observed_to_final_log_metadata_ms": 234.0,
+        "launcher_spawn_to_observed_process_exit_seconds": 5.110000000000582
+      },
+      "cleanup": {
+        "viewer": {
+          "status": "already_exited",
+          "exit_code": 0,
+          "forced": false,
+          "elapsed_ms": 0.0
+        },
+        "worker": {
+          "status": "graceful",
+          "exit_code": 0,
+          "forced": false,
+          "elapsed_ms": 46.0,
+          "acknowledged": true
+        },
+        "worker_stdout": {
+          "status": "completed",
+          "elapsed_ms": 0.0
+        },
+        "startup_handoff": {
+          "status": "completed",
+          "elapsed_ms": 0.0
+        },
+        "output_capture": {
+          "status": "drained",
+          "drained": true,
+          "timed_out": false,
+          "remaining": 0,
+          "errors": 0,
+          "elapsed_ms": 0.0
+        },
+        "worker_archive": {
+          "status": "completed",
+          "elapsed_ms": 0.0
+        },
+        "hardware": {
+          "status": "stopped",
+          "timed_out": false,
+          "elapsed_ms": 16.0
+        },
+        "telemetry": {
+          "status": "stopped",
+          "timed_out": false,
+          "elapsed_ms": 32.0
+        }
+      },
+      "application_errors": 0,
+      "hardware_errors": 0,
+      "command_rejections": 1,
+      "source_version": "da1545d69e2a858f",
+      "evidence": {
+        "summary_sha256": "a007c152ccd13bac12973592d5177353dd8907de4406c52f8e7404cb67d4f11a",
+        "viewer_report_sha256": "67ba1f99255e00ae65f1590435f24c735b277fad93cdf64a8cdd87735cd0c6b9",
+        "run_log_sha256": "6373c7396932acbb37f9313600287e27e0d1b75883cc37adc792933d019f6585",
+        "local_directory": ".cache/game-menu/rendered-map-error-v3"
+      }
+    },
+    {
+      "id": "rendered-city-map-save-v2",
+      "samples": 1,
+      "case": "save_exit",
+      "scene": "city",
+      "population_before": 1000,
+      "population_saved": 1000,
+      "outdoor_at_menu": 782,
+      "mode": "map",
+      "portable": false,
+      "rendered": true,
+      "renderer": "gl_compatibility",
+      "godot": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org",
+      "crowd_backend": "canvas-2d",
+      "display": {
+        "frame_cap": 0,
+        "ui_scale": 1.0,
+        "viewport_size": [
+          1600.0,
+          900.0
+        ],
+        "vsync_mode": 1,
+        "window_mode": 0,
+        "window_pixels": [
+          1280,
+          720
+        ]
+      },
+      "lighting": "fixed",
+      "cache": {
+        "state": "existing local caches, no cold reset",
+        "scenery": {
+          "geography": {
+            "enabled": true,
+            "error": "",
+            "errors": 0,
+            "generated_tiles": 0,
+            "hits": 0,
+            "misses": 0,
+            "restored_tiles": 0,
+            "writes": 0
+          },
+          "terrain": {
+            "enabled": true,
+            "error": "",
+            "errors": 0,
+            "hits": 0,
+            "invalid_payloads": 0,
+            "misses": 0,
+            "writes": 0
+          }
+        }
+      },
+      "hardware": {
+        "os": {
+          "system": "Windows",
+          "release": "11",
+          "version": "10.0.26200",
+          "architecture": "AMD64"
+        },
+        "python": {
+          "version": "3.12.10",
+          "implementation": "CPython"
+        },
+        "cpu": {
+          "model": "AMD Ryzen 5 2600X Six-Core Processor",
+          "vendor": "AuthenticAMD",
+          "logical_cores": 12,
+          "physical_cores": 6
+        },
+        "memory_total_bytes": 34294595584,
+        "gpu": {
+          "model": "NVIDIA GeForce GTX 1070 Ti",
+          "driver_version": "582.66",
+          "vram_total_bytes": 8589934592
+        },
+        "monitoring": "enabled"
+      },
+      "checks": {
+        "launcher_completed": true,
+        "viewer_passed": true,
+        "quick_save_unchanged": true,
+        "recovery_valid": true,
+        "exit_record_matches": true,
+        "worker_shutdown_acknowledged": true,
+        "output_fully_drained": true,
+        "final_viewer_metrics": true,
+        "valid_single_exit_marker": true,
+        "owned_processes_stopped": true,
+        "source_unchanged": true,
+        "one_completed_run": true,
+        "no_application_errors": true
+      },
+      "save_outcome": "saved",
+      "captured_tick": 302346,
+      "timings": {
+        "menu_input_through_two_frames_ms": 81.362,
+        "menu_input_to_confirmed_pause_ms": 629.225,
+        "save_stage_ms": 24838.723,
+        "exit_request_to_close_dispatch_ms": 24838.866,
+        "exit_marker_received_to_viewer_exit_observed_ms": 593.0,
+        "viewer_exit_observed_to_final_log_metadata_ms": 2369.0,
+        "launcher_spawn_to_observed_process_exit_seconds": 64.01499999999942
+      },
+      "cleanup": {
+        "viewer": {
+          "status": "already_exited",
+          "exit_code": 0,
+          "forced": false,
+          "elapsed_ms": 0.0
+        },
+        "worker": {
+          "status": "graceful",
+          "exit_code": 0,
+          "forced": false,
+          "elapsed_ms": 1750.0,
+          "acknowledged": true
+        },
+        "worker_stdout": {
+          "status": "completed",
+          "elapsed_ms": 0.0
+        },
+        "startup_handoff": {
+          "status": "completed",
+          "elapsed_ms": 0.0
+        },
+        "output_capture": {
+          "status": "drained",
+          "drained": true,
+          "timed_out": false,
+          "remaining": 0,
+          "errors": 0,
+          "elapsed_ms": 0.0
+        },
+        "worker_archive": {
+          "status": "completed",
+          "elapsed_ms": 0.0
+        },
+        "hardware": {
+          "status": "stopped",
+          "timed_out": false,
+          "elapsed_ms": 78.0
+        },
+        "telemetry": {
+          "status": "stopped",
+          "timed_out": false,
+          "elapsed_ms": 47.0
+        }
+      },
+      "application_errors": 0,
+      "hardware_errors": 0,
+      "command_rejections": 0,
+      "source_version": "b2b5636c3c7ceb60",
+      "evidence": {
+        "summary_sha256": "32a17b6acecc8940ecc76e97c3055e85f82fe5339050183b9937ab09e573f895",
+        "viewer_report_sha256": "9e8934827b2afad4c03c85b02b86ae99935c8d55eb2edecf73a023e59d35185c",
+        "run_log_sha256": "3d2f6b37939d78a45026357080a0976db214fbe6220218a96103425a15a15874",
+        "local_directory": ".cache/game-menu/rendered-city-map-save-v2"
+      }
+    },
+    {
+      "id": "portable-overhead-save-v3",
+      "samples": 1,
+      "case": "save_exit",
+      "scene": "pilot",
+      "population_before": 20,
+      "population_saved": 20,
+      "outdoor_at_menu": 6,
+      "mode": "overhead",
+      "portable": true,
+      "rendered": true,
+      "renderer": "gl_compatibility",
+      "godot": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org",
+      "crowd_backend": "individual",
+      "display": {
+        "frame_cap": 0,
+        "ui_scale": 1.0,
+        "viewport_size": [
+          1600.0,
+          900.0
+        ],
+        "vsync_mode": 1,
+        "window_mode": 0,
+        "window_pixels": [
+          1280,
+          720
+        ]
+      },
+      "lighting": "fixed",
+      "cache": {
+        "state": "existing local caches, no cold reset",
+        "scenery": {
+          "geography": {
+            "enabled": true,
+            "error": "",
+            "errors": 0,
+            "generated_tiles": 0,
+            "hits": 0,
+            "misses": 0,
+            "restored_tiles": 0,
+            "writes": 0
+          },
+          "terrain": {
+            "enabled": true,
+            "error": "",
+            "errors": 0,
+            "hits": 0,
+            "invalid_payloads": 0,
+            "misses": 0,
+            "writes": 0
+          }
+        }
+      },
+      "hardware": {
+        "os": {
+          "system": "Windows",
+          "release": "11",
+          "version": "10.0.26200",
+          "architecture": "AMD64"
+        },
+        "python": {
+          "version": "3.13.15",
+          "implementation": "CPython"
+        },
+        "cpu": {
+          "model": "AMD Ryzen 5 2600X Six-Core Processor",
+          "vendor": "AuthenticAMD",
+          "logical_cores": 12,
+          "physical_cores": 6
+        },
+        "memory_total_bytes": 34294595584,
+        "gpu": {
+          "model": "NVIDIA GeForce GTX 1070 Ti",
+          "driver_version": "582.66",
+          "vram_total_bytes": 8589934592
+        },
+        "monitoring": "enabled"
+      },
+      "checks": {
+        "launcher_completed": true,
+        "viewer_passed": true,
+        "quick_save_unchanged": true,
+        "recovery_valid": true,
+        "exit_record_matches": true,
+        "worker_shutdown_acknowledged": true,
+        "output_fully_drained": true,
+        "final_viewer_metrics": true,
+        "valid_single_exit_marker": true,
+        "owned_processes_stopped": true,
+        "source_unchanged": true,
+        "one_completed_run": true,
+        "no_application_errors": true
+      },
+      "save_outcome": "saved",
+      "captured_tick": 60609,
+      "timings": {
+        "menu_input_through_two_frames_ms": 26.48,
+        "menu_input_to_confirmed_pause_ms": 66.562,
+        "save_stage_ms": 280.36,
+        "exit_request_to_close_dispatch_ms": 280.53,
+        "exit_marker_received_to_viewer_exit_observed_ms": 316.0,
+        "viewer_exit_observed_to_final_log_metadata_ms": 104.0,
+        "launcher_spawn_to_observed_process_exit_seconds": 4.875
+      },
+      "cleanup": {
+        "viewer": {
+          "status": "already_exited",
+          "exit_code": 0,
+          "forced": false,
+          "elapsed_ms": 0.003
+        },
+        "worker": {
+          "status": "graceful",
+          "exit_code": 0,
+          "forced": false,
+          "elapsed_ms": 30.68,
+          "acknowledged": true
+        },
+        "worker_stdout": {
+          "status": "completed",
+          "elapsed_ms": 0.023
+        },
+        "startup_handoff": {
+          "status": "completed",
+          "elapsed_ms": 0.391
+        },
+        "output_capture": {
+          "status": "drained",
+          "drained": true,
+          "timed_out": false,
+          "remaining": 0,
+          "errors": 0,
+          "elapsed_ms": 0.077
+        },
+        "worker_archive": {
+          "status": "completed",
+          "elapsed_ms": 0.103
+        },
+        "hardware": {
+          "status": "stopped",
+          "timed_out": false,
+          "elapsed_ms": 8.169
+        },
+        "telemetry": {
+          "status": "stopped",
+          "timed_out": false,
+          "elapsed_ms": 2.426
+        }
+      },
+      "application_errors": 0,
+      "hardware_errors": 0,
+      "command_rejections": 0,
+      "source_version": "7690de05466f89c0",
+      "evidence": {
+        "summary_sha256": "cff7cdd8f3cf7a426c2e609757dd3e18b96b9dafb0e3af0507c67ce768f997c8",
+        "viewer_report_sha256": "c521b8b255762f8ae5a06adf6c7904b9780fe186cedffb88af2d609a353b3879",
+        "run_log_sha256": "4cbafa27ff1f82be67979dac10f02334bcaed63665e3f011fc17688d62bb3aae",
+        "local_directory": ".cache/game-menu/portable-overhead-save-v3"
+      }
+    }
+  ],
+  "source_versions": {
+    "c17faa0d048b7f53": {
+      "civic_center/__init__.py": "e5e6ea12287796ea1949dbc2b9934e9c8b95d23ee0e2f46a255cda064d081b19",
+      "civic_center/__main__.py": "fa7722a2d82dbce8375c2f35789b2bb8d6e1b26f04017f868708d98c3bc0517c",
+      "civic_center/checkpoint.py": "db9b7179b52985185d1f32879ab58aa8a2016586fa9fdbd1e8be60375c7b8b45",
+      "civic_center/city_scenario.py": "16785b845a9b11c8afc6c201b34bcd1b9087c3ad8dec81aba87922c3d4bebd24",
+      "civic_center/experiments.py": "412543223101e7afe60c1a02949a5f3e3f4259e1a570eef18ef3e7f0f32b2e3d",
+      "civic_center/geography.py": "8b03d540ffde2821d8be9ad3accd7253df6c65cb05b85e0dd2cfe148695dfae0",
+      "civic_center/gpu_hardware.py": "4b0e42f38c4300d58884c26999e8155779261b83b73ff434e8b1467eebc533d1",
+      "civic_center/hardware.py": "55824d1d1914672880d903f5e09ab4e7c2722b6babb12d123e2138493d4311ae",
+      "civic_center/hardware_monitor.py": "d68134313e6dd1550b92496be5d81f92ca3697a78c8bdc332aae09bb1a842cfa",
+      "civic_center/landuse.py": "4e4fbd17c93309c971fa41f155cee748b0ad4c3701987586a9ed303ae5a617a5",
+      "civic_center/launch.py": "196e2844b3a6e3385a494ab1b2d0fcfe2d0fbfc25ae7e87a86f419a13d3f1ee9",
+      "civic_center/mesh_prepare.py": "1e40716e2212b581e8e029d183678a928f476a72b7af224a9743f6b95c7ec687",
+      "civic_center/model.py": "313f60f2f7a3b82c40b7c2487eb9f7c4ab87e9bb241cd385552d7b444e3d0d29",
+      "civic_center/native_routing.py": "9c628fab317f4f8aa62285a18964bdc9999fba38c5408d03ed014d84c6308459",
+      "civic_center/package_verify.py": "4a70dad6075d96e583910a1d42bcae610c7f49f8d9aadc3f98e480b8c236f2da",
+      "civic_center/places.py": "d2f1f30fd90c9b0992121bfcc9a2f8df422c075399e12806f13c5feb1b877b1f",
+      "civic_center/point_transport.py": "2c0f0f5c67d9d5e779346eb2a4b599bc5fe1e30c80ab927b2d71ac9f707a5e7f",
+      "civic_center/population.py": "80169738750392e7e3097598e12a6233485dd3bb1d45aa7e6379af5880960850",
+      "civic_center/processes.py": "64b56f7c676a8e82031758744dbad61472e62d9df81157cb77101a6a57f86247",
+      "civic_center/routing.py": "d1a180511a3f98d8de5cf795752997496c7a5726accdb547ee6d3523a23c5759",
+      "civic_center/run_log.py": "aa063e9df9ad55d07d9e6c12a60467a336f096de96d46e4068a5e5317b212cb8",
+      "civic_center/scenario.py": "bbedee25350db09f0c6238b034c285185cb1c82fd6c55ccb9b5642f96f821891",
+      "civic_center/shared_geometry.py": "6d5d267b97735b0891a9f0e052e7f38f52228eae50b7b12036d8cc9c95514141",
+      "civic_center/startup.py": "9d0427329b7a5f4a095655f183742efcd9c2e4c7c5ca7833996ea45ccbe9ef60",
+      "civic_center/telemetry.py": "d6a4300558ed717dc05d71c38086284397732c265a616f5ba0cfbc577fdd1229",
+      "civic_center/terrain.py": "5e8e5c2e50c92b8fdd7f9575ba0a5120d5f69c203978fa92d9fa12631d36ede2",
+      "civic_center/trees.py": "6b7d406702b3da611d1c51b3f880d4632e14ccc31b48fb9914e3fafef0acf75c",
+      "civic_center/worker.py": "e55e435286564201fcbcfe36209ba90ebd44b7c708702660c2652c3c5e02ef4a",
+      "viewer/area_activity.gd": "2196418a051b1769355b749ededcfc2d1856b7d82c14b2b3ad4d63b528b76e48",
+      "viewer/area_activity_driver.gd": "1bca0d317ddd12c50410ddf8700f352fc8b65773b061a497a9c882fae5752d76",
+      "viewer/area_activity_driver_tests.gd": "b58a7867065163e9713e2a8aa47672421ac9f3b7da94226e3b290351c0060650",
+      "viewer/area_activity_integration_tests.gd": "097c783018bb0e89ed6820418bd43583df810430d3d8f1ca7c1eaeddaf47e4f9",
+      "viewer/area_activity_tests.gd": "2e795799c79ec82fbe74435e96b73210fd524fbab272dd706e9f83a3b056caad",
+      "viewer/cameras.gd": "4e8c873bc09a060cc70d7a796ea8efd50647ff5534707af45d01048bd61e523d",
+      "viewer/coordinates.gd": "849619310202b96203109e267b45743b2907ea7e485e00c4c392efecf05fbd1a",
+      "viewer/crowd.gd": "44da1b5145444ff7ed3c1f07550e10f659ca88698b960e749660aac785d4735b",
+      "viewer/crowd_benchmark.gd": "179d83ba1cb3f0a8f072504bfff04c08647897d2e5bb5aec2e31761eeadfcae8",
+      "viewer/daylight.gd": "c52aa26403a1428f258e65cb075625d8fa530b5b715ab39fcb4f521cc23cb5b0",
+      "viewer/daylight_tests.gd": "30e4df482cc2d6c3e0f663115bce7220e214dfe4a5a7512025d926d004e737a0",
+      "viewer/diagnostic_chart.gd": "80806c121359b1798c9dfd89b211c87ac6a838b47f4a90ac9950e73f29fd03b7",
+      "viewer/diagnostics.gd": "b5d177b46e06c283d405c28710b1a08aecd41c28f487c1e4ba6dcab29d7be42a",
+      "viewer/display_settings.gd": "c070fdcd98ce99b212988c5a9d3d135acac41f2a68dfe7df32097ae09e99ee71",
+      "viewer/facade_tests.gd": "c374e39a0a560d3f4dec94cb69897ad323985bb91cdc6b4b9722ea8e3beffa77",
+      "viewer/game_menu.gd": "9e7a35c96ec63671abbda9e11e8213d2fa4352f393503996fc5a09747a4297d2",
+      "viewer/game_menu_probe.gd": "243383ee741b5ba80ccdc121f93489a0b0cd1cd3c09d2650be5564b88ad2ec55",
+      "viewer/game_menu_tests.gd": "c847e8a38c354f7459c0b57065a023b8e273ec461e29d76b8c1c81c19181370f",
+      "viewer/geography.gd": "bfbbe55c24414566e437481d73593f31cbecee74fcb73707d93e68fe9b95a6eb",
+      "viewer/geography_mesh.gd": "044a17b9c1a66412388fcf404128dfce8c01cd47cd60969af31a602daa885b83",
+      "viewer/geography_tests.gd": "ce43f0d25dac5ffab808674acae3291ab7c8fae02c4a66942d5ffa37f4f60acb",
+      "viewer/geography_use.gd": "8338c4f92471166efffa3b61b098b83890de43da8f16de4f6c1d796b4c60d041",
+      "viewer/geography_use_tests.gd": "8a9e65216a4e21c67b0abe45d6cd113088045744dd85645e35c1272687114c20",
+      "viewer/geography_visuals.gd": "be6162b59d179d0d1c46e2b8d5dd667bbd47f4106aaddc1282da4aee43eb859b",
+      "viewer/geography_visuals_tests.gd": "f67e7ef51437d3ce1c517db6cf06f4a6f439b7d2df921693b2b053794bc8ee03",
+      "viewer/hud.gd": "c8cdd0d6f25774ce78359faf2a9cd6eceb75a857bac97c0c1bccd55c842b4cf1",
+      "viewer/landmark_tests.gd": "aa5658f451ba8183b6e2b87a3feebf5c338e1e2b04544374d1db36f0be0d8b17",
+      "viewer/landmarks.gd": "782e6b25e596fc55fe6fdf9a372a598657b410f35bf7a87a70a0545a02ebc974",
+      "viewer/live_workspace_probe.gd": "9722db4f9367bbffe0b85c5a4fa6b5056c0ca3d3c120f5e237c31e897e86aa5a",
+      "viewer/loading_screen.gd": "05c85ff92722e6866bf3d54f7c11b5c198a974c034aaedd52caf401ee977ad3c",
+      "viewer/main.gd": "278f5aa7110e17c794d329c794173190799722ee3006e582fbea13ce1c9823ef",
+      "viewer/map_2d.gd": "08f0c3fa980eb732ee9f26d86efeb56080d63d85a9061e744ee98fcc343bd5fd",
+      "viewer/map_2d_tests.gd": "5bb6fc627be9a5e02029934bcac875c6d67e9c129b9c210ffd4b7cad36ef79a9",
+      "viewer/map_mode_checks.gd": "c6923df3077377c5ccc305370721773d9d15e7053d90cf3daed32a97a67d1dd0",
+      "viewer/menu_flow.gd": "e2a8ceeec9bd1f965ea9874fb5b86b31d612970192ef3bfb3faa9b1e76f478a1",
+      "viewer/menu_flow_tests.gd": "5710c00087434d4ba53e21226a2bbfca650300a4dfefdf94bafd1069043ffe7f",
+      "viewer/navigation_input_checks.gd": "448ed6e8beb0a73ddd5b4bc13fcc779a37ce7d7e6c09b620f029266a05a29ea8",
+      "viewer/place_outline.gd": "f47e515dc07c48b49a2b8a855f0f07f98032b86ede994d38e50b2fea0fabc3b6",
+      "viewer/place_outline_tests.gd": "9ef0d9416384069dba9c810548a7764d2dc6d046e1acbddfba5f81fc975f5bda",
+      "viewer/place_search.gd": "ffeb28e9ab4d62bebaf17da1dd69338b4c873e8943c1abd0e3fe7dec3c1ca6da",
+      "viewer/places.gd": "4aefb74dec729443b1be9fe82c182609492850f096df8ccea6fa6fb9d803e609",
+      "viewer/places_tests.gd": "f32d1ea1d2a8f90a9e8d2ab380847e5775be209861b84a46fc9ca27993876597",
+      "viewer/prepare_scenery.gd": "b3ec59985a5a9a120417306ed707815ded0c4dc91936c471aa3a7ce8e9d15064",
+      "viewer/presentation_benchmark.gd": "afa07744dbc26119c13c8df1206f207b2493f7ed4dfc598064ccbe080a8c954b",
+      "viewer/presentation_tests.gd": "89f4e7a3e58d84d0dd7341d3bb8f419e0babce59d2dac66b463444b80e0b5c83",
+      "viewer/presenter.gd": "4c6bc135ebd108a2555d9442d7924c86fde1197e50b04231e79eec431d1905b1",
+      "viewer/project.godot": "af3c06fb40f2d05ac5312dbcb2018bd2b12c515c0315d5556d5f7dee41e34c86",
+      "viewer/run_metrics_tests.gd": "e20731bd157b59d335e4353162b038433b5a3c67649cc50a891d37256353c1e0",
+      "viewer/scene_adapter.gd": "84d18bbd584264f43d93562b4f41932e6e45bdb483882cd2e1c94f16e354a205",
+      "viewer/scene_adapter_tests.gd": "4c35458fcd4c6810af13698f3c7f5a0e67ab56b92c0b09dc0300a8c834e19a80",
+      "viewer/scenery_cache.gd": "0b9a005f4278970cc5b0929e6c11b19296dbc55bbb28ed30c7d087af40b5b037",
+      "viewer/scenery_cache_tests.gd": "ffd8336df49108cc0b73e23f08b477f28cafce204df74e4b4ed0bcc7948045a4",
+      "viewer/shared_geometry.gd": "67bbe1d1162542bdb70de67ec4993208beec3cf816cbc61e0fb59f25885b6ebb",
+      "viewer/shoreline_tests.gd": "de91e55ee24b47926754c7593134242888700f20a8602a1f2f1e9fa1d4889201",
+      "viewer/smoke_checks.gd": "fd643c1b61047d48f62c72d407499adfe7b23c5af1b855acfe3dfa5d5bc8d731",
+      "viewer/snapshot_client.gd": "58ae6e14bbf21f5e33145c6156371327634e8500981163c215a5ae825f9f1d22",
+      "viewer/snapshot_close_tests.gd": "1184f345175ca474038615b8b1b57060beccccb7575f9a9c0b32443779508e76",
+      "viewer/snapshot_decoder.gd": "aaab40f454c19adb56a92f734eb6bcde9a51b8002e6c8764b10d1645156bd71f",
+      "viewer/solar.gd": "09e36bf3f6a92ef87c5720cea821935ec341665611161e91a0f3b5345b700b1f",
+      "viewer/startup_checks.gd": "2c88ed5eb408043a34452950f850e5ac2db5ef445e740d2606faec724e34fd33",
+      "viewer/telemetry_client.gd": "122282cbcf259255e50dbab4f03f32c632ce84b534bcc335e29c43a7f662dff9",
+      "viewer/telemetry_client_tests.gd": "411b4d6fcb448a3d00d6b2e1c2888f38567139906db718dc98ab2d38207b03b4",
+      "viewer/terrain.gd": "e052cbdb822caee9532ade559ad432a6d8e12274654569127a74e6e67dc625bd",
+      "viewer/terrain_cache_tests.gd": "e5c7d55ab38b3dbe3fb46f6ef21664d87a4a2dea8ae51512035988040b675f67",
+      "viewer/terrain_shoreline.gd": "97d87c5214801b0a585aae53a6bfddde760cd1bebc89ebbe170f67614f8df86b",
+      "viewer/terrain_tests.gd": "5eb9c68fe798eb376498b81b6f865f774f071ee5afb54b86490438127cb31d61",
+      "viewer/transport_benchmark.gd": "0f9868712bb93eeee58dfbe11c50056a03d6f9585ce1e5b05b092b450ac06df5",
+      "viewer/tree_geometry.gd": "6a7b9a7583a6cb0e602b38fa48f646e356ea360571d2c4d3aaff46d8504cece7",
+      "viewer/trees.gd": "396649d30ba0c7cfb0dccf51e15ed7ac3c8f88ce01394a2f4c0b285dd749fe79",
+      "viewer/trees_tests.gd": "034586968185a40dcdba64bcf8f80e2c9035f8f9905a62e70aa4efbb42b097ce",
+      "viewer/workspace_input_tests.gd": "b09a7f1dd6e943d124b9cb3b7bbf86b07a3147f00dffa02b932a247314f01bf8",
+      "viewer/workspace_ui_tests.gd": "7a33325971ff51e48a6ac44109ab654f3c0710d80b748f0fb2e0da8725ad4369",
+      "viewer/world.gd": "ce3e88c2282170a9bd1da4178c6452af0c17cc7255cedec2ccfcb7081ebf4e05",
+      "runtime/python": "0b471133e110cfb53a061cad528ce8e517d7b9ac41a0a396c39ad795a487fc14"
+    },
+    "da1545d69e2a858f": {
+      "civic_center/__init__.py": "e5e6ea12287796ea1949dbc2b9934e9c8b95d23ee0e2f46a255cda064d081b19",
+      "civic_center/__main__.py": "fa7722a2d82dbce8375c2f35789b2bb8d6e1b26f04017f868708d98c3bc0517c",
+      "civic_center/checkpoint.py": "db9b7179b52985185d1f32879ab58aa8a2016586fa9fdbd1e8be60375c7b8b45",
+      "civic_center/city_scenario.py": "16785b845a9b11c8afc6c201b34bcd1b9087c3ad8dec81aba87922c3d4bebd24",
+      "civic_center/experiments.py": "412543223101e7afe60c1a02949a5f3e3f4259e1a570eef18ef3e7f0f32b2e3d",
+      "civic_center/geography.py": "8b03d540ffde2821d8be9ad3accd7253df6c65cb05b85e0dd2cfe148695dfae0",
+      "civic_center/gpu_hardware.py": "4b0e42f38c4300d58884c26999e8155779261b83b73ff434e8b1467eebc533d1",
+      "civic_center/hardware.py": "55824d1d1914672880d903f5e09ab4e7c2722b6babb12d123e2138493d4311ae",
+      "civic_center/hardware_monitor.py": "d68134313e6dd1550b92496be5d81f92ca3697a78c8bdc332aae09bb1a842cfa",
+      "civic_center/landuse.py": "4e4fbd17c93309c971fa41f155cee748b0ad4c3701987586a9ed303ae5a617a5",
+      "civic_center/launch.py": "196e2844b3a6e3385a494ab1b2d0fcfe2d0fbfc25ae7e87a86f419a13d3f1ee9",
+      "civic_center/mesh_prepare.py": "1e40716e2212b581e8e029d183678a928f476a72b7af224a9743f6b95c7ec687",
+      "civic_center/model.py": "313f60f2f7a3b82c40b7c2487eb9f7c4ab87e9bb241cd385552d7b444e3d0d29",
+      "civic_center/native_routing.py": "9c628fab317f4f8aa62285a18964bdc9999fba38c5408d03ed014d84c6308459",
+      "civic_center/package_verify.py": "4a70dad6075d96e583910a1d42bcae610c7f49f8d9aadc3f98e480b8c236f2da",
+      "civic_center/places.py": "d2f1f30fd90c9b0992121bfcc9a2f8df422c075399e12806f13c5feb1b877b1f",
+      "civic_center/point_transport.py": "2c0f0f5c67d9d5e779346eb2a4b599bc5fe1e30c80ab927b2d71ac9f707a5e7f",
+      "civic_center/population.py": "80169738750392e7e3097598e12a6233485dd3bb1d45aa7e6379af5880960850",
+      "civic_center/processes.py": "64b56f7c676a8e82031758744dbad61472e62d9df81157cb77101a6a57f86247",
+      "civic_center/routing.py": "d1a180511a3f98d8de5cf795752997496c7a5726accdb547ee6d3523a23c5759",
+      "civic_center/run_log.py": "aa063e9df9ad55d07d9e6c12a60467a336f096de96d46e4068a5e5317b212cb8",
+      "civic_center/scenario.py": "bbedee25350db09f0c6238b034c285185cb1c82fd6c55ccb9b5642f96f821891",
+      "civic_center/shared_geometry.py": "6d5d267b97735b0891a9f0e052e7f38f52228eae50b7b12036d8cc9c95514141",
+      "civic_center/startup.py": "9d0427329b7a5f4a095655f183742efcd9c2e4c7c5ca7833996ea45ccbe9ef60",
+      "civic_center/telemetry.py": "d6a4300558ed717dc05d71c38086284397732c265a616f5ba0cfbc577fdd1229",
+      "civic_center/terrain.py": "5e8e5c2e50c92b8fdd7f9575ba0a5120d5f69c203978fa92d9fa12631d36ede2",
+      "civic_center/trees.py": "6b7d406702b3da611d1c51b3f880d4632e14ccc31b48fb9914e3fafef0acf75c",
+      "civic_center/worker.py": "e55e435286564201fcbcfe36209ba90ebd44b7c708702660c2652c3c5e02ef4a",
+      "viewer/area_activity.gd": "2196418a051b1769355b749ededcfc2d1856b7d82c14b2b3ad4d63b528b76e48",
+      "viewer/area_activity_driver.gd": "1bca0d317ddd12c50410ddf8700f352fc8b65773b061a497a9c882fae5752d76",
+      "viewer/area_activity_driver_tests.gd": "b58a7867065163e9713e2a8aa47672421ac9f3b7da94226e3b290351c0060650",
+      "viewer/area_activity_integration_tests.gd": "097c783018bb0e89ed6820418bd43583df810430d3d8f1ca7c1eaeddaf47e4f9",
+      "viewer/area_activity_tests.gd": "2e795799c79ec82fbe74435e96b73210fd524fbab272dd706e9f83a3b056caad",
+      "viewer/cameras.gd": "4e8c873bc09a060cc70d7a796ea8efd50647ff5534707af45d01048bd61e523d",
+      "viewer/coordinates.gd": "849619310202b96203109e267b45743b2907ea7e485e00c4c392efecf05fbd1a",
+      "viewer/crowd.gd": "44da1b5145444ff7ed3c1f07550e10f659ca88698b960e749660aac785d4735b",
+      "viewer/crowd_benchmark.gd": "179d83ba1cb3f0a8f072504bfff04c08647897d2e5bb5aec2e31761eeadfcae8",
+      "viewer/daylight.gd": "c52aa26403a1428f258e65cb075625d8fa530b5b715ab39fcb4f521cc23cb5b0",
+      "viewer/daylight_tests.gd": "30e4df482cc2d6c3e0f663115bce7220e214dfe4a5a7512025d926d004e737a0",
+      "viewer/diagnostic_chart.gd": "80806c121359b1798c9dfd89b211c87ac6a838b47f4a90ac9950e73f29fd03b7",
+      "viewer/diagnostics.gd": "b5d177b46e06c283d405c28710b1a08aecd41c28f487c1e4ba6dcab29d7be42a",
+      "viewer/display_settings.gd": "c070fdcd98ce99b212988c5a9d3d135acac41f2a68dfe7df32097ae09e99ee71",
+      "viewer/facade_tests.gd": "c374e39a0a560d3f4dec94cb69897ad323985bb91cdc6b4b9722ea8e3beffa77",
+      "viewer/game_menu.gd": "9e7a35c96ec63671abbda9e11e8213d2fa4352f393503996fc5a09747a4297d2",
+      "viewer/game_menu_probe.gd": "243383ee741b5ba80ccdc121f93489a0b0cd1cd3c09d2650be5564b88ad2ec55",
+      "viewer/game_menu_tests.gd": "c847e8a38c354f7459c0b57065a023b8e273ec461e29d76b8c1c81c19181370f",
+      "viewer/geography.gd": "bfbbe55c24414566e437481d73593f31cbecee74fcb73707d93e68fe9b95a6eb",
+      "viewer/geography_mesh.gd": "044a17b9c1a66412388fcf404128dfce8c01cd47cd60969af31a602daa885b83",
+      "viewer/geography_tests.gd": "ce43f0d25dac5ffab808674acae3291ab7c8fae02c4a66942d5ffa37f4f60acb",
+      "viewer/geography_use.gd": "8338c4f92471166efffa3b61b098b83890de43da8f16de4f6c1d796b4c60d041",
+      "viewer/geography_use_tests.gd": "8a9e65216a4e21c67b0abe45d6cd113088045744dd85645e35c1272687114c20",
+      "viewer/geography_visuals.gd": "be6162b59d179d0d1c46e2b8d5dd667bbd47f4106aaddc1282da4aee43eb859b",
+      "viewer/geography_visuals_tests.gd": "f67e7ef51437d3ce1c517db6cf06f4a6f439b7d2df921693b2b053794bc8ee03",
+      "viewer/hud.gd": "c8cdd0d6f25774ce78359faf2a9cd6eceb75a857bac97c0c1bccd55c842b4cf1",
+      "viewer/landmark_tests.gd": "aa5658f451ba8183b6e2b87a3feebf5c338e1e2b04544374d1db36f0be0d8b17",
+      "viewer/landmarks.gd": "782e6b25e596fc55fe6fdf9a372a598657b410f35bf7a87a70a0545a02ebc974",
+      "viewer/live_workspace_probe.gd": "9722db4f9367bbffe0b85c5a4fa6b5056c0ca3d3c120f5e237c31e897e86aa5a",
+      "viewer/loading_screen.gd": "05c85ff92722e6866bf3d54f7c11b5c198a974c034aaedd52caf401ee977ad3c",
+      "viewer/main.gd": "278f5aa7110e17c794d329c794173190799722ee3006e582fbea13ce1c9823ef",
+      "viewer/map_2d.gd": "08f0c3fa980eb732ee9f26d86efeb56080d63d85a9061e744ee98fcc343bd5fd",
+      "viewer/map_2d_tests.gd": "5bb6fc627be9a5e02029934bcac875c6d67e9c129b9c210ffd4b7cad36ef79a9",
+      "viewer/map_mode_checks.gd": "c6923df3077377c5ccc305370721773d9d15e7053d90cf3daed32a97a67d1dd0",
+      "viewer/menu_flow.gd": "d25d747e27d13e41a6c68abca8d626fdc77fbdfd231616a815061ea39276d53e",
+      "viewer/menu_flow_tests.gd": "019501cc3614a62201e4f6cfb7c7a1c4cc4e1259f956b79e5ccbbf825b60d96e",
+      "viewer/navigation_input_checks.gd": "448ed6e8beb0a73ddd5b4bc13fcc779a37ce7d7e6c09b620f029266a05a29ea8",
+      "viewer/place_outline.gd": "f47e515dc07c48b49a2b8a855f0f07f98032b86ede994d38e50b2fea0fabc3b6",
+      "viewer/place_outline_tests.gd": "9ef0d9416384069dba9c810548a7764d2dc6d046e1acbddfba5f81fc975f5bda",
+      "viewer/place_search.gd": "ffeb28e9ab4d62bebaf17da1dd69338b4c873e8943c1abd0e3fe7dec3c1ca6da",
+      "viewer/places.gd": "4aefb74dec729443b1be9fe82c182609492850f096df8ccea6fa6fb9d803e609",
+      "viewer/places_tests.gd": "f32d1ea1d2a8f90a9e8d2ab380847e5775be209861b84a46fc9ca27993876597",
+      "viewer/prepare_scenery.gd": "b3ec59985a5a9a120417306ed707815ded0c4dc91936c471aa3a7ce8e9d15064",
+      "viewer/presentation_benchmark.gd": "afa07744dbc26119c13c8df1206f207b2493f7ed4dfc598064ccbe080a8c954b",
+      "viewer/presentation_tests.gd": "89f4e7a3e58d84d0dd7341d3bb8f419e0babce59d2dac66b463444b80e0b5c83",
+      "viewer/presenter.gd": "4c6bc135ebd108a2555d9442d7924c86fde1197e50b04231e79eec431d1905b1",
+      "viewer/project.godot": "af3c06fb40f2d05ac5312dbcb2018bd2b12c515c0315d5556d5f7dee41e34c86",
+      "viewer/run_metrics_tests.gd": "e20731bd157b59d335e4353162b038433b5a3c67649cc50a891d37256353c1e0",
+      "viewer/scene_adapter.gd": "84d18bbd584264f43d93562b4f41932e6e45bdb483882cd2e1c94f16e354a205",
+      "viewer/scene_adapter_tests.gd": "4c35458fcd4c6810af13698f3c7f5a0e67ab56b92c0b09dc0300a8c834e19a80",
+      "viewer/scenery_cache.gd": "0b9a005f4278970cc5b0929e6c11b19296dbc55bbb28ed30c7d087af40b5b037",
+      "viewer/scenery_cache_tests.gd": "ffd8336df49108cc0b73e23f08b477f28cafce204df74e4b4ed0bcc7948045a4",
+      "viewer/shared_geometry.gd": "67bbe1d1162542bdb70de67ec4993208beec3cf816cbc61e0fb59f25885b6ebb",
+      "viewer/shoreline_tests.gd": "de91e55ee24b47926754c7593134242888700f20a8602a1f2f1e9fa1d4889201",
+      "viewer/smoke_checks.gd": "fd643c1b61047d48f62c72d407499adfe7b23c5af1b855acfe3dfa5d5bc8d731",
+      "viewer/snapshot_client.gd": "58ae6e14bbf21f5e33145c6156371327634e8500981163c215a5ae825f9f1d22",
+      "viewer/snapshot_close_tests.gd": "1184f345175ca474038615b8b1b57060beccccb7575f9a9c0b32443779508e76",
+      "viewer/snapshot_decoder.gd": "aaab40f454c19adb56a92f734eb6bcde9a51b8002e6c8764b10d1645156bd71f",
+      "viewer/solar.gd": "09e36bf3f6a92ef87c5720cea821935ec341665611161e91a0f3b5345b700b1f",
+      "viewer/startup_checks.gd": "2c88ed5eb408043a34452950f850e5ac2db5ef445e740d2606faec724e34fd33",
+      "viewer/telemetry_client.gd": "122282cbcf259255e50dbab4f03f32c632ce84b534bcc335e29c43a7f662dff9",
+      "viewer/telemetry_client_tests.gd": "411b4d6fcb448a3d00d6b2e1c2888f38567139906db718dc98ab2d38207b03b4",
+      "viewer/terrain.gd": "e052cbdb822caee9532ade559ad432a6d8e12274654569127a74e6e67dc625bd",
+      "viewer/terrain_cache_tests.gd": "e5c7d55ab38b3dbe3fb46f6ef21664d87a4a2dea8ae51512035988040b675f67",
+      "viewer/terrain_shoreline.gd": "97d87c5214801b0a585aae53a6bfddde760cd1bebc89ebbe170f67614f8df86b",
+      "viewer/terrain_tests.gd": "5eb9c68fe798eb376498b81b6f865f774f071ee5afb54b86490438127cb31d61",
+      "viewer/transport_benchmark.gd": "0f9868712bb93eeee58dfbe11c50056a03d6f9585ce1e5b05b092b450ac06df5",
+      "viewer/tree_geometry.gd": "6a7b9a7583a6cb0e602b38fa48f646e356ea360571d2c4d3aaff46d8504cece7",
+      "viewer/trees.gd": "396649d30ba0c7cfb0dccf51e15ed7ac3c8f88ce01394a2f4c0b285dd749fe79",
+      "viewer/trees_tests.gd": "034586968185a40dcdba64bcf8f80e2c9035f8f9905a62e70aa4efbb42b097ce",
+      "viewer/workspace_input_tests.gd": "b09a7f1dd6e943d124b9cb3b7bbf86b07a3147f00dffa02b932a247314f01bf8",
+      "viewer/workspace_ui_tests.gd": "7a33325971ff51e48a6ac44109ab654f3c0710d80b748f0fb2e0da8725ad4369",
+      "viewer/world.gd": "ce3e88c2282170a9bd1da4178c6452af0c17cc7255cedec2ccfcb7081ebf4e05",
+      "runtime/python": "0b471133e110cfb53a061cad528ce8e517d7b9ac41a0a396c39ad795a487fc14"
+    },
+    "b2b5636c3c7ceb60": {
+      "civic_center/__init__.py": "e5e6ea12287796ea1949dbc2b9934e9c8b95d23ee0e2f46a255cda064d081b19",
+      "civic_center/__main__.py": "fa7722a2d82dbce8375c2f35789b2bb8d6e1b26f04017f868708d98c3bc0517c",
+      "civic_center/checkpoint.py": "db9b7179b52985185d1f32879ab58aa8a2016586fa9fdbd1e8be60375c7b8b45",
+      "civic_center/city_scenario.py": "16785b845a9b11c8afc6c201b34bcd1b9087c3ad8dec81aba87922c3d4bebd24",
+      "civic_center/experiments.py": "412543223101e7afe60c1a02949a5f3e3f4259e1a570eef18ef3e7f0f32b2e3d",
+      "civic_center/geography.py": "8b03d540ffde2821d8be9ad3accd7253df6c65cb05b85e0dd2cfe148695dfae0",
+      "civic_center/gpu_hardware.py": "4b0e42f38c4300d58884c26999e8155779261b83b73ff434e8b1467eebc533d1",
+      "civic_center/hardware.py": "55824d1d1914672880d903f5e09ab4e7c2722b6babb12d123e2138493d4311ae",
+      "civic_center/hardware_monitor.py": "d68134313e6dd1550b92496be5d81f92ca3697a78c8bdc332aae09bb1a842cfa",
+      "civic_center/landuse.py": "4e4fbd17c93309c971fa41f155cee748b0ad4c3701987586a9ed303ae5a617a5",
+      "civic_center/launch.py": "196e2844b3a6e3385a494ab1b2d0fcfe2d0fbfc25ae7e87a86f419a13d3f1ee9",
+      "civic_center/mesh_prepare.py": "1e40716e2212b581e8e029d183678a928f476a72b7af224a9743f6b95c7ec687",
+      "civic_center/model.py": "313f60f2f7a3b82c40b7c2487eb9f7c4ab87e9bb241cd385552d7b444e3d0d29",
+      "civic_center/native_routing.py": "9c628fab317f4f8aa62285a18964bdc9999fba38c5408d03ed014d84c6308459",
+      "civic_center/package_verify.py": "4a70dad6075d96e583910a1d42bcae610c7f49f8d9aadc3f98e480b8c236f2da",
+      "civic_center/places.py": "d2f1f30fd90c9b0992121bfcc9a2f8df422c075399e12806f13c5feb1b877b1f",
+      "civic_center/point_transport.py": "2c0f0f5c67d9d5e779346eb2a4b599bc5fe1e30c80ab927b2d71ac9f707a5e7f",
+      "civic_center/population.py": "80169738750392e7e3097598e12a6233485dd3bb1d45aa7e6379af5880960850",
+      "civic_center/processes.py": "64b56f7c676a8e82031758744dbad61472e62d9df81157cb77101a6a57f86247",
+      "civic_center/routing.py": "d1a180511a3f98d8de5cf795752997496c7a5726accdb547ee6d3523a23c5759",
+      "civic_center/run_log.py": "aa063e9df9ad55d07d9e6c12a60467a336f096de96d46e4068a5e5317b212cb8",
+      "civic_center/scenario.py": "bbedee25350db09f0c6238b034c285185cb1c82fd6c55ccb9b5642f96f821891",
+      "civic_center/shared_geometry.py": "6d5d267b97735b0891a9f0e052e7f38f52228eae50b7b12036d8cc9c95514141",
+      "civic_center/startup.py": "9d0427329b7a5f4a095655f183742efcd9c2e4c7c5ca7833996ea45ccbe9ef60",
+      "civic_center/telemetry.py": "d6a4300558ed717dc05d71c38086284397732c265a616f5ba0cfbc577fdd1229",
+      "civic_center/terrain.py": "5e8e5c2e50c92b8fdd7f9575ba0a5120d5f69c203978fa92d9fa12631d36ede2",
+      "civic_center/trees.py": "6b7d406702b3da611d1c51b3f880d4632e14ccc31b48fb9914e3fafef0acf75c",
+      "civic_center/worker.py": "e55e435286564201fcbcfe36209ba90ebd44b7c708702660c2652c3c5e02ef4a",
+      "viewer/area_activity.gd": "2196418a051b1769355b749ededcfc2d1856b7d82c14b2b3ad4d63b528b76e48",
+      "viewer/area_activity_driver.gd": "1bca0d317ddd12c50410ddf8700f352fc8b65773b061a497a9c882fae5752d76",
+      "viewer/area_activity_driver_tests.gd": "b58a7867065163e9713e2a8aa47672421ac9f3b7da94226e3b290351c0060650",
+      "viewer/area_activity_integration_tests.gd": "097c783018bb0e89ed6820418bd43583df810430d3d8f1ca7c1eaeddaf47e4f9",
+      "viewer/area_activity_tests.gd": "2e795799c79ec82fbe74435e96b73210fd524fbab272dd706e9f83a3b056caad",
+      "viewer/cameras.gd": "4e8c873bc09a060cc70d7a796ea8efd50647ff5534707af45d01048bd61e523d",
+      "viewer/coordinates.gd": "849619310202b96203109e267b45743b2907ea7e485e00c4c392efecf05fbd1a",
+      "viewer/crowd.gd": "44da1b5145444ff7ed3c1f07550e10f659ca88698b960e749660aac785d4735b",
+      "viewer/crowd_benchmark.gd": "179d83ba1cb3f0a8f072504bfff04c08647897d2e5bb5aec2e31761eeadfcae8",
+      "viewer/daylight.gd": "c52aa26403a1428f258e65cb075625d8fa530b5b715ab39fcb4f521cc23cb5b0",
+      "viewer/daylight_tests.gd": "30e4df482cc2d6c3e0f663115bce7220e214dfe4a5a7512025d926d004e737a0",
+      "viewer/diagnostic_chart.gd": "80806c121359b1798c9dfd89b211c87ac6a838b47f4a90ac9950e73f29fd03b7",
+      "viewer/diagnostics.gd": "b5d177b46e06c283d405c28710b1a08aecd41c28f487c1e4ba6dcab29d7be42a",
+      "viewer/display_settings.gd": "c070fdcd98ce99b212988c5a9d3d135acac41f2a68dfe7df32097ae09e99ee71",
+      "viewer/facade_tests.gd": "c374e39a0a560d3f4dec94cb69897ad323985bb91cdc6b4b9722ea8e3beffa77",
+      "viewer/game_menu.gd": "9e7a35c96ec63671abbda9e11e8213d2fa4352f393503996fc5a09747a4297d2",
+      "viewer/game_menu_probe.gd": "243383ee741b5ba80ccdc121f93489a0b0cd1cd3c09d2650be5564b88ad2ec55",
+      "viewer/game_menu_tests.gd": "c847e8a38c354f7459c0b57065a023b8e273ec461e29d76b8c1c81c19181370f",
+      "viewer/geography.gd": "bfbbe55c24414566e437481d73593f31cbecee74fcb73707d93e68fe9b95a6eb",
+      "viewer/geography_mesh.gd": "044a17b9c1a66412388fcf404128dfce8c01cd47cd60969af31a602daa885b83",
+      "viewer/geography_tests.gd": "ce43f0d25dac5ffab808674acae3291ab7c8fae02c4a66942d5ffa37f4f60acb",
+      "viewer/geography_use.gd": "8338c4f92471166efffa3b61b098b83890de43da8f16de4f6c1d796b4c60d041",
+      "viewer/geography_use_tests.gd": "8a9e65216a4e21c67b0abe45d6cd113088045744dd85645e35c1272687114c20",
+      "viewer/geography_visuals.gd": "be6162b59d179d0d1c46e2b8d5dd667bbd47f4106aaddc1282da4aee43eb859b",
+      "viewer/geography_visuals_tests.gd": "f67e7ef51437d3ce1c517db6cf06f4a6f439b7d2df921693b2b053794bc8ee03",
+      "viewer/hud.gd": "c8cdd0d6f25774ce78359faf2a9cd6eceb75a857bac97c0c1bccd55c842b4cf1",
+      "viewer/landmark_tests.gd": "aa5658f451ba8183b6e2b87a3feebf5c338e1e2b04544374d1db36f0be0d8b17",
+      "viewer/landmarks.gd": "782e6b25e596fc55fe6fdf9a372a598657b410f35bf7a87a70a0545a02ebc974",
+      "viewer/live_workspace_probe.gd": "9722db4f9367bbffe0b85c5a4fa6b5056c0ca3d3c120f5e237c31e897e86aa5a",
+      "viewer/loading_screen.gd": "05c85ff92722e6866bf3d54f7c11b5c198a974c034aaedd52caf401ee977ad3c",
+      "viewer/main.gd": "278f5aa7110e17c794d329c794173190799722ee3006e582fbea13ce1c9823ef",
+      "viewer/map_2d.gd": "08f0c3fa980eb732ee9f26d86efeb56080d63d85a9061e744ee98fcc343bd5fd",
+      "viewer/map_2d_tests.gd": "5bb6fc627be9a5e02029934bcac875c6d67e9c129b9c210ffd4b7cad36ef79a9",
+      "viewer/map_mode_checks.gd": "c6923df3077377c5ccc305370721773d9d15e7053d90cf3daed32a97a67d1dd0",
+      "viewer/menu_flow.gd": "e2a8ceeec9bd1f965ea9874fb5b86b31d612970192ef3bfb3faa9b1e76f478a1",
+      "viewer/menu_flow_tests.gd": "5710c00087434d4ba53e21226a2bbfca650300a4dfefdf94bafd1069043ffe7f",
+      "viewer/navigation_input_checks.gd": "448ed6e8beb0a73ddd5b4bc13fcc779a37ce7d7e6c09b620f029266a05a29ea8",
+      "viewer/place_outline.gd": "f47e515dc07c48b49a2b8a855f0f07f98032b86ede994d38e50b2fea0fabc3b6",
+      "viewer/place_outline_tests.gd": "9ef0d9416384069dba9c810548a7764d2dc6d046e1acbddfba5f81fc975f5bda",
+      "viewer/place_search.gd": "ffeb28e9ab4d62bebaf17da1dd69338b4c873e8943c1abd0e3fe7dec3c1ca6da",
+      "viewer/places.gd": "4aefb74dec729443b1be9fe82c182609492850f096df8ccea6fa6fb9d803e609",
+      "viewer/places_tests.gd": "f32d1ea1d2a8f90a9e8d2ab380847e5775be209861b84a46fc9ca27993876597",
+      "viewer/prepare_scenery.gd": "b3ec59985a5a9a120417306ed707815ded0c4dc91936c471aa3a7ce8e9d15064",
+      "viewer/presentation_benchmark.gd": "afa07744dbc26119c13c8df1206f207b2493f7ed4dfc598064ccbe080a8c954b",
+      "viewer/presentation_tests.gd": "89f4e7a3e58d84d0dd7341d3bb8f419e0babce59d2dac66b463444b80e0b5c83",
+      "viewer/presenter.gd": "4c6bc135ebd108a2555d9442d7924c86fde1197e50b04231e79eec431d1905b1",
+      "viewer/project.godot": "af3c06fb40f2d05ac5312dbcb2018bd2b12c515c0315d5556d5f7dee41e34c86",
+      "viewer/run_metrics_tests.gd": "e20731bd157b59d335e4353162b038433b5a3c67649cc50a891d37256353c1e0",
+      "viewer/scene_adapter.gd": "84d18bbd584264f43d93562b4f41932e6e45bdb483882cd2e1c94f16e354a205",
+      "viewer/scene_adapter_tests.gd": "4c35458fcd4c6810af13698f3c7f5a0e67ab56b92c0b09dc0300a8c834e19a80",
+      "viewer/scenery_cache.gd": "0b9a005f4278970cc5b0929e6c11b19296dbc55bbb28ed30c7d087af40b5b037",
+      "viewer/scenery_cache_tests.gd": "ffd8336df49108cc0b73e23f08b477f28cafce204df74e4b4ed0bcc7948045a4",
+      "viewer/shared_geometry.gd": "67bbe1d1162542bdb70de67ec4993208beec3cf816cbc61e0fb59f25885b6ebb",
+      "viewer/shoreline_tests.gd": "de91e55ee24b47926754c7593134242888700f20a8602a1f2f1e9fa1d4889201",
+      "viewer/smoke_checks.gd": "fd643c1b61047d48f62c72d407499adfe7b23c5af1b855acfe3dfa5d5bc8d731",
+      "viewer/snapshot_client.gd": "58ae6e14bbf21f5e33145c6156371327634e8500981163c215a5ae825f9f1d22",
+      "viewer/snapshot_close_tests.gd": "1184f345175ca474038615b8b1b57060beccccb7575f9a9c0b32443779508e76",
+      "viewer/snapshot_decoder.gd": "aaab40f454c19adb56a92f734eb6bcde9a51b8002e6c8764b10d1645156bd71f",
+      "viewer/solar.gd": "09e36bf3f6a92ef87c5720cea821935ec341665611161e91a0f3b5345b700b1f",
+      "viewer/startup_checks.gd": "2c88ed5eb408043a34452950f850e5ac2db5ef445e740d2606faec724e34fd33",
+      "viewer/telemetry_client.gd": "122282cbcf259255e50dbab4f03f32c632ce84b534bcc335e29c43a7f662dff9",
+      "viewer/telemetry_client_tests.gd": "411b4d6fcb448a3d00d6b2e1c2888f38567139906db718dc98ab2d38207b03b4",
+      "viewer/terrain.gd": "e052cbdb822caee9532ade559ad432a6d8e12274654569127a74e6e67dc625bd",
+      "viewer/terrain_cache_tests.gd": "e5c7d55ab38b3dbe3fb46f6ef21664d87a4a2dea8ae51512035988040b675f67",
+      "viewer/terrain_shoreline.gd": "97d87c5214801b0a585aae53a6bfddde760cd1bebc89ebbe170f67614f8df86b",
+      "viewer/terrain_tests.gd": "5eb9c68fe798eb376498b81b6f865f774f071ee5afb54b86490438127cb31d61",
+      "viewer/transport_benchmark.gd": "0f9868712bb93eeee58dfbe11c50056a03d6f9585ce1e5b05b092b450ac06df5",
+      "viewer/tree_geometry.gd": "6a7b9a7583a6cb0e602b38fa48f646e356ea360571d2c4d3aaff46d8504cece7",
+      "viewer/trees.gd": "396649d30ba0c7cfb0dccf51e15ed7ac3c8f88ce01394a2f4c0b285dd749fe79",
+      "viewer/trees_tests.gd": "034586968185a40dcdba64bcf8f80e2c9035f8f9905a62e70aa4efbb42b097ce",
+      "viewer/workspace_input_tests.gd": "b09a7f1dd6e943d124b9cb3b7bbf86b07a3147f00dffa02b932a247314f01bf8",
+      "viewer/workspace_ui_tests.gd": "7a33325971ff51e48a6ac44109ab654f3c0710d80b748f0fb2e0da8725ad4369",
+      "viewer/world.gd": "ce3e88c2282170a9bd1da4178c6452af0c17cc7255cedec2ccfcb7081ebf4e05",
+      "runtime/python": "0b471133e110cfb53a061cad528ce8e517d7b9ac41a0a396c39ad795a487fc14",
+      "input/checkpoint": "f268360d9e4506544e741dc2ae6a70597c726411b5f3021addd94cce3102625d"
+    },
+    "7690de05466f89c0": {
+      "civic_center/__init__.py": "e5e6ea12287796ea1949dbc2b9934e9c8b95d23ee0e2f46a255cda064d081b19",
+      "civic_center/__main__.py": "fa7722a2d82dbce8375c2f35789b2bb8d6e1b26f04017f868708d98c3bc0517c",
+      "civic_center/checkpoint.py": "db9b7179b52985185d1f32879ab58aa8a2016586fa9fdbd1e8be60375c7b8b45",
+      "civic_center/city_scenario.py": "16785b845a9b11c8afc6c201b34bcd1b9087c3ad8dec81aba87922c3d4bebd24",
+      "civic_center/experiments.py": "412543223101e7afe60c1a02949a5f3e3f4259e1a570eef18ef3e7f0f32b2e3d",
+      "civic_center/geography.py": "8b03d540ffde2821d8be9ad3accd7253df6c65cb05b85e0dd2cfe148695dfae0",
+      "civic_center/gpu_hardware.py": "4b0e42f38c4300d58884c26999e8155779261b83b73ff434e8b1467eebc533d1",
+      "civic_center/hardware.py": "55824d1d1914672880d903f5e09ab4e7c2722b6babb12d123e2138493d4311ae",
+      "civic_center/hardware_monitor.py": "d68134313e6dd1550b92496be5d81f92ca3697a78c8bdc332aae09bb1a842cfa",
+      "civic_center/landuse.py": "4e4fbd17c93309c971fa41f155cee748b0ad4c3701987586a9ed303ae5a617a5",
+      "civic_center/launch.py": "196e2844b3a6e3385a494ab1b2d0fcfe2d0fbfc25ae7e87a86f419a13d3f1ee9",
+      "civic_center/mesh_prepare.py": "1e40716e2212b581e8e029d183678a928f476a72b7af224a9743f6b95c7ec687",
+      "civic_center/model.py": "313f60f2f7a3b82c40b7c2487eb9f7c4ab87e9bb241cd385552d7b444e3d0d29",
+      "civic_center/native_routing.py": "9c628fab317f4f8aa62285a18964bdc9999fba38c5408d03ed014d84c6308459",
+      "civic_center/package_verify.py": "4a70dad6075d96e583910a1d42bcae610c7f49f8d9aadc3f98e480b8c236f2da",
+      "civic_center/places.py": "d2f1f30fd90c9b0992121bfcc9a2f8df422c075399e12806f13c5feb1b877b1f",
+      "civic_center/point_transport.py": "2c0f0f5c67d9d5e779346eb2a4b599bc5fe1e30c80ab927b2d71ac9f707a5e7f",
+      "civic_center/population.py": "80169738750392e7e3097598e12a6233485dd3bb1d45aa7e6379af5880960850",
+      "civic_center/processes.py": "64b56f7c676a8e82031758744dbad61472e62d9df81157cb77101a6a57f86247",
+      "civic_center/routing.py": "d1a180511a3f98d8de5cf795752997496c7a5726accdb547ee6d3523a23c5759",
+      "civic_center/run_log.py": "aa063e9df9ad55d07d9e6c12a60467a336f096de96d46e4068a5e5317b212cb8",
+      "civic_center/scenario.py": "bbedee25350db09f0c6238b034c285185cb1c82fd6c55ccb9b5642f96f821891",
+      "civic_center/shared_geometry.py": "6d5d267b97735b0891a9f0e052e7f38f52228eae50b7b12036d8cc9c95514141",
+      "civic_center/startup.py": "9d0427329b7a5f4a095655f183742efcd9c2e4c7c5ca7833996ea45ccbe9ef60",
+      "civic_center/telemetry.py": "d6a4300558ed717dc05d71c38086284397732c265a616f5ba0cfbc577fdd1229",
+      "civic_center/terrain.py": "5e8e5c2e50c92b8fdd7f9575ba0a5120d5f69c203978fa92d9fa12631d36ede2",
+      "civic_center/trees.py": "6b7d406702b3da611d1c51b3f880d4632e14ccc31b48fb9914e3fafef0acf75c",
+      "civic_center/worker.py": "e55e435286564201fcbcfe36209ba90ebd44b7c708702660c2652c3c5e02ef4a",
+      "viewer/area_activity.gd": "2196418a051b1769355b749ededcfc2d1856b7d82c14b2b3ad4d63b528b76e48",
+      "viewer/area_activity_driver.gd": "1bca0d317ddd12c50410ddf8700f352fc8b65773b061a497a9c882fae5752d76",
+      "viewer/area_activity_driver_tests.gd": "b58a7867065163e9713e2a8aa47672421ac9f3b7da94226e3b290351c0060650",
+      "viewer/area_activity_integration_tests.gd": "097c783018bb0e89ed6820418bd43583df810430d3d8f1ca7c1eaeddaf47e4f9",
+      "viewer/area_activity_tests.gd": "2e795799c79ec82fbe74435e96b73210fd524fbab272dd706e9f83a3b056caad",
+      "viewer/cameras.gd": "4e8c873bc09a060cc70d7a796ea8efd50647ff5534707af45d01048bd61e523d",
+      "viewer/coordinates.gd": "849619310202b96203109e267b45743b2907ea7e485e00c4c392efecf05fbd1a",
+      "viewer/crowd.gd": "44da1b5145444ff7ed3c1f07550e10f659ca88698b960e749660aac785d4735b",
+      "viewer/crowd_benchmark.gd": "179d83ba1cb3f0a8f072504bfff04c08647897d2e5bb5aec2e31761eeadfcae8",
+      "viewer/daylight.gd": "c52aa26403a1428f258e65cb075625d8fa530b5b715ab39fcb4f521cc23cb5b0",
+      "viewer/daylight_tests.gd": "30e4df482cc2d6c3e0f663115bce7220e214dfe4a5a7512025d926d004e737a0",
+      "viewer/diagnostic_chart.gd": "80806c121359b1798c9dfd89b211c87ac6a838b47f4a90ac9950e73f29fd03b7",
+      "viewer/diagnostics.gd": "b5d177b46e06c283d405c28710b1a08aecd41c28f487c1e4ba6dcab29d7be42a",
+      "viewer/display_settings.gd": "c070fdcd98ce99b212988c5a9d3d135acac41f2a68dfe7df32097ae09e99ee71",
+      "viewer/facade_tests.gd": "c374e39a0a560d3f4dec94cb69897ad323985bb91cdc6b4b9722ea8e3beffa77",
+      "viewer/game_menu.gd": "9e7a35c96ec63671abbda9e11e8213d2fa4352f393503996fc5a09747a4297d2",
+      "viewer/game_menu_probe.gd": "243383ee741b5ba80ccdc121f93489a0b0cd1cd3c09d2650be5564b88ad2ec55",
+      "viewer/game_menu_tests.gd": "c847e8a38c354f7459c0b57065a023b8e273ec461e29d76b8c1c81c19181370f",
+      "viewer/geography.gd": "bfbbe55c24414566e437481d73593f31cbecee74fcb73707d93e68fe9b95a6eb",
+      "viewer/geography_mesh.gd": "044a17b9c1a66412388fcf404128dfce8c01cd47cd60969af31a602daa885b83",
+      "viewer/geography_tests.gd": "ce43f0d25dac5ffab808674acae3291ab7c8fae02c4a66942d5ffa37f4f60acb",
+      "viewer/geography_use.gd": "8338c4f92471166efffa3b61b098b83890de43da8f16de4f6c1d796b4c60d041",
+      "viewer/geography_use_tests.gd": "8a9e65216a4e21c67b0abe45d6cd113088045744dd85645e35c1272687114c20",
+      "viewer/geography_visuals.gd": "be6162b59d179d0d1c46e2b8d5dd667bbd47f4106aaddc1282da4aee43eb859b",
+      "viewer/geography_visuals_tests.gd": "f67e7ef51437d3ce1c517db6cf06f4a6f439b7d2df921693b2b053794bc8ee03",
+      "viewer/hud.gd": "c8cdd0d6f25774ce78359faf2a9cd6eceb75a857bac97c0c1bccd55c842b4cf1",
+      "viewer/landmark_tests.gd": "aa5658f451ba8183b6e2b87a3feebf5c338e1e2b04544374d1db36f0be0d8b17",
+      "viewer/landmarks.gd": "782e6b25e596fc55fe6fdf9a372a598657b410f35bf7a87a70a0545a02ebc974",
+      "viewer/live_workspace_probe.gd": "9722db4f9367bbffe0b85c5a4fa6b5056c0ca3d3c120f5e237c31e897e86aa5a",
+      "viewer/loading_screen.gd": "05c85ff92722e6866bf3d54f7c11b5c198a974c034aaedd52caf401ee977ad3c",
+      "viewer/main.gd": "278f5aa7110e17c794d329c794173190799722ee3006e582fbea13ce1c9823ef",
+      "viewer/map_2d.gd": "08f0c3fa980eb732ee9f26d86efeb56080d63d85a9061e744ee98fcc343bd5fd",
+      "viewer/map_2d_tests.gd": "5bb6fc627be9a5e02029934bcac875c6d67e9c129b9c210ffd4b7cad36ef79a9",
+      "viewer/map_mode_checks.gd": "c6923df3077377c5ccc305370721773d9d15e7053d90cf3daed32a97a67d1dd0",
+      "viewer/menu_flow.gd": "d25d747e27d13e41a6c68abca8d626fdc77fbdfd231616a815061ea39276d53e",
+      "viewer/menu_flow_tests.gd": "019501cc3614a62201e4f6cfb7c7a1c4cc4e1259f956b79e5ccbbf825b60d96e",
+      "viewer/navigation_input_checks.gd": "448ed6e8beb0a73ddd5b4bc13fcc779a37ce7d7e6c09b620f029266a05a29ea8",
+      "viewer/place_outline.gd": "f47e515dc07c48b49a2b8a855f0f07f98032b86ede994d38e50b2fea0fabc3b6",
+      "viewer/place_outline_tests.gd": "9ef0d9416384069dba9c810548a7764d2dc6d046e1acbddfba5f81fc975f5bda",
+      "viewer/place_search.gd": "ffeb28e9ab4d62bebaf17da1dd69338b4c873e8943c1abd0e3fe7dec3c1ca6da",
+      "viewer/places.gd": "4aefb74dec729443b1be9fe82c182609492850f096df8ccea6fa6fb9d803e609",
+      "viewer/places_tests.gd": "f32d1ea1d2a8f90a9e8d2ab380847e5775be209861b84a46fc9ca27993876597",
+      "viewer/prepare_scenery.gd": "b3ec59985a5a9a120417306ed707815ded0c4dc91936c471aa3a7ce8e9d15064",
+      "viewer/presentation_benchmark.gd": "afa07744dbc26119c13c8df1206f207b2493f7ed4dfc598064ccbe080a8c954b",
+      "viewer/presentation_tests.gd": "89f4e7a3e58d84d0dd7341d3bb8f419e0babce59d2dac66b463444b80e0b5c83",
+      "viewer/presenter.gd": "4c6bc135ebd108a2555d9442d7924c86fde1197e50b04231e79eec431d1905b1",
+      "viewer/project.godot": "af3c06fb40f2d05ac5312dbcb2018bd2b12c515c0315d5556d5f7dee41e34c86",
+      "viewer/run_metrics_tests.gd": "e20731bd157b59d335e4353162b038433b5a3c67649cc50a891d37256353c1e0",
+      "viewer/scene_adapter.gd": "84d18bbd584264f43d93562b4f41932e6e45bdb483882cd2e1c94f16e354a205",
+      "viewer/scene_adapter_tests.gd": "4c35458fcd4c6810af13698f3c7f5a0e67ab56b92c0b09dc0300a8c834e19a80",
+      "viewer/scenery_cache.gd": "0b9a005f4278970cc5b0929e6c11b19296dbc55bbb28ed30c7d087af40b5b037",
+      "viewer/scenery_cache_tests.gd": "ffd8336df49108cc0b73e23f08b477f28cafce204df74e4b4ed0bcc7948045a4",
+      "viewer/shared_geometry.gd": "67bbe1d1162542bdb70de67ec4993208beec3cf816cbc61e0fb59f25885b6ebb",
+      "viewer/shoreline_tests.gd": "de91e55ee24b47926754c7593134242888700f20a8602a1f2f1e9fa1d4889201",
+      "viewer/smoke_checks.gd": "fd643c1b61047d48f62c72d407499adfe7b23c5af1b855acfe3dfa5d5bc8d731",
+      "viewer/snapshot_client.gd": "58ae6e14bbf21f5e33145c6156371327634e8500981163c215a5ae825f9f1d22",
+      "viewer/snapshot_close_tests.gd": "1184f345175ca474038615b8b1b57060beccccb7575f9a9c0b32443779508e76",
+      "viewer/snapshot_decoder.gd": "aaab40f454c19adb56a92f734eb6bcde9a51b8002e6c8764b10d1645156bd71f",
+      "viewer/solar.gd": "09e36bf3f6a92ef87c5720cea821935ec341665611161e91a0f3b5345b700b1f",
+      "viewer/startup_checks.gd": "2c88ed5eb408043a34452950f850e5ac2db5ef445e740d2606faec724e34fd33",
+      "viewer/telemetry_client.gd": "122282cbcf259255e50dbab4f03f32c632ce84b534bcc335e29c43a7f662dff9",
+      "viewer/telemetry_client_tests.gd": "411b4d6fcb448a3d00d6b2e1c2888f38567139906db718dc98ab2d38207b03b4",
+      "viewer/terrain.gd": "e052cbdb822caee9532ade559ad432a6d8e12274654569127a74e6e67dc625bd",
+      "viewer/terrain_cache_tests.gd": "e5c7d55ab38b3dbe3fb46f6ef21664d87a4a2dea8ae51512035988040b675f67",
+      "viewer/terrain_shoreline.gd": "97d87c5214801b0a585aae53a6bfddde760cd1bebc89ebbe170f67614f8df86b",
+      "viewer/terrain_tests.gd": "5eb9c68fe798eb376498b81b6f865f774f071ee5afb54b86490438127cb31d61",
+      "viewer/transport_benchmark.gd": "0f9868712bb93eeee58dfbe11c50056a03d6f9585ce1e5b05b092b450ac06df5",
+      "viewer/tree_geometry.gd": "6a7b9a7583a6cb0e602b38fa48f646e356ea360571d2c4d3aaff46d8504cece7",
+      "viewer/trees.gd": "396649d30ba0c7cfb0dccf51e15ed7ac3c8f88ce01394a2f4c0b285dd749fe79",
+      "viewer/trees_tests.gd": "034586968185a40dcdba64bcf8f80e2c9035f8f9905a62e70aa4efbb42b097ce",
+      "viewer/workspace_input_tests.gd": "b09a7f1dd6e943d124b9cb3b7bbf86b07a3147f00dffa02b932a247314f01bf8",
+      "viewer/workspace_ui_tests.gd": "7a33325971ff51e48a6ac44109ab654f3c0710d80b748f0fb2e0da8725ad4369",
+      "viewer/world.gd": "ce3e88c2282170a9bd1da4178c6452af0c17cc7255cedec2ccfcb7081ebf4e05",
+      "runtime/python": "85b71d8c6ec1905935f74be0c9869aae198d00e98f39df699ec66f9c5a84cecd"
+    }
+  },
+  "python_tests": {
+    "passed": 839,
+    "skipped": 1,
+    "seconds": 45.65,
+    "evidence_sha256": "47e0b692543f9e46b942332185bce492795e28c5507d36445a61d1f44d834525"
+  },
+  "godot_checks": [
+    "game_menu_tests",
+    "menu_flow_tests",
+    "snapshot_close_tests",
+    "workspace_input_tests",
+    "workspace_ui_tests",
+    "run_metrics_tests",
+    "scene_adapter_tests",
+    "telemetry_client_tests"
+  ],
+  "portable_package": {
+    "manifest_sha256": "8d857930c831552a055793262d812cd9f9d37b428bcc222de3e38244fce8ed67",
+    "verified_files": 275,
+    "verified_bytes": 210453089,
+    "scope": "pilot only, native helpers omitted, bundled runtimes exercised"
+  },
+  "limitations": [
+    "Each scenario/action row is one observation. Different populations, scenes, paths and runtimes are not comparable performance baselines.",
+    "Pause is complete before exit is requested in these trials. Zero exit pause-stage time does not mean pausing is free.",
+    "Menu response ends after two processed frames, not a display-photodiode measurement.",
+    "Save stage measures viewer request through terminal response: confirmed acknowledgement on successful save rows, rejection on the deliberate save_error row. It includes validation, disk work and transport; it is not pure disk-write time.",
+    "Window disappearance is not timestamped directly; viewer-exit observation and final-log metadata use launcher timestamps.",
+    "Whole application timing includes startup, scripted operations, screenshot capture and 250 ms process polling. Checkpoint reload verification runs afterward.",
+    "Existing caches were used. No claim of cold-start speed, FPS improvement or supported population capacity is made.",
+    "Final save-error wording was verified after the successful version-2 trials; source hashes are retained per trial.",
+    "Raw local reports may contain local paths and synthetic state. Public evidence includes aggregate fields only.",
+    "Atomic saves and graceful cleanup cannot guarantee persistence after hardware or operating-system failure."
+  ],
+  "check_semantics": {
+    "recovery_valid": "Successful save rows: checkpoint reload validated acknowledged tick, roster and paused state. The save_error row: expected failure behavior passed, the blocking directory remained and no recovery was reloaded. This key does not certify a valid checkpoint in a failed-save row."
+  }
+}

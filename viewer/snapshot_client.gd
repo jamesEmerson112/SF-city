@@ -5,6 +5,7 @@ signal scene_received(message: Dictionary)
 signal snapshot_received(message: Dictionary)
 signal acknowledged(message: Dictionary)
 signal command_rejected(message: Dictionary)
+signal command_progress(message: Dictionary)
 signal status_changed(message: String, is_error: bool)
 
 const MAX_BUFFER: int = 16 * 1024 * 1024
@@ -21,6 +22,7 @@ var incoming := PackedByteArray()
 var outgoing := PackedByteArray()
 var connected: bool = false
 var active: bool = false
+var stopped: bool = false
 var hello_sent: bool = false
 var host: String = "127.0.0.1"
 var port: int = 0
@@ -58,6 +60,7 @@ func _ensure_decoder() -> bool:
 	return true
 
 func connect_worker(address: String, number: int, secret: String) -> void:
+	stopped = false
 	peer.disconnect_from_host()
 	incoming.clear()
 	outgoing.clear()
@@ -119,6 +122,20 @@ func _queue(message: Dictionary) -> void:
 		return
 	outgoing.append_array(bytes)
 
+func stop() -> void:
+	# A save ACK callback can close its owner in the middle of this poll.
+	# Stop both socket work and already decoded callbacks before disconnecting.
+	if stopped: return
+	stopped = true
+	active = false
+	connected = false
+	generation = decoder.reset()
+	incoming.clear()
+	outgoing.clear()
+	pending.clear()
+	pending_actions.clear()
+	peer.disconnect_from_host()
+
 func _process(_delta: float) -> void:
 	var started: int = Time.get_ticks_usec()
 	_poll_connection()
@@ -154,7 +171,7 @@ func _poll_connection() -> void:
 		outgoing = outgoing.slice(int(sent[1]))
 	# Deliver at most one complete render state per frame. Commands above always
 	# reach the socket even when decoding or presentation is behind.
-	if not _drain_decoded():
+	if not _drain_decoded() or not active or peer.get_status() != StreamPeerTCP.STATUS_CONNECTED:
 		return
 	if not _drain_incoming():
 		return
@@ -243,7 +260,7 @@ func _drain_decoded(snapshot_budget: int = 1) -> bool:
 			continue
 		last_json_decode_ms += float(result.json_ms)
 		last_expand_ms += float(result.expand_ms)
-		if not _deliver(result):
+		if not _deliver(result) or stopped:
 			return false
 		if result.kind == "snapshot":
 			snapshots += 1
@@ -259,6 +276,7 @@ func _deliver(result: Dictionary) -> bool:
 			session_id = str(message.session_id)
 			sequence = -1
 			scene_received.emit(message)
+			if stopped: return false
 			status_changed.emit("Live local simulation", false)
 		"snapshot":
 			if str(message.get("session_id", "")) != session_id:
@@ -276,6 +294,8 @@ func _deliver(result: Dictionary) -> bool:
 			pending_actions.erase(request_id)
 			acknowledged.emit(message)
 		"command_status":
+			command_progress.emit(message)
+			if stopped: return false
 			var label: String = {"save":"Saving day", "load":"Loading saved day", "population":"Preparing residents", "set_population":"Preparing live population"}.get(str(message.get("action", "")), "Preparing simulation")
 			status_changed.emit("%s… %.0fs" % [label, float(message.get("elapsed_seconds", 0.0))], false)
 		"geometry_status":
@@ -296,6 +316,7 @@ func _deliver(result: Dictionary) -> bool:
 				message = message.duplicate(false)
 				message["action"] = action
 				command_rejected.emit(message)
+				if stopped: return false
 			status_changed.emit(str(message.get("message", message.get("error", "Simulation rejected a request."))), not recoverable)
 			acknowledged.emit(message)
 		"failure":

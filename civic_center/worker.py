@@ -31,10 +31,13 @@ from pathlib import Path
 from typing import Any, Callable
 
 from civic_center.checkpoint import (
+    CheckpointTemporary,
     PreparedCheckpointCapture,
     capture_checkpoint,
+    discard_checkpoint_temporary,
     load_checkpoint,
     prepare_checkpoint_capture,
+    reserve_checkpoint_temporary,
     write_captured_checkpoint,
 )
 from civic_center.model import CivicSimulation
@@ -466,8 +469,8 @@ def _process_job_main(connection: Any, action: str, payload: Any) -> None:
     started = time.monotonic()
     try:
         if action == "save":
-            capture, path = payload
-            result = write_captured_checkpoint(capture, path)
+            capture, path, temporary = payload
+            result = write_captured_checkpoint(capture, path, temporary=temporary)
         elif action == "load":
             path = payload["path"] if isinstance(payload, dict) else payload
             result = prepare_session(
@@ -601,6 +604,7 @@ class PendingJob:
     lifecycle_lock: threading.Lock = field(default_factory=threading.Lock)
     cancelled: threading.Event = field(default_factory=threading.Event)
     metrics: dict[str, Any] = field(default_factory=dict)
+    checkpoint_temporary: CheckpointTemporary | None = None
 
 
 class CivicWorker:
@@ -766,14 +770,24 @@ class CivicWorker:
         if self._closed:
             return
         self._closed = True
-        self._cancel_pending_job()
+        errors = []
+
+        def cleanup(action) -> None:
+            try:
+                action()
+            except Exception as error:
+                errors.append(error)
+
+        cleanup(self._cancel_pending_job)
         if self._point_service is not None:
-            self._point_service.close()
+            cleanup(self._point_service.close)
             self._point_service = None
         for client in list(self.clients.values()):
-            self._close_client(client)
-        self.listener.close()
-        self.selector.close()
+            cleanup(lambda connection=client: self._close_client(connection))
+        cleanup(self.listener.close)
+        cleanup(self.selector.close)
+        if errors:
+            raise RuntimeError("Worker cleanup did not complete") from errors[0]
 
     def _advance_elapsed(self, now: float) -> None:
         started = time.perf_counter()
@@ -1568,6 +1582,7 @@ class CivicWorker:
         *,
         slot: str | None = None,
         process_payload: Any = None,
+        checkpoint_temporary: CheckpointTemporary | None = None,
     ) -> None:
         job = PendingJob(
             client,
@@ -1577,6 +1592,7 @@ class CivicWorker:
             slot,
             time.monotonic(),
         )
+        job.checkpoint_temporary = checkpoint_temporary
         job.next_status = job.started_at + 1.0
         self._pending_job = job
 
@@ -1592,6 +1608,7 @@ class CivicWorker:
                 )
             except Exception as exc:
                 result = (None, exc)
+            self._discard_job_temporary(job)
             job.metrics["preparation_finished_monotonic"] = time.monotonic()
             job.result.put(result)
 
@@ -1665,6 +1682,26 @@ class CivicWorker:
                     if process.is_alive():
                         process.kill()
                         process.join(2)
+                    if process.is_alive():
+                        raise RuntimeError(
+                            "Owned checkpoint/preparation writer did not terminate"
+                        )
+
+    def _discard_job_temporary(self, job: PendingJob) -> None:
+        if job.checkpoint_temporary is None:
+            return
+        if job.process is not None and job.process.is_alive():
+            return
+        try:
+            removed = discard_checkpoint_temporary(job.checkpoint_temporary)
+            if removed:
+                job.metrics["temporary_removed"] = True
+        except (OSError, ValueError):
+            job.metrics["temporary_cleanup_failed"] = True
+            print(
+                "WARNING: owned checkpoint temporary could not be safely removed",
+                file=sys.stderr,
+            )
 
     def _cancel_pending_job(self) -> None:
         job = self._pending_job
@@ -1680,8 +1717,14 @@ class CivicWorker:
                 if process.is_alive():
                     process.kill()
                     process.join(2)
+                if process.is_alive():
+                    raise RuntimeError(
+                        "Owned checkpoint/preparation writer did not terminate"
+                    )
         if job.thread is not None and job.thread is not threading.current_thread():
             job.thread.join(2)
+        if job.process is not None or job.thread is None or not job.thread.is_alive():
+            self._discard_job_temporary(job)
         self._pending_job = None
         self.last_job_metrics = {
             **job.metrics,
@@ -2331,12 +2374,16 @@ class CivicWorker:
                 return
             elif action in ("save", "load"):
                 slot, path = self._slot_path(message.get("value", "quick"))
+                temporary = None
                 if action == "save":
                     capture = capture_checkpoint(
                         self.simulation, self._checkpoint_preparation
                     )
-                    work = lambda: write_captured_checkpoint(capture, path)
-                    process_payload = (capture, path)
+                    temporary = reserve_checkpoint_temporary(path)
+                    work = lambda: write_captured_checkpoint(
+                        capture, path, temporary=temporary
+                    )
+                    process_payload = (capture, path, temporary)
                 else:
                     points = any(
                         self._uses_points(connection)
@@ -2351,7 +2398,12 @@ class CivicWorker:
                     process_payload = {"path": path, "points": points}
 
                 self._start_job(
-                    client, message, work, slot=slot, process_payload=process_payload
+                    client,
+                    message,
+                    work,
+                    slot=slot,
+                    process_payload=process_payload,
+                    checkpoint_temporary=temporary,
                 )
                 return
             elif action == "shutdown":

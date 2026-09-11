@@ -544,3 +544,117 @@ def test_expected_rejection_keeps_run_completed_unless_a_real_failure_follows(
         )
         == 1
     )
+
+
+@pytest.mark.parametrize("viewer_code", [0, 17])
+def test_forced_worker_cleanup_is_explicit_and_preserves_original_failure(
+    launcher, monkeypatch, viewer_code
+):
+    _install_processes(
+        monkeypatch,
+        exit_code=viewer_code,
+        output='GODOT_APPLICATION_STARTUP_COMPLETE {"complete":true}\n',
+    )
+    monkeypatch.setattr(
+        launch,
+        "_shutdown_worker",
+        lambda *args: {
+            "status": "forced",
+            "forced": True,
+            "exit_code": 1,
+            "acknowledged": False,
+            "reason": "worker_shutdown_timeout",
+        },
+    )
+    assert launch.main(["--world", "pilot", "--no-geography"]) == (viewer_code or 1)
+    record = _read_logs(launcher)[0]
+    assert record["status"] == "failed"
+    assert record["exit_code"] == (viewer_code or 1)
+    assert record["cleanup"]["stages"]["worker"]["status"] == "forced"
+    assert record["cleanup"]["stages"]["output_capture"]["drained"] is True
+    assert record["hardware"]["status"] == "stopped"
+
+
+def test_hardware_cleanup_failure_does_not_suppress_final_log_or_other_cleanup(
+    launcher, monkeypatch
+):
+    _install_processes(
+        monkeypatch, output='GODOT_APPLICATION_STARTUP_COMPLETE {"complete":true}\n'
+    )
+
+    def failed_stop(self):
+        raise RuntimeError("hardware stop failed")
+
+    monkeypatch.setattr(launch.HardwareMonitor, "stop", failed_stop)
+    assert launch.main(["--world", "pilot", "--no-geography"]) == 1
+    record = _read_logs(launcher)[0]
+    assert record["status"] == "failed"
+    assert record["cleanup"]["stages"]["hardware"]["status"] == "failed"
+    assert record["cleanup"]["stages"]["telemetry"]["status"] == "stopped"
+    assert record["ended_at"] is not None
+
+
+def test_final_log_write_failure_is_not_a_successful_launcher_exit(
+    launcher, monkeypatch, capsys
+):
+    _install_processes(
+        monkeypatch, output='GODOT_APPLICATION_STARTUP_COMPLETE {"complete":true}\n'
+    )
+    monkeypatch.setattr(
+        launch.RunLog,
+        "finish",
+        lambda *args, **kwargs: {"persisted": False, "status": "failed"},
+    )
+    assert launch.main(["--world", "pilot", "--no-geography"]) == 1
+    assert "final run log was not saved" in capsys.readouterr().err
+    assert launch.HardwareMonitor.instances[0].stopped
+
+
+def test_menu_probe_ownership_and_private_save_directory_reach_both_handoffs(
+    launcher, monkeypatch
+):
+    commands, handoffs = _install_processes(
+        monkeypatch, output='GODOT_APPLICATION_STARTUP_COMPLETE {"complete":true}\n'
+    )
+    target = launcher / "evidence/menu.json"
+    saves = launcher / "evidence/private-saves"
+    assert (
+        launch.main(
+            [
+                "--world",
+                "pilot",
+                "--no-geography",
+                "--menu-probe",
+                str(target),
+                "--menu-probe-case",
+                "window_close",
+                "--save-dir",
+                str(saves),
+            ]
+        )
+        == 0
+    )
+    for options in (commands[0], handoffs[-1]["arguments"]):
+        assert "--launcher-owned" in options
+        assert options[options.index("--menu-probe") + 1] == str(target.resolve())
+        assert options[options.index("--menu-probe-case") + 1] == "window_close"
+    worker = next(command for command in commands if "civic_center.worker" in command)
+    assert worker[worker.index("--save-dir") + 1] == str(saves.resolve())
+    assert not (launcher / ".local/civic/saves/exit-recovery.json").exists()
+
+
+def test_cleanup_failure_preserves_keyboard_interrupt_status(launcher, monkeypatch):
+    def interrupted():
+        raise KeyboardInterrupt
+
+    def failed_stop(self):
+        raise RuntimeError("sensor close failed during interrupt")
+
+    monkeypatch.setattr(launch, "find_godot", interrupted)
+    monkeypatch.setattr(launch.HardwareMonitor, "stop", failed_stop)
+    assert launch.main(["--world", "pilot", "--no-geography"]) == 130
+    record = _read_logs(launcher)[0]
+    assert record["status"] == "interrupted"
+    assert record["exit_code"] == 130
+    assert record["cleanup"]["stages"]["hardware"]["status"] == "failed"
+    assert record["cleanup"]["stages"]["telemetry"]["status"] == "stopped"

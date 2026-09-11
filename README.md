@@ -26,6 +26,7 @@ for exploration and experimentation; population calibration remains future work.
 | JSON logs and local hardware reporting | Diagnosing slowdowns and performance changes | Correlate CPU, memory, disk and available GPU readings with loading and frame timings; retain recent history and run-wide peaks. |
 | Live population controls and a performance console | Exploring how a larger workload affects the computer | Add/remove synthetic citizens during the current day and inspect frame, simulation, and hardware readings beside filterable logs. |
 | Flexible desktop layout | Keeping the city and its controls usable on wider screens | Resize panels, use fullscreen, and adjust interface scale. |
+| Escape menu and recovery exit | Leaving an experiment without abandoning an unfinished save | Save a separate recovery checkpoint before closing; finish process cleanup and run diagnostics. |
 
 ### Measured startup improvement
 

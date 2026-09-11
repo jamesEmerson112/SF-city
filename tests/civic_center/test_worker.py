@@ -1495,11 +1495,11 @@ def test_async_save_captures_exact_tick_while_controls_and_snapshots_continue(
     writer = worker_module.write_captured_checkpoint
     writer_threads = []
 
-    def delayed_write(capture, path):
+    def delayed_write(capture, path, *, temporary=None):
         writer_threads.append(threading.get_ident())
         entered.set()
         assert release.wait(5), "test did not release checkpoint writer"
-        return writer(capture, path)
+        return writer(capture, path, temporary=temporary)
 
     monkeypatch.setattr(worker_module, "write_captured_checkpoint", delayed_write)
     with running() as (instance, peer, thread):
@@ -1716,7 +1716,8 @@ def test_spawned_save_load_and_population_transfer_validated_models(running, sce
 
 def _delayed_spawned_writer(connection, _action, payload):
     """Test child proves cancellation owns a real descendant before its write."""
-    _capture, path = payload
+    _capture, path, temporary = payload
+    temporary.path.write_text("partial temporary checkpoint", encoding="utf-8")
     path.parent.mkdir(parents=True, exist_ok=True)
     path.with_suffix(".started").write_text("started", encoding="utf-8")
     time.sleep(3)
@@ -1751,12 +1752,18 @@ def test_shutdown_terminates_and_joins_owned_job_before_save_can_write(
         job = instance._pending_job
         process = job.process
         assert process.is_alive()
+        temporary = job.checkpoint_temporary.path
+        assert temporary.is_file()
+        unrelated = temporary.parent / ".other-save.unrelated.tmp"
+        unrelated.write_text("unrelated operation", encoding="utf-8")
         peer.command("shutdown")
         thread.join(2)
         assert not thread.is_alive()
         assert not process.is_alive()
         assert not job.thread.is_alive()
         assert target.read_text(encoding="utf-8") == "existing save"
+        assert not temporary.exists()
+        assert unrelated.read_text(encoding="utf-8") == "unrelated operation"
 
 
 def test_oversized_local_process_transfer_leaves_current_day_intact(
@@ -2210,3 +2217,29 @@ def test_live_route_cache_limit_rejects_before_commit_and_connection_recovers(
         assert instance.simulation.roster_revision == 0
         assert peer.command("step", 1)["tick"] == 2501
         peer.until("snapshot", tick=2501)
+
+
+def test_worker_close_releases_transport_even_when_job_cleanup_fails(
+    scenario, tmp_path, monkeypatch
+):
+    instance = CivicWorker(scenario, token=TOKEN, save_dir=tmp_path)
+    closed = []
+
+    def failed_cancel():
+        raise RuntimeError("owned writer did not stop")
+
+    class PointService:
+        def close(self):
+            closed.append("points")
+            raise OSError("point service close failed")
+
+    instance._point_service = PointService()
+    monkeypatch.setattr(instance, "_cancel_pending_job", failed_cancel)
+    with pytest.raises(RuntimeError, match="Worker cleanup did not complete") as error:
+        instance.close()
+    assert str(error.value.__cause__) == "owned writer did not stop"
+    assert closed == ["points"]
+    assert instance.listener.fileno() == -1
+    assert instance.selector.get_map() is None
+    assert instance._closed
+    instance.close()

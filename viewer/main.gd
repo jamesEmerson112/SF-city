@@ -108,6 +108,11 @@ var phase_id: String = "viewer-0"
 var phase_started_usec: int = 0
 var phase_signature: String = ""
 var layout_last_size := Vector2.ZERO
+var game_menu: CanvasLayer
+var menu_flow := preload("res://menu_flow.gd").new()
+var launcher_owned: bool = false
+var navigation_rearm: bool = false
+var menu_exit_reported: bool = false
 
 func _ready() -> void:
 	get_tree().auto_accept_quit = false
@@ -116,13 +121,18 @@ func _ready() -> void:
 	run_metrics_last_usec = startup_started_usec
 	loading_screen = preload("res://loading_screen.gd").new()
 	add_child(loading_screen)
-	loading_screen.close_requested.connect(_close_application)
+	loading_screen.close_requested.connect(func() -> void: _request_close("loading_cancel"))
 	var arguments: PackedStringArray = OS.get_cmdline_user_args()
-	if "--workspace-probe" in arguments: _set_probe_input_guard(true)
+	if "--workspace-probe" in arguments or "--menu-probe" in arguments: _set_probe_input_guard(true)
 	display_settings = preload("res://display_settings.gd").new()
 	add_child(display_settings)
 	display_settings.initialize(arguments)
 	display_settings.changed.connect(_display_changed)
+	game_menu = preload("res://game_menu.gd").new()
+	add_child(game_menu)
+	menu_flow.initialize(self)
+	game_menu.action_requested.connect(_menu_action)
+	launcher_owned = "--launcher-owned" in arguments
 	phase_started_usec = startup_started_usec
 	var diagnostics_layer := CanvasLayer.new()
 	diagnostics_layer.layer = 110
@@ -243,8 +253,10 @@ func _ready() -> void:
 	client.status_changed.connect(_connection_status)
 	client.acknowledged.connect(_acknowledged)
 	client.command_rejected.connect(_command_rejected)
+	client.command_progress.connect(menu_flow.command_progress)
 	startup_initialized = true
 	await _loading_stage("Waiting for the simulation", "Preparing residents, homes, jobs, and daily commutes. Please wait.")
+	launcher_owned = "--launcher-owned" in arguments
 	var replay_path: String = _argument(arguments,"--replay","")
 	if not replay_path.is_empty():
 		_load_replay(replay_path)
@@ -371,6 +383,7 @@ func run_metrics(final: bool = false) -> Dictionary:
 	var viewport: Viewport = get_viewport() if is_inside_tree() else null
 	var simulation: Dictionary = {"ready":not displayed.is_empty(),"sequence":sequence,"tick":displayed.get("tick"),"simulation_time":displayed.get("simulation_time"),"clock_seconds":displayed.get("clock_seconds"),"resident_count":resident_count,"outdoor_count":resident_view.outdoor_count if is_instance_valid(resident_view) else null,"paused":displayed.get("paused"),"speed":displayed.get("speed")}
 	var presentation: Dictionary = {"mode":"map" if map_active else (str(cameras.mode) if is_instance_valid(cameras) else initial_mode),"display_server":DisplayServer.get_name(),"rendering_method":RenderingServer.get_current_rendering_method(),"graphics_adapter":RenderingServer.get_video_adapter_name(),"rendering_3d":not viewport.disable_3d if viewport != null else null,"render_draw_calls":int(Performance.get_monitor(Performance.RENDER_TOTAL_DRAW_CALLS_IN_FRAME)),"render_primitives":int(Performance.get_monitor(Performance.RENDER_TOTAL_PRIMITIVES_IN_FRAME)),"crowd_backend":str(resident_view.draw_backend) if is_instance_valid(resident_view) else "","lighting_mode":"cycle" if daylight.enabled else "fixed"}
+	presentation.merge({"menu_open":menu_flow.menu_open,"menu_state":menu_flow.state,"closing":menu_flow.finished})
 	if display_settings != null: presentation.merge(display_settings.state())
 	simulation["population"] = displayed.get("population",resident_count)
 	simulation["roster_revision"] = displayed.get("roster_revision",scene_message.get("roster_revision",0))
@@ -398,6 +411,7 @@ func _argument(arguments: PackedStringArray, name_value: String, fallback: Strin
 	return arguments[index + 1] if index >= 0 and index + 1 < arguments.size() else fallback
 
 func _receive_scene(message: Dictionary) -> void:
+	menu_flow.observe_scene(message)
 	var same_world: bool = not str(message.get("world_identity","")).is_empty() and message.get("world_identity") == scene_message.get("world_identity")
 	if str(message.get("reason","")) == "population_adjustment" and same_world and not displayed.is_empty():
 		pending_population_scene = message
@@ -507,8 +521,10 @@ func _receive_snapshot(message: Dictionary) -> void:
 		startup_first_snapshot_ms = float(Time.get_ticks_usec()-startup_started_usec)/1000.0
 		ready_reported = true
 		print("GODOT_APPLICATION_READY " + JSON.stringify(_report_state()))
+	menu_flow.observe_snapshot(message)
 
 func _acknowledged(message: Dictionary) -> void:
+	menu_flow.acknowledge(message)
 	if str(message.get("action","")) == "set_population" or str(message.get("request_id","")) == population_request:
 		if str(message.get("type","")) == "error":
 			diagnostics.set_population_status(str(message.get("message","Population change rejected.")),false)
@@ -528,6 +544,7 @@ func _command_rejected(message: Dictionary) -> void:
 	print("GODOT_APPLICATION_COMMAND_REJECTED "+JSON.stringify(marker))
 
 func _connection_status(message: String, is_error: bool) -> void:
+	if is_error: menu_flow.connection_failed(message)
 	hud.set_status(message,is_error)
 	if is_error and diagnostics != null and diagnostics.pending: diagnostics.set_population_status(message,false)
 	if is_error:
@@ -560,6 +577,7 @@ func _seek_replay(index: int) -> void:
 	_receive_snapshot(replay.snapshots[replay_index])
 
 func _process(delta: float) -> void:
+	menu_flow.pump()
 	# Keep the interval's original start: a phase can change during diagnostics
 	# or later while presenting a population handoff in this same callback.
 	var interval_start_usec: int = previous_frame_usec
@@ -594,11 +612,11 @@ func _process(delta: float) -> void:
 	var view_started: int = Time.get_ticks_usec()
 	if not map_active and not displayed.is_empty(): daylight.update_clock(float(displayed.get("clock_seconds",28790.0)))
 	view_elapsed += delta
-	cameras.allow_walk_input = startup_complete and not workspace_probe_active and camera_input_allowed(get_viewport().gui_get_focus_owner(),get_window().has_focus())
-	if not map_active:
+	cameras.allow_walk_input = startup_complete and not workspace_probe_active and not menu_flow.menu_open and not menu_flow.finished and not navigation_rearm and camera_input_allowed(get_viewport().gui_get_focus_owner(),get_window().has_focus())
+	if not map_active and not menu_flow.menu_open:
 		_update_follow()
 	_update_keyboard_navigation(delta)
-	if not map_active:
+	if not map_active and not menu_flow.menu_open:
 		cameras.update_camera(delta)
 	var trees_ms: float = 0.0
 	if not map_active:
@@ -715,6 +733,7 @@ func _advance_replay() -> void:
 	_receive_snapshot(next)
 
 func _action(action: String, value: Variant = null) -> void:
+	if menu_flow.blocks_actions() and action not in ["fullscreen","window_mode","ui_scale","open_run_log"]: return
 	match action:
 		"performance":
 			if diagnostics != null: diagnostics.set_open(not diagnostics.visible)
@@ -894,7 +913,13 @@ static func camera_input_allowed(focus: Control, window_focused: bool) -> bool:
 	return window_focused and not (focus is LineEdit or focus is TextEdit or focus is SpinBox or focus is OptionButton)
 
 func _update_keyboard_navigation(delta: float) -> void:
-	if workspace_probe_active or not cameras.allow_walk_input: return
+	if navigation_rearm:
+		var held: bool = false
+		for key: int in [KEY_W,KEY_A,KEY_S,KEY_D,KEY_Q,KEY_E,KEY_LEFT,KEY_RIGHT,KEY_SHIFT]:
+			if Input.is_physical_key_pressed(key): held = true
+		if not held: navigation_rearm = false
+		return
+	if workspace_probe_active or menu_flow.menu_open or not cameras.allow_walk_input: return
 	var direction := Vector2(
 		float(Input.is_physical_key_pressed(KEY_D))-float(Input.is_physical_key_pressed(KEY_A)),
 		float(Input.is_physical_key_pressed(KEY_W))-float(Input.is_physical_key_pressed(KEY_S)))
@@ -1015,8 +1040,65 @@ func _select_at(screen_position: Vector2) -> void:
 	_select(identifier,label_value)
 	if not identifier.is_empty(): hud.set_inspector_collapsed(false)
 
+func _input(event: InputEvent) -> void:
+	if workspace_probe_active or game_menu == null or menu_flow.finished: return
+	if event is InputEventKey and event.pressed and not event.echo:
+		if event.physical_keycode == KEY_ESCAPE:
+			if game_menu.visible:
+				if game_menu.close_popup(): pass
+				elif game_menu.page == "confirm_unsaved": game_menu.show_page("exit" if menu_flow.exit_intent else "root")
+				elif game_menu.page in ["display","controls"]: game_menu.show_page("root")
+				elif game_menu.page in ["exit","error"]: menu_flow.cancel_exit()
+				else: menu_flow.return_to_city()
+			else:
+				var focus: Control = get_viewport().gui_get_focus_owner()
+				if focus is OptionButton and focus.get_popup().visible: focus.get_popup().hide()
+				else: menu_flow.open_menu()
+			get_viewport().set_input_as_handled()
+		elif game_menu.visible and (event.physical_keycode == KEY_SPACE or game_menu.handle_key(event)):
+			get_viewport().set_input_as_handled()
+
+func _menu_action(action: String) -> void:
+	if menu_flow.finished: return
+	if action.begins_with("mode_"):
+		display_settings.set_mode(["windowed","maximized","fullscreen"][int(action.trim_prefix("mode_"))])
+	elif action.begins_with("scale_"):
+		display_settings.set_scale([1.0,1.25,1.5][int(action.trim_prefix("scale_"))])
+	else:
+		match action:
+			"return": menu_flow.return_to_city()
+			"save": menu_flow.save_day()
+			"display":
+				game_menu.scale_picker.select([1.0,1.25,1.5].find(display_settings.scale_value))
+				var mode_value: int = get_window().mode
+				game_menu.mode_picker.select(2 if mode_value == Window.MODE_FULLSCREEN else (1 if mode_value == Window.MODE_MAXIMIZED else 0))
+				game_menu.show_page("display")
+			"controls": game_menu.show_page("controls")
+			"back_display","back_controls": game_menu.show_page("root")
+			"performance":
+				menu_flow.return_to_city()
+				diagnostics.set_open(true)
+			"exit": menu_flow.request_exit("menu")
+			"cancel_exit","cancel_error": menu_flow.cancel_exit()
+			"retry": menu_flow.retry()
+			"unsaved_exit","unsaved_error": game_menu.show_page("confirm_unsaved")
+			"cancel_unsaved": game_menu.show_page("exit" if menu_flow.exit_intent else "root")
+			"confirm_unsaved": menu_flow.confirm_unsaved()
+
+func _request_close(reason: String = "window_close") -> void:
+	if game_menu == null:
+		_close_application()
+	else:
+		menu_flow.request_exit(reason)
+
+func _finalize_menu_exit(marker: Dictionary) -> void:
+	if menu_exit_reported: return
+	menu_exit_reported = true
+	print("GODOT_APPLICATION_EXIT "+JSON.stringify(marker))
+	_close_application()
+
 func _unhandled_input(event: InputEvent) -> void:
-	if workspace_probe_active: return
+	if workspace_probe_active or menu_flow.menu_open or menu_flow.finished: return
 	if event is InputEventKey and event.pressed and not event.echo:
 		if event.physical_keycode == KEY_F11:
 			_action("fullscreen")
@@ -1046,7 +1128,6 @@ func _unhandled_input(event: InputEvent) -> void:
 			KEY_T:
 				var speeds: Array = [1,4,60,600]
 				_action("speed",speeds[(speeds.find(int(displayed.get("speed",1))) + 1) % speeds.size()])
-			KEY_ESCAPE: dragging = false
 	if event is InputEventMouseButton:
 		if event.pressed and hud != null and hud.content_rect().has_area() and not hud.content_rect().has_point(event.position): return
 		if event.button_index in [MOUSE_BUTTON_LEFT,MOUSE_BUTTON_RIGHT,MOUSE_BUTTON_MIDDLE]:
@@ -1117,17 +1198,19 @@ func _fail(message: String) -> void:
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_WM_CLOSE_REQUEST:
-		_close_application()
+		if workspace_probe_active and "--menu-probe" not in OS.get_cmdline_user_args(): _close_application()
+		else: _request_close("window_close")
 
 func _close_application() -> void:
 	_emit_run_metrics(true)
 	# The launcher owns the worker lifecycle. A viewer only closes its peer.
-	if client != null: client.peer.disconnect_from_host()
+	if client != null: client.stop()
 	get_tree().quit()
 
 func _automation() -> void:
 	var probe: bool = "--workspace-probe" in OS.get_cmdline_user_args()
-	if not smoke and screenshot_path.is_empty() and not probe: return
+	var menu_probe: bool = "--menu-probe" in OS.get_cmdline_user_args()
+	if not smoke and screenshot_path.is_empty() and not probe and not menu_probe: return
 	automation_running = true
 	var deadline: int = Time.get_ticks_msec() + 45000
 	while (displayed.is_empty() or not startup_complete) and Time.get_ticks_msec() < deadline and last_error.is_empty():
@@ -1135,6 +1218,12 @@ func _automation() -> void:
 	if displayed.is_empty() or not startup_complete:
 		_fail("The initial simulation and scenery did not finish loading for automation.")
 		get_tree().quit(1)
+		return
+	if menu_probe:
+		var failure: String = await load("res://game_menu_probe.gd").new().run(self,_argument(OS.get_cmdline_user_args(),"--menu-probe",""),_argument(OS.get_cmdline_user_args(),"--menu-probe-case","save_exit"))
+		if not failure.is_empty():
+			_fail(failure)
+			get_tree().quit(1)
 		return
 	if probe:
 		var failure: String = await preload("res://live_workspace_probe.gd").new().run(self,OS.get_cmdline_user_args())
@@ -1190,6 +1279,7 @@ func _automation() -> void:
 func _workspace_layout() -> void:
 	var viewport_size: Vector2 = get_viewport().get_visible_rect().size
 	layout_last_size = viewport_size
+	if game_menu != null: game_menu.layout(viewport_size)
 	var dock := Rect2()
 	if diagnostics != null: dock = diagnostics.layout(viewport_size)
 	if hud != null:
@@ -1201,7 +1291,7 @@ func _display_changed() -> void:
 	if startup_complete: _emit_phase("display","settled")
 
 func _phase_context() -> Dictionary:
-	var result: Dictionary = {"population":displayed.get("population",displayed.get("residents",[]).size()),"roster_revision":displayed.get("roster_revision",0),"mode":_view_mode() if cameras != null else initial_mode,"paused":displayed.get("paused",false),"speed":displayed.get("speed",1),"world_identity":scene_message.get("world_identity",""),"diagnostics_visible":diagnostics.visible if diagnostics != null else false}
+	var result: Dictionary = {"population":displayed.get("population",displayed.get("residents",[]).size()),"roster_revision":displayed.get("roster_revision",0),"mode":_view_mode() if cameras != null else initial_mode,"paused":displayed.get("paused",false),"speed":displayed.get("speed",1),"world_identity":scene_message.get("world_identity",""),"diagnostics_visible":diagnostics.visible if diagnostics != null else false,"menu_open":menu_flow.menu_open,"menu_state":menu_flow.state,"closing":menu_flow.finished}
 	if display_settings != null: result.merge(display_settings.state())
 	if cameras != null and cameras.camera != null:
 		var pose: Vector3 = cameras.camera.position

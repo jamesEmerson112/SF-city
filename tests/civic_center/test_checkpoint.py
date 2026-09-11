@@ -795,3 +795,63 @@ def test_shared_dense_routes_are_stored_once_with_per_trip_verification(tmp_path
         == load_checkpoint(legacy_path).snapshot()
         == model.snapshot()
     )
+
+
+def test_reserved_temporary_only_cleans_its_recorded_identity(tmp_path):
+    from civic_center.checkpoint import (
+        discard_checkpoint_temporary,
+        reserve_checkpoint_temporary,
+    )
+
+    destination = tmp_path / "exit-recovery.json"
+    destination.write_text("previous complete checkpoint", encoding="utf-8")
+    temporary = reserve_checkpoint_temporary(destination)
+    unrelated = tmp_path / ".another-job.tmp"
+    unrelated.write_text("other job", encoding="utf-8")
+    assert discard_checkpoint_temporary(temporary) is True
+    assert not temporary.path.exists()
+    assert destination.read_text(encoding="utf-8") == "previous complete checkpoint"
+    assert unrelated.read_text(encoding="utf-8") == "other job"
+    assert discard_checkpoint_temporary(temporary) is False
+
+
+def test_replaced_temporary_is_preserved_when_identity_no_longer_matches(tmp_path):
+    from dataclasses import replace
+
+    from civic_center.checkpoint import (
+        discard_checkpoint_temporary,
+        reserve_checkpoint_temporary,
+    )
+
+    temporary = reserve_checkpoint_temporary(tmp_path / "quick.json")
+    mismatched = replace(temporary, inode=temporary.inode + 1)
+    try:
+        with pytest.raises(ValueError, match="identity changed"):
+            discard_checkpoint_temporary(mismatched)
+        assert temporary.path.is_file()
+    finally:
+        discard_checkpoint_temporary(temporary)
+
+
+def test_reserved_temporary_cannot_target_a_different_checkpoint(tmp_path):
+    from civic_center.checkpoint import (
+        discard_checkpoint_temporary,
+        reserve_checkpoint_temporary,
+    )
+    from civic_center.model import CivicSimulation
+    from civic_center.scenario import make_scenario
+
+    temporary = reserve_checkpoint_temporary(tmp_path / "quick.json")
+    target = tmp_path / "exit-recovery.json"
+    target.write_text("old recovery", encoding="utf-8")
+    try:
+        with pytest.raises(ValueError, match="does not belong"):
+            save_checkpoint(
+                CivicSimulation(make_scenario(population=1)),
+                target,
+                temporary=temporary,
+            )
+        assert target.read_text(encoding="utf-8") == "old recovery"
+        assert temporary.path.is_file()
+    finally:
+        discard_checkpoint_temporary(temporary)

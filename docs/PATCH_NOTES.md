@@ -1,5 +1,80 @@
 # SF-city Patch Notes
 
+## 2026-09-06 - Escape menu and confirmed recovery exit
+
+Press **Escape** to open the vertical game menu. It pauses the city, blocks
+camera input, and puts Return, Save day, Display, Controls, Performance, and
+**Save & Exit** in one place. Return restores the previous playback state.
+
+Previously, Escape cancelled dragging and closing the window could abandon an
+unfinished save. A ready launcher-owned game now waits for an acknowledged
+**exit-recovery** checkpoint before closing, including when using the window's
+close button. This preserves the quick-save slot. Failed or unconfirmed saves
+keep the window open with Retry, Return, and an explicit unsaved-exit choice.
+Slow saves continue with visible status.
+
+Resume the recovery with:
+
+```powershell
+python -m civic_center --load .local/civic/saves/exit-recovery.json
+```
+
+Recovery opens paused at the saved tick, with its population and speed. The
+launcher finishes owned-process cleanup, output capture, hardware monitoring,
+telemetry, and the final JSON report after Godot exits. Wait for the launcher to
+return before closing its terminal. The report now separates save intent/outcome
+from actual cleanup results, including forced or incomplete cleanup.
+
+### Validation and observed save cost
+
+The application suite passed **839 tests, with 1 skipped**. Eight relevant Godot
+checks passed, covering menu input/layout, pause/save coordination, socket closure,
+existing workspace behavior, metrics and telemetry. Layout checks exercised
+960 x 540 through 5120 x 1440 at 100%, 125% and 150% scale; these do not establish
+physical ultrawide or mixed-DPI display coverage.
+
+**Eight rendered trials passed:** Save & Exit and ordinary window close in both
+3D and 2D, saving after a live population change, a deliberately failed save with
+explicit unsaved exit, a 1,000-resident city recovery, and a portable pilot.
+Successful saves reloaded at the acknowledged tick and retained their roster;
+quick saves stayed unchanged. Final logs were readable, output was drained, and
+owned processes stopped. The fresh pilot-only portable package verified
+**275 files / 210,453,089 bytes** and ran with its bundled runtimes and individual
+crowd fallback.
+
+Selected single-run observations from the
+[aggregate validation report](benchmarks/2026-09-06-game-menu.json):
+
+| Scenario | Residents / outdoors at menu | Save request through acknowledgement | Whole automated application run |
+| --- | --- | --- | --- |
+| City Hall pilot, 3D overhead | 200 / 47 | 0.342 s | 4.828 s |
+| City Hall pilot, 2D map | 200 / 47 | 0.472 s | 5.109 s |
+| Installed city, 2D map | 1,000 / 782 | 24.839 s | 64.015 s |
+
+Each row is **one observation**, on Windows 11, Ryzen 5 2600X, about 32 GiB RAM,
+and GTX 1070 Ti 8 GiB (driver 582.66), with Python 3.12.10 and Godot 4.7.2
+Compatibility. The 3D row used the Rust crowd helper; both map rows used the
+2D canvas. These source trials used a 1280 x 720 window, 100% UI scale, VSync,
+fixed lighting and existing local caches; no cold
+reset was performed. Save timing includes validation, disk work and transport.
+Whole-run timing includes startup, scripted interaction, a screenshot, closure,
+and 250 ms process polling; it is not click-to-exit latency. Recovery reload
+validation ran afterward. Pause had already completed before exit was requested.
+
+The gain is recoverable progress and explicit shutdown outcomes. There is no
+measured before/after speedup, absolute time saving, or percentage reduction for
+this feature. Scenes and workloads differ, so the rows are not a 2D-versus-3D
+performance comparison. Large saves can take tens of seconds. The report retains
+separate menu, pause, close-dispatch and launcher-cleanup observations, source
+fingerprints, and measurement limits; raw logs remain ignored locally.
+
+Recovery does not record camera poses or individual trajectories. The
+[overlapping-newcomer fix and coordinate recorder](CITIZEN_COORDINATE_PLAN.md)
+remain planned. Direct viewer and replay exits do not claim a new live recovery
+save; unexpected OS termination or filesystem failure can still interrupt
+persistence. See the [application guide](../civic_center/README.md#escape-menu-and-safe-exit)
+for controls and recovery behavior.
+
 ## 2026-09-06 - Live population experiments and a wider workspace
 
 ### What users gain

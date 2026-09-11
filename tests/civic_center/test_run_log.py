@@ -823,3 +823,329 @@ def test_malformed_command_rejection_marker_does_not_persist_arbitrary_payload(
     assert record["diagnostics"]["malformed_marker_count"] == 1
     assert record["diagnostics"]["command_rejection_count"] == 0
     assert "private-row" not in json.dumps(record)
+
+
+def _exit_payload(**fields):
+    return {
+        "schema_version": 1,
+        "reason": "menu",
+        "save_intent": "save",
+        "save_outcome": "saved",
+        "slot": "exit-recovery",
+        "captured_tick": 234,
+        "session_id": "day-session",
+        "at_unix": 1234.5,
+        "durations_ms": {"total": 55.0, "pause": 10.0, "save": 40.0},
+        **fields,
+    }
+
+
+def test_viewer_exit_retains_one_bounded_save_summary_and_final_metrics(
+    tmp_path, capsys
+):
+    log = RunLog(tmp_path, {}, secrets=("fixture-secret",))
+    payload = _exit_payload(
+        session_id="session-fixture-secret",
+        residents=[{"coordinates": [123, 456]}],
+        token="not-retained",
+        cleanup={"worker": "not-retained"},
+        durations_ms={
+            "total": 55.0,
+            "pause": 10.0,
+            "save": 40.0,
+            "settling": -1,
+            "preferences": float("inf"),
+            "coordinates": [123, 456],
+        },
+    )
+    log.capture(
+        io.StringIO(
+            "GODOT_APPLICATION_EXIT "
+            + json.dumps(payload)
+            + "\n"
+            + "GODOT_APPLICATION_EXIT "
+            + json.dumps(_exit_payload(captured_tick=999))
+            + "\n"
+            + 'GODOT_APPLICATION_RUN_METRICS {"final":true,"error":""}\n'
+        )
+    )
+    assert log.close_capture()["drained"]
+    result = log.finish("completed", 0)
+    record = _read(log)
+    assert result == {"status": "persisted", "persisted": True, "reason": None}
+    assert log.final_persisted is True
+    assert record["exit"]["captured_tick"] == 234
+    assert record["exit"]["save_intent"] == "save"
+    assert record["exit"]["save_outcome"] == "saved"
+    assert record["exit"]["slot"] == "exit-recovery"
+    assert record["exit"]["session_id"] == "session-[redacted]"
+    assert record["exit"]["durations_ms"] == {
+        "total": 55.0,
+        "pause": 10.0,
+        "save": 40.0,
+    }
+    assert record["exit"]["received_elapsed_seconds"] >= 0
+    assert record["metrics"]["runtime"]["final"] is True
+    assert record["diagnostics"]["duplicate_exit_marker_count"] == 1
+    assert (
+        len([event for event in record["events"] if event["name"] == "viewer_exit"])
+        == 1
+    )
+    assert "cleanup" not in record
+    encoded = json.dumps(record)
+    assert "coordinates" not in encoded and "not-retained" not in encoded
+    assert "fixture-secret" not in encoded
+    assert "GODOT_APPLICATION_EXIT" not in capsys.readouterr().out
+
+
+@pytest.mark.parametrize(
+    "fields",
+    [
+        {"schema_version": 2},
+        {"schema_version": True},
+        {"reason": {"coordinates": [1, 2]}},
+        {"save_outcome": "saved", "captured_tick": None},
+        {"captured_tick": True},
+        {"captured_tick": -1},
+        {"slot": "private-path"},
+        {"save_intent": "unrecognized"},
+    ],
+)
+def test_exit_marker_rejects_unknown_versions_and_unproven_save_claims(
+    tmp_path, fields
+):
+    log = RunLog(tmp_path, {})
+    log.capture(
+        io.StringIO(
+            "GODOT_APPLICATION_EXIT " + json.dumps(_exit_payload(**fields)) + "\n"
+        )
+    )
+    log.close_capture()
+    log.finish("completed", 0)
+    record = _read(log)
+    assert "exit" not in record
+    assert record["diagnostics"]["malformed_marker_count"] == 1
+    assert not log.has_errors
+
+
+@pytest.mark.parametrize(
+    "outcome", ["skipped", "unknown", "not_available", "replay", "viewer_only"]
+)
+def test_exit_without_confirmed_save_never_invents_a_capture_tick(tmp_path, outcome):
+    log = RunLog(tmp_path, {})
+    payload = _exit_payload(
+        save_outcome=outcome,
+        save_intent="skip",
+        slot=None,
+        captured_tick=None,
+    )
+    log.capture(io.StringIO("GODOT_APPLICATION_EXIT " + json.dumps(payload) + "\n"))
+    log.close_capture()
+    log.finish("completed", 0)
+    assert _read(log)["exit"]["save_outcome"] == outcome
+    assert _read(log)["exit"]["captured_tick"] is None
+
+
+def test_capture_source_filter_and_timeout_report_actual_reader_completion(tmp_path):
+    entered = threading.Event()
+    release = threading.Event()
+
+    class BlockingOutput:
+        def readline(self, limit):
+            entered.set()
+            release.wait(5)
+            return ""
+
+        def close(self):
+            pytest.fail("Closing a locked stream is not a bounded drain")
+
+    log = RunLog(tmp_path, {})
+    worker = log.capture(BlockingOutput(), source="worker", echo=False)
+    try:
+        assert entered.wait(2)
+        log.capture(
+            io.StringIO('GODOT_APPLICATION_STARTUP_COMPLETE {"complete":true}\n')
+        )
+        viewer = log.close_capture(source="viewer")
+        assert viewer["status"] == "drained"
+        assert viewer["readers"] == 1 and viewer["remaining"] == 0
+        assert worker.is_alive() and log.startup_complete
+        pending = log.close_capture(timeout=0.01)
+        assert pending["status"] == "timed_out"
+        assert pending["timed_out"] and not pending["drained"]
+        assert pending["remaining"] == 1 and pending["readers"] == 2
+        log.cleanup_stage("capture", pending)
+        log.finish("completed", 0)
+        before = log.path.read_bytes()
+    finally:
+        release.set()
+        worker.join(2)
+    assert log.close_capture()["drained"]
+    assert log.path.read_bytes() == before
+    assert _read(log)["cleanup"]["stages"]["capture"]["status"] == "timed_out"
+
+
+def test_capture_io_error_is_incomplete_even_after_reader_stops(tmp_path):
+    class BrokenOutput:
+        def readline(self, limit):
+            raise OSError("pipe read failed")
+
+    log = RunLog(tmp_path, {})
+    log.capture(BrokenOutput(), source="worker", echo=False)
+    result = log.close_capture()
+    assert result["status"] == "failed"
+    assert result["errors"] == 1
+    assert result["remaining"] == 0
+    assert not result["drained"] and not result["timed_out"]
+
+
+def test_cleanup_stage_reports_force_and_independent_outcomes_without_raw_state(
+    tmp_path,
+):
+    log = RunLog(tmp_path, {}, secrets=("fixture-secret",))
+    log.cleanup_stage(
+        "worker",
+        {
+            "status": "forced",
+            "forced": True,
+            "acknowledged": False,
+            "exit_code": -15,
+            "elapsed_ms": 2000.0,
+            "reason": "timeout fixture-secret",
+            "residents": ["private-person"],
+            "environment": {"private-key": "private-value"},
+        },
+    )
+    log.cleanup_stage("hardware", {"status": "stopped", "stopped": True})
+    log.error("earlier runtime failure")
+    log.finish("completed", 0)
+    record = _read(log)
+    assert record["status"] == "failed"
+    assert record["cleanup"]["stages"]["worker"]["status"] == "forced"
+    assert record["cleanup"]["stages"]["worker"]["forced"] is True
+    assert record["cleanup"]["stages"]["hardware"]["stopped"] is True
+    assert record["diagnostics"]["error_count"] == 1
+    assert "private-" not in json.dumps(record)
+    assert "fixture-secret" not in json.dumps(record)
+    before = log.path.read_bytes()
+    log.cleanup_stage("worker", {"status": "graceful"})
+    assert log.path.read_bytes() == before
+
+
+@pytest.mark.parametrize("previous", ["failed", "interrupted"])
+def test_finish_keeps_previous_terminal_failure_status(tmp_path, previous):
+    log = RunLog(tmp_path, {})
+    log.update(status=previous)
+    log.finish("completed", 0)
+    assert _read(log)["status"] == previous
+
+
+def test_final_persistence_failure_is_explicit_and_late_callbacks_remain_sealed(
+    tmp_path,
+    monkeypatch,
+    capsys,
+):
+    log = RunLog(tmp_path, {}, secrets=("fixture-secret",))
+    assert log.final_persisted is None
+    before = log.path.read_bytes()
+    attempts = []
+
+    def failed_write(path, payload):
+        attempts.append(path)
+        raise OSError("disk full fixture-secret")
+
+    monkeypatch.setattr(run_log, "atomic_write", failed_write)
+    result = log.finish("completed", 0)
+    assert result == {
+        "status": "failed",
+        "persisted": False,
+        "reason": "disk full [redacted]",
+    }
+    assert log.final_persisted is False and log.disabled
+    assert log.path.read_bytes() == before
+    assert _read(log)["ended_at"] is None
+    in_memory = json.dumps(log._data)
+    log.event("late")
+    log.error("late")
+    log.cleanup_stage("worker", {"status": "graceful"})
+    log.capture(io.StringIO("GODOT_APPLICATION_FAIL late\n"))
+    log.close_capture()
+    assert log.finish("failed", 1) == result
+    assert json.dumps(log._data) == in_memory
+    assert len(attempts) == 1
+    assert capsys.readouterr().err.count("run logging unavailable") == 1
+
+
+def test_menu_and_closing_phases_retain_separate_context(tmp_path):
+    log = RunLog(tmp_path, {})
+    log.configure_hardware(True)
+    for index, (menu_open, closing) in enumerate(
+        ((False, False), (True, False), (True, True))
+    ):
+        payload = {
+            "phase_id": f"viewer-{index}",
+            "reason": "menu_state",
+            "stage": "settled",
+            "boundary_monotonic_seconds": time.monotonic(),
+            "clock_uncertainty_seconds": 0.0,
+            "menu_open": menu_open,
+            "closing": closing,
+        }
+        log.phase(payload)
+    log.capture(
+        io.StringIO(
+            'GODOT_APPLICATION_RUN_METRICS {"presentation":{"menu_open":true,"closing":true}}\n'
+        )
+    )
+    log.close_capture()
+    log.hardware_sample({"cpu": {"percent": 12}})
+    log.finish("completed", 0)
+    record = _read(log)
+    phases = [
+        phase
+        for phase in record["experiments"]["phases"]
+        if phase["source_phase_id"] is not None
+    ]
+    assert [
+        (phase["context"]["menu_open"], phase["context"]["closing"]) for phase in phases
+    ] == [
+        (False, False),
+        (True, False),
+        (True, True),
+    ]
+    context = record["hardware"]["samples"][-1]["context"]
+    assert context["menu_open"] is True and context["closing"] is True
+
+
+def test_exit_numeric_fields_are_bounded_before_float_conversion(tmp_path):
+    log = RunLog(tmp_path, {})
+    payload = _exit_payload(
+        at_unix=10**400, durations_ms={"save": 10**400, "total": 12.5}
+    )
+    log.capture(io.StringIO("GODOT_APPLICATION_EXIT " + json.dumps(payload) + "\n"))
+    assert log.close_capture()["drained"]
+    log.finish("completed", 0)
+    exit_record = _read(log)["exit"]
+    assert "at_unix" not in exit_record
+    assert exit_record["durations_ms"] == {"total": 12.5}
+
+
+def test_failed_output_archive_is_reported_while_parsing_still_completes(tmp_path):
+    class BrokenArchive:
+        def write(self, chunk):
+            raise OSError("archive full")
+
+    log = RunLog(tmp_path, {})
+    log.capture(
+        io.StringIO('GODOT_APPLICATION_STARTUP_COMPLETE {"complete":true}\n'),
+        archive=BrokenArchive(),
+        echo=False,
+    )
+    result = log.close_capture()
+    assert log.startup_complete
+    assert result["status"] == "failed"
+    assert result["errors"] == 1 and result["remaining"] == 0
+    assert log.finish("completed", 0)["persisted"]
+    assert any(
+        event["name"] == "process_archive_unavailable" for event in _read(log)["events"]
+    )

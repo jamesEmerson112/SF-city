@@ -256,7 +256,15 @@ def _prepare_with_viewer(
                     time.sleep(0.1)
             finally:
                 if child.poll() is None:
-                    _terminate_tree(child)
+                    outcome = (
+                        _cleanup_stage(
+                            run_log, "preparation", lambda: _terminate_tree(child)
+                        )
+                        if run_log is not None
+                        else _terminate_tree(child)
+                    )
+                    if outcome["status"] == "failed":
+                        raise RuntimeError("Owned city preparation did not terminate")
                 if preparation_reader is not None:
                     preparation_reader.join(2.0)
         if viewer.poll() is not None:
@@ -272,16 +280,51 @@ def _prepare_with_viewer(
         return scenario
     finally:
         if child is not None and child.poll() is None:
-            _terminate_tree(child)
-        request.unlink(missing_ok=True)
-        result.unlink(missing_ok=True)
+            outcome = (
+                _cleanup_stage(run_log, "preparation", lambda: _terminate_tree(child))
+                if run_log is not None
+                else _terminate_tree(child)
+            )
+            if outcome["status"] == "failed" and run_log is None:
+                raise RuntimeError("Owned city preparation did not terminate")
+        for name, path in (
+            ("preparation_request", request),
+            ("preparation_result", result),
+        ):
+            if run_log is not None:
+                _cleanup_stage(
+                    run_log, name, lambda target=path: target.unlink(missing_ok=True)
+                )
+            else:
+                path.unlink(missing_ok=True)
 
 
-def _shutdown_worker(process: subprocess.Popen, port: int | None, token: str) -> None:
+def _process_outcome(
+    process: subprocess.Popen, started: float, status: str, **fields
+) -> dict:
+    return {
+        "status": status,
+        "exit_code": process.poll(),
+        "forced": status == "forced",
+        "elapsed_ms": round((time.monotonic() - started) * 1000, 3),
+        **fields,
+    }
+
+
+def _shutdown_worker(process: subprocess.Popen, port: int | None, token: str) -> dict:
+    """Ask the owned worker to exit, then report whether termination was required.
+
+    Read small acknowledgment frames without retaining the potentially large scene
+    preceding them. The grace deadline includes socket draining and process joining.
+    """
+    started = time.monotonic()
     if process.poll() is not None:
-        return
+        return _process_outcome(process, started, "already_exited", acknowledged=False)
+    acknowledged = False
+    reason = "worker_endpoint_unavailable"
     if port:
         try:
+            deadline = started + 8.0
             with socket.create_connection(("127.0.0.1", port), timeout=1) as connection:
                 hello = {
                     "type": "hello",
@@ -298,43 +341,126 @@ def _shutdown_worker(process: subprocess.Popen, port: int | None, token: str) ->
                 connection.sendall(
                     (json.dumps(hello) + "\n" + json.dumps(shutdown) + "\n").encode()
                 )
-                # A complete scene can precede the acknowledgment. Consume data so
-                # backpressure cannot prevent a graceful local shutdown.
-                connection.settimeout(0.5)
-                deadline = time.monotonic() + 2
-                while time.monotonic() < deadline and process.poll() is None:
+                pending = bytearray()
+                oversized = False
+                while time.monotonic() < deadline:
+                    connection.settimeout(
+                        min(0.5, max(0.001, deadline - time.monotonic()))
+                    )
                     try:
-                        if not connection.recv(65536):
-                            break
+                        chunk = connection.recv(65536)
                     except socket.timeout:
+                        if process.poll() is not None:
+                            break
                         continue
-            process.wait(timeout=2)
-            return
-        except (OSError, subprocess.TimeoutExpired):
-            pass
-    _terminate_tree(process)
+                    if not chunk:
+                        break
+                    pieces = chunk.split(b"\n")
+                    for index, piece in enumerate(pieces):
+                        if not oversized:
+                            if len(pending) + len(piece) > 8192:
+                                oversized = True
+                                pending.clear()
+                            else:
+                                pending.extend(piece)
+                        if index == len(pieces) - 1:
+                            continue
+                        if not oversized:
+                            try:
+                                message = json.loads(pending)
+                            except (ValueError, UnicodeError, RecursionError):
+                                message = None
+                            if isinstance(message, dict) and (
+                                message.get("type") == "ack"
+                                and message.get("action") == "shutdown"
+                                and message.get("request_id") == "launcher-shutdown"
+                            ):
+                                acknowledged = True
+                        pending.clear()
+                        oversized = False
+            process.wait(timeout=max(0.0, deadline - time.monotonic()))
+            status = "graceful" if acknowledged else "already_exited"
+            if process.returncode != 0:
+                status = "failed"
+            return _process_outcome(
+                process,
+                started,
+                status,
+                acknowledged=acknowledged,
+                reason=(
+                    None if acknowledged else "exited_without_shutdown_acknowledgment"
+                ),
+            )
+        except (OSError, subprocess.TimeoutExpired) as error:
+            reason = (
+                "worker_shutdown_timeout"
+                if isinstance(error, subprocess.TimeoutExpired)
+                else "worker_connection_failed"
+            )
+    outcome = _terminate_tree(process)
+    outcome.update(
+        acknowledged=acknowledged,
+        reason=outcome.get("reason") or reason,
+        elapsed_ms=round((time.monotonic() - started) * 1000, 3),
+    )
+    return outcome
 
 
-def _terminate_tree(process: subprocess.Popen) -> None:
+def _terminate_tree(process: subprocess.Popen) -> dict:
     """Terminate only a process tree started by this launcher.
 
     Windows venv python.exe can be a parent launcher for the real interpreter;
     killing only that parent would leave a worker behind after startup failure.
     """
+    started = time.monotonic()
     if process.poll() is not None:
-        return
-    if sys.platform == "win32":
-        from .processes import terminate_windows_tree
-
-        terminate_windows_tree(process)
-        process.wait(timeout=3)
-        return
-    process.terminate()
+        return _process_outcome(process, started, "already_exited")
     try:
-        process.wait(timeout=3)
-    except subprocess.TimeoutExpired:
-        process.kill()
-        process.wait(timeout=3)
+        if sys.platform == "win32":
+            from .processes import terminate_windows_tree
+
+            terminate_windows_tree(process)
+            process.wait(timeout=3)
+        else:
+            process.terminate()
+            try:
+                process.wait(timeout=3)
+            except subprocess.TimeoutExpired:
+                process.kill()
+                process.wait(timeout=3)
+    except (OSError, RuntimeError, subprocess.TimeoutExpired) as error:
+        return _process_outcome(
+            process,
+            started,
+            "failed",
+            forced=True,
+            reason=f"{type(error).__name__}: {error}",
+        )
+    return _process_outcome(process, started, "forced")
+
+
+def _cleanup_stage(log: RunLog, name: str, operation: Callable) -> dict:
+    """One cleanup failure must not suppress another stage or the final archive."""
+    started = time.monotonic()
+    try:
+        result = operation()
+        outcome = dict(result) if isinstance(result, dict) else {"status": "completed"}
+    except Exception as error:
+        outcome = {"status": "failed", "reason": f"{type(error).__name__}: {error}"}
+    outcome.setdefault("elapsed_ms", round((time.monotonic() - started) * 1000, 3))
+    log.cleanup_stage(name, outcome)
+    if outcome.get("status") == "failed":
+        log.error(
+            f"{name}: {outcome.get('reason', 'cleanup failed')}", source="cleanup"
+        )
+    return outcome
+
+
+def _stop_monitor(monitor) -> dict:
+    monitor.stop()
+    thread = getattr(monitor, "_thread", None)
+    alive = thread is not None and thread.is_alive()
+    return {"status": "timed_out" if alive else "stopped", "timed_out": alive}
 
 
 def _start_viewer(
@@ -445,6 +571,18 @@ def main(argv: list[str] | None = None) -> int:
         help="Ignore saved display preferences for reproducible runs",
     )
     parser.add_argument("--workspace-probe", type=Path, help=argparse.SUPPRESS)
+    parser.add_argument("--menu-probe", type=Path, help=argparse.SUPPRESS)
+    parser.add_argument(
+        "--menu-probe-case",
+        default="save_exit",
+        choices=("save_exit", "window_close", "save_error", "population_exit"),
+        help=argparse.SUPPRESS,
+    )
+    parser.add_argument(
+        "--save-dir",
+        type=Path,
+        help="Named checkpoint directory; defaults to .local/civic/saves",
+    )
     parser.add_argument(
         "--probe-counts", default="200,500,1000,2000,5000", help=argparse.SUPPRESS
     )
@@ -510,6 +648,8 @@ def main(argv: list[str] | None = None) -> int:
         args.window_size = "x".join(str(int(part)) for part in parts)
     if not math.isfinite(args.probe_seconds) or args.probe_seconds <= 0:
         parser.error("Probe duration must be finite and positive")
+    if args.workspace_probe and args.menu_probe:
+        parser.error("Choose either --workspace-probe or --menu-probe")
     if args.workspace_probe:
         try:
             counts = [int(part) for part in args.probe_counts.split(",")]
@@ -556,6 +696,7 @@ def main(argv: list[str] | None = None) -> int:
     run_status = "failed"
     exit_code = 1
     hardware_monitor = None
+    early_worker_cleanup = None
     run_log = RunLog(
         args.log_dir or ROOT / ".local/civic/logs",
         vars(args),
@@ -597,7 +738,13 @@ def main(argv: list[str] | None = None) -> int:
         runtime = [godot, "--path", str(VIEWER)]
         if args.headless:
             runtime.append("--headless")
-        viewer_options = ["--mode", args.mode, "--location", args.location]
+        viewer_options = [
+            "--launcher-owned",
+            "--mode",
+            args.mode,
+            "--location",
+            args.location,
+        ]
         if telemetry is not None:
             viewer_options += [
                 "--telemetry-port",
@@ -621,6 +768,14 @@ def main(argv: list[str] | None = None) -> int:
                 args.probe_counts,
                 "--probe-seconds",
                 str(args.probe_seconds),
+            ]
+        if args.menu_probe:
+            args.menu_probe.parent.mkdir(parents=True, exist_ok=True)
+            viewer_options += [
+                "--menu-probe",
+                str(args.menu_probe.resolve()),
+                "--menu-probe-case",
+                args.menu_probe_case,
             ]
         viewer_options += ["--lighting", args.lighting]
         viewer_options += ["--facades", args.facades]
@@ -777,7 +932,7 @@ def main(argv: list[str] | None = None) -> int:
                 "--seed",
                 str(args.seed),
                 "--save-dir",
-                str(user_data / "saves"),
+                str((args.save_dir or user_data / "saves").resolve()),
             ]
             if scenario_path:
                 command += ["--scenario", str(scenario_path.resolve())]
@@ -864,13 +1019,16 @@ def main(argv: list[str] | None = None) -> int:
                     f"Simulation worker stopped unexpectedly; see {log_path}"
                 )
             if (
-                args.smoke_test or args.screenshot or args.workspace_probe
+                args.smoke_test
+                or args.screenshot
+                or args.workspace_probe
+                or args.menu_probe
             ) and time.monotonic() - started > args.smoke_timeout:
                 raise RuntimeError(
                     "Godot verification did not finish before its timeout"
                 )
             time.sleep(0.1)
-        run_log.close_capture()
+        run_log.close_capture(source="viewer")
         exit_code = viewer.returncode
         if exit_code != 0 or run_log.has_errors:
             run_status = "failed"
@@ -906,12 +1064,15 @@ def main(argv: list[str] | None = None) -> int:
             try:
                 write_status(startup_path, "error", str(error))
                 if worker is not None:
-                    _shutdown_worker(worker, port, token)
+                    early_worker_cleanup = _cleanup_stage(
+                        run_log, "worker", lambda: _shutdown_worker(worker, port, token)
+                    )
                 if not (
                     args.headless
                     or args.smoke_test
                     or args.screenshot
                     or args.workspace_probe
+                    or args.menu_probe
                 ):
                     while viewer.poll() is None:
                         time.sleep(0.1)
@@ -926,44 +1087,73 @@ def main(argv: list[str] | None = None) -> int:
         run_log.error(f"{type(error).__name__}: {error}")
         raise
     finally:
-        # Each cleanup is independent so a process error cannot suppress the log
-        # or prevent the other owned process from being stopped.
-        cleanup = []
+        cleanup_outcomes = []
         if viewer is not None:
-            cleanup.append(lambda: _terminate_tree(viewer))
+            cleanup_outcomes.append(
+                _cleanup_stage(run_log, "viewer", lambda: _terminate_tree(viewer))
+            )
         if worker is not None:
-            cleanup.append(lambda: _shutdown_worker(worker, port, token))
+            outcome = early_worker_cleanup
+            if outcome is None or worker.poll() is None:
+                outcome = _cleanup_stage(
+                    run_log, "worker", lambda: _shutdown_worker(worker, port, token)
+                )
+            cleanup_outcomes.append(outcome)
             if worker.stdout:
-                cleanup.append(worker.stdout.close)
+                cleanup_outcomes.append(
+                    _cleanup_stage(run_log, "worker_stdout", worker.stdout.close)
+                )
         if startup_path is not None:
-            cleanup.append(lambda: startup_path.unlink(missing_ok=True))
-        for action in cleanup:
-            try:
-                action()
-            except (OSError, RuntimeError, subprocess.TimeoutExpired) as error:
-                run_log.error(str(error), source="cleanup")
-                if run_status != "interrupted":
-                    run_status, exit_code = "failed", 1
-        run_log.close_capture()
-        if worker_log:
-            try:
-                worker_log.close()
-            except OSError as error:
-                run_log.error(str(error), source="cleanup")
-                if run_status != "interrupted":
-                    run_status, exit_code = "failed", 1
-        if hardware_monitor is not None:
-            hardware_monitor.stop()
-        if run_status == "cancelled" and run_log.has_errors:
-            run_status, exit_code = "failed", exit_code or 1
-        run_log.finish(
-            run_status,
-            exit_code,
-            viewer_exit_code=getattr(viewer, "returncode", None),
-            worker_exit_code=getattr(worker, "returncode", None),
+            cleanup_outcomes.append(
+                _cleanup_stage(
+                    run_log,
+                    "startup_handoff",
+                    lambda: startup_path.unlink(missing_ok=True),
+                )
+            )
+        cleanup_outcomes.append(
+            _cleanup_stage(run_log, "output_capture", run_log.close_capture)
         )
+        if worker_log:
+            cleanup_outcomes.append(
+                _cleanup_stage(run_log, "worker_archive", worker_log.close)
+            )
+        if hardware_monitor is not None:
+            cleanup_outcomes.append(
+                _cleanup_stage(
+                    run_log, "hardware", lambda: _stop_monitor(hardware_monitor)
+                )
+            )
         if telemetry is not None:
-            telemetry.stop()
+            cleanup_outcomes.append(
+                _cleanup_stage(run_log, "telemetry", lambda: _stop_monitor(telemetry))
+            )
+        incomplete = any(
+            item.get("status") in ("failed", "forced", "timed_out")
+            or item.get("exit_code") not in (None, 0)
+            for item in cleanup_outcomes
+        )
+        if run_status != "interrupted" and (
+            run_log.has_errors or (incomplete and run_status == "completed")
+        ):
+            run_status, exit_code = "failed", exit_code or 1
+        try:
+            persistence = run_log.finish(
+                run_status,
+                exit_code,
+                viewer_exit_code=getattr(viewer, "returncode", None),
+                worker_exit_code=getattr(worker, "returncode", None),
+            )
+        except Exception as error:
+            persistence = {"persisted": False, "reason": type(error).__name__}
+        if not persistence.get("persisted", False):
+            print(
+                "San Francisco: final run log was not saved; cleanup already attempted.",
+                file=sys.stderr,
+            )
+            if run_status != "interrupted":
+                exit_code = exit_code or 1
+
     return exit_code
 
 

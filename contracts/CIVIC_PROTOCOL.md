@@ -444,3 +444,33 @@ refer to the previous completed frame, avoiding self-referential byte totals.
 They are worker costs, distinct from viewer FPS and adapter-wide GPU metrics.
 `monotonic_seconds` identifies freshness; cached paused frames do not pretend to
 be new samples. No periodic worker telemetry is printed to stdout.
+
+## Viewer menu and application exit
+
+The menu reuses existing pause/save commands and checkpoint versions; there is
+no new worker shutdown or save wire format. For a ready launcher-owned session,
+Save & Exit and normal window close settle pending operations, confirm pause,
+then save slot `exit-recovery`. The client retains request ID, action, session
+and slot and accepts only their matching final success acknowledgement and
+captured tick. Progress (`command_status`) is forwarded as a request-correlated
+viewer signal; neither progress nor a file's existence confirms persistence.
+
+Live population handoffs retain pause intent only when the tracked operation,
+sessions and roster revision match. A load/reset/preset establishes a new
+playback baseline. Cancelled exit attempts cannot be completed by an old save
+reply; lost connections leave the save outcome unconfirmed. A standalone viewer
+owns only its connection, while replay/loading exits do not claim a live save.
+
+Immediately before its final metrics record and close, the viewer emits one
+bounded `GODOT_APPLICATION_EXIT` JSON marker on captured output. Schema version 1
+records `reason`, `save_intent`, `save_outcome`, `slot`, `captured_tick`,
+`session_id`, `at_unix` and `durations_ms` for settling, pause, save, preferences
+and total exit coordination. This is a launcher diagnostic, not a worker
+command or a guarantee that cleanup/log persistence has finished.
+
+The launcher validates this marker into the run log's `exit` section. It separately
+records actual cleanup outcomes under `cleanup.stages`: owned process exits,
+worker acknowledgement, output/archive draining, hardware and telemetry shutdown.
+The final JSON is written after those stages. Missing or forced completion is
+reported explicitly, and earlier failures are preserved. Raw checkpoints,
+credentials and individual coordinate records are not added to the exit marker.

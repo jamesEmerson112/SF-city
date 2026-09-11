@@ -81,6 +81,57 @@ _COMPRESSED_CHUNK_BYTES = 49_152  # Base64 expands this to one 65,536-character 
 
 
 @dataclass(frozen=True, slots=True)
+class CheckpointTemporary:
+    """Identity of one reserved sibling, private to its owned writer job."""
+
+    path: Path
+    destination: Path
+    device: int
+    inode: int
+
+
+def reserve_checkpoint_temporary(destination: str | Path) -> CheckpointTemporary:
+    destination = Path(destination).resolve()
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    with tempfile.NamedTemporaryFile(
+        mode="wb",
+        prefix=f".{destination.name}.",
+        suffix=".tmp",
+        dir=destination.parent,
+        delete=False,
+    ) as stream:
+        identity = os.fstat(stream.fileno())
+        return CheckpointTemporary(
+            Path(stream.name).resolve(), destination, identity.st_dev, identity.st_ino
+        )
+
+
+def _check_temporary(temporary: CheckpointTemporary, destination: Path) -> None:
+    if (
+        not isinstance(temporary, CheckpointTemporary)
+        or temporary.destination != destination.resolve()
+        or temporary.path.parent != temporary.destination.parent
+        or temporary.path == temporary.destination
+        or not temporary.path.name.startswith(f".{temporary.destination.name}.")
+        or not temporary.path.name.endswith(".tmp")
+    ):
+        raise ValueError("Checkpoint temporary does not belong to this destination")
+
+
+def discard_checkpoint_temporary(temporary: CheckpointTemporary) -> bool:
+    """Remove only this reservation after its writer has stopped, never glob slots."""
+    _check_temporary(temporary, temporary.destination)
+    try:
+        identity = temporary.path.lstat()
+    except FileNotFoundError:
+        return False
+    if (identity.st_dev, identity.st_ino) != (temporary.device, temporary.inode):
+        raise ValueError("Checkpoint temporary identity changed; leaving it untouched")
+    temporary.path.unlink(missing_ok=True)
+    return True
+
+
+@dataclass(frozen=True, slots=True)
 class PreparedCheckpointCapture:
     """One immutable scenario encoding tied to a specific live model.
 
@@ -485,7 +536,12 @@ def capture_checkpoint(
     )
 
 
-def write_captured_checkpoint(capture: CheckpointCapture, path: str | Path) -> Path:
+def write_captured_checkpoint(
+    capture: CheckpointCapture,
+    path: str | Path,
+    *,
+    temporary: CheckpointTemporary | None = None,
+) -> Path:
     """Reconstruct and validate a detached capture, then atomically write v2 or v3.
 
     This function may run in a background job. Its inputs contain only immutable
@@ -564,10 +620,15 @@ def write_captured_checkpoint(capture: CheckpointCapture, path: str | Path) -> P
         raise ValueError(
             "Checkpoint capture state does not match deterministic reconstruction"
         )
-    return save_checkpoint(simulation, path)
+    return save_checkpoint(simulation, path, temporary=temporary)
 
 
-def save_checkpoint(simulation: CivicSimulation, path: str | Path) -> Path:
+def save_checkpoint(
+    simulation: CivicSimulation,
+    path: str | Path,
+    *,
+    temporary: CheckpointTemporary | None = None,
+) -> Path:
     """Atomically save a complete checkpoint, preserving an existing save on error.
 
     Callers must serialize saves with simulation advancement (the worker does so
@@ -617,26 +678,26 @@ def save_checkpoint(simulation: CivicSimulation, path: str | Path) -> Path:
     encoded = _canonical(document) + b"\n"
     if len(encoded) > MAX_CHECKPOINT_BYTES:
         raise ValueError(f"Checkpoint exceeds {MAX_CHECKPOINT_BYTES} bytes")
-    destination.parent.mkdir(parents=True, exist_ok=True)
-    temporary: Path | None = None
+    reservation = temporary or reserve_checkpoint_temporary(destination)
+    _check_temporary(reservation, destination)
     try:
-        with tempfile.NamedTemporaryFile(
-            mode="wb",
-            prefix=f".{destination.name}.",
-            suffix=".tmp",
-            dir=destination.parent,
-            delete=False,
-        ) as stream:
-            temporary = Path(stream.name)
+        with reservation.path.open("r+b") as stream:
+            identity = os.fstat(stream.fileno())
+            if (identity.st_dev, identity.st_ino) != (
+                reservation.device,
+                reservation.inode,
+            ):
+                raise ValueError(
+                    "Checkpoint temporary identity changed; leaving it untouched"
+                )
+            stream.seek(0)
+            stream.truncate()
             stream.write(encoded)
             stream.flush()
             os.fsync(stream.fileno())
-        os.replace(temporary, destination)
-        temporary = None
+        os.replace(reservation.path, destination)
     finally:
-        if temporary is not None:
-            # This is only the exact sibling file created above by this call.
-            temporary.unlink(missing_ok=True)
+        discard_checkpoint_temporary(reservation)
     return destination
 
 
